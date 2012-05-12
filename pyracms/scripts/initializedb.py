@@ -1,19 +1,11 @@
+from ..lib.userlib import UserLib
+from ..models import DBSession, Base
+from pyramid.paster import get_appsettings, setup_logging
+from pyramid.security import Everyone
+from sqlalchemy import engine_from_config
 import os
 import sys
 import transaction
-
-from sqlalchemy import engine_from_config
-
-from pyramid.paster import (
-    get_appsettings,
-    setup_logging,
-    )
-
-from ..models import (
-    DBSession,
-    MyModel,
-    Base,
-    )
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -31,5 +23,11 @@ def main(argv=sys.argv):
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
     with transaction.manager:
-        model = MyModel(name='one', value=1)
-        DBSession.add(model)
+        # Default Users
+        u = UserLib()
+        admin_user = u.create_user("admin", "admin@admin.com", "Admin User", 
+                                   "admin")
+        u.create_user(Everyone, "guest@guest.com", "Guest User", "guest")
+    
+        # Default Groups
+        u.create_group("admin", "All Access!", [admin_user])
