@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal">
+<head>
+    <title>Hypernucleus {% block title %}{% endblock %}</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+    <meta name="keywords" content="python pygame installer automatic games" />
+    <meta name="description" content="Installs and runs python games with a single click." />
+    <link rel="shortcut icon" href="/static/favicon.ico" />
+    {% set login_form = w.login_form() %}
+    {% for reqt in w.merge_res(login_form, js_links, 'js') %}
+      <script type="text/javascript" src="/dstatic/{{ reqt | safe }}"></script>
+    {%- endfor %}
+    {% for reqt in w.merge_res(login_form, css_links, 'css') %}
+      <link rel="stylesheet" href="/dstatic/{{ reqt | safe }}" type="text/css" />
+    {%- endfor %}
+    <link rel="stylesheet" href="/css" 
+                            type="text/css" media="screen" charset="utf-8" />
+</head>
+<body>
+  <div class="menu">
+    {{ login_form.render() | safe }}
+    Logged in: {{ w.logged_in(request) }}
+  </div>
+  <div class="content">
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

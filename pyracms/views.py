@@ -7,13 +7,13 @@ u = UserLib()
 
 @view_config(route_name='home', renderer='index.jinja2')
 def home(request):
-    return {}
+    return {'css_links':['/css']}
 
 @view_config(route_name='login')
 def login(request):
-    if 'Username' in request.POST and 'Password' in request.POST:
-        if u.login(request.POST['Username'], request.POST['Password']):
-            headers = remember(request, request.POST['Username'])
+    if 'username' in request.POST and 'password' in request.POST:
+        if u.login(request.POST['username'], request.POST['password']):
+            headers = remember(request, request.POST['username'])
             return redirect(request, 'home', headers=headers)
         else:
             return redirect(request, 'invalid_login')
@@ -27,4 +27,11 @@ def invalid_login(request):
 @view_config(route_name='logout')
 def logout(request):
     return redirect(request, 'home', headers=forget(request))
+
+@view_config(route_name='css')
+def css(request):
+    res = request.response
+    res.article_type = "text/css"
+    res.text = ""
+    return res
 
