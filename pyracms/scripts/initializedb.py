@@ -1,11 +1,12 @@
 from ..lib.userlib import UserLib
 from ..models import DBSession, Base
 from pyramid.paster import get_appsettings, setup_logging
-from pyramid.security import Everyone
+from pyramid.security import Everyone, Allow, Authenticated
 from sqlalchemy import engine_from_config
 import os
 import sys
 import transaction
+from ..models import RootFactory
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -30,4 +31,28 @@ def main(argv=sys.argv):
         u.create_user(Everyone, "guest@guest.com", "Guest User", "guest")
     
         # Default Groups
+        u.create_group("article", "Ability to Add, Edit, Delete, " +
+                       "Revert and Protect Articles.", [admin_user])
         u.create_group("admin", "All Access!", [admin_user])
+    
+        # Default ACL
+        acl = RootFactory()
+        acl.__acl__.add((Allow, Everyone, Everyone))
+        acl.__acl__.add((Allow, Authenticated, Authenticated))
+        acl.__acl__.add((Allow, Authenticated, "not_authenticated"))
+        acl.__acl__.add((Allow, Authenticated, "userarea_edit"))
+        acl.__acl__.add((Allow, Everyone, "article_view"))
+        acl.__acl__.add((Allow, Everyone, "article_list"))
+        acl.__acl__.add((Allow, Everyone, "article_list_revisions"))
+        acl.__acl__.add((Allow, "group:admin", "group:admin"))
+        acl.__acl__.add((Allow, "group:admin", "edit_men"))
+        acl.__acl__.add((Allow, "group:admin", "edit_acl"))
+        acl.__acl__.add((Allow, "group:article", "group:article"))
+        acl.__acl__.add((Allow, "group:article", "article_view"))
+        acl.__acl__.add((Allow, "group:article", "article_list"))
+        acl.__acl__.add((Allow, "group:article", "article_list_revisions"))
+        acl.__acl__.add((Allow, "group:article", "article_create"))
+        acl.__acl__.add((Allow, "group:article", "article_update"))
+        acl.__acl__.add((Allow, "group:article", "article_delete"))
+        acl.__acl__.add((Allow, "group:article", "article_revert"))
+        acl.sync_to_database()

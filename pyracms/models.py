@@ -1,11 +1,12 @@
 from hashlib import sha1
-from sqlalchemy import Column, Integer, Unicode
+from sqlalchemy import Column, Integer, Unicode, desc
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, synonym
 from sqlalchemy.schema import UniqueConstraint, ForeignKey
-from sqlalchemy.types import UnicodeText
+from sqlalchemy.types import UnicodeText, DateTime, Boolean
 from zope.sqlalchemy import ZopeTransactionExtension
 import os
+from datetime import datetime
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
@@ -28,6 +29,7 @@ class RootFactory(object):
         """
         Load ACL records from database
         """
+        self.__acl__ = set()
         rows = DBSession.query(ACL)
         for row in rows:
             self.__acl__.add((row.allow_deny, row.who, row.permission))
@@ -170,3 +172,61 @@ class ACL(Base):
         self.allow_deny = allow_deny
         self.who = who
         self.permission = permission
+
+class Settings(Base):
+    __tablename__ = 'settings'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+    
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    name = Column(Unicode(16), unique=True, nullable=False)
+    value = Column(UnicodeText)
+
+class Tags(Base):
+    __tablename__ = 'tags'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode(128), index=True, nullable=False)
+    page_id = Column(Integer, ForeignKey('articlepage.id'))
+    page = relationship("ArticlePage")
+    
+    def __init__(self, name):
+        self.name = name
+
+class ArticleRevision(Base):
+    __tablename__ = 'articlerevision'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+    
+    id = Column(Integer, primary_key=True)
+    page_id = Column(Integer, ForeignKey('articlepage.id'), nullable=False)
+    article = Column(UnicodeText, default='')
+    summary = Column(Unicode(128), index=True, nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user = relationship(User)
+    page = relationship("ArticlePage")
+    created = Column(DateTime, default=datetime.now)
+
+    def __init__(self, article, summary, user):
+        self.article = article
+        self.summary = summary
+        self.user = user
+        
+class ArticlePage(Base):
+    __tablename__ = 'articlepage'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode(128), index=True, unique=True, nullable=False)
+    display_name = Column(Unicode(128), index=True, nullable=False)
+    created = Column(DateTime, default=datetime.now)
+    deleted = Column(Boolean, default=False, index=True)
+    view_count = Column(Integer, default=0, index=True)
+    revisions = relationship(ArticleRevision, 
+                             cascade="all, delete, delete-orphan",
+                             lazy="dynamic",
+                             order_by=desc(ArticleRevision.created))
+    tags = relationship(Tags, cascade="all, delete, delete-orphan")
+    
+    def __init__(self, name, display_name):
+        self.name = name
+        self.display_name = display_name

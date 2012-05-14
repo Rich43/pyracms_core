@@ -3,7 +3,6 @@ from ..deform_schemas.userarea import LoginSchema
 from deform.form import Form
 
 class WidgetLib():
-        
     def logged_in(self, request):
         return authenticated_userid(request)
     

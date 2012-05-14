@@ -1,0 +1,16 @@
+{% extends "main.jinja2" %}
+{% from "widgets/comments.jinja2" import comments %}
+{% block title %} - {{ user }}'s Profile{% endblock %}
+{% block content %}
+    <h3>{{ user }}'s Profile</h3>
+    <p>Username: {{ user }}</p>
+    <p>Display Name: {{ db_user.display_name }}</p>
+    <p>Website: {{ db_user.website }}</p>
+    <p>Birthday: {{ h.format_date(db_user.birthday, request) }}</p>
+    <p>Sex: {{ db_user.sex.name }}</p>
+    <p>About Me: {{ db_user.aboutme }}</p>
+    <p>Post Count: {{ db_user.postcount }}</p>
+    <p>Timezone: {{ db_user.timezone }}</p>
+    <p>Member Since: {{ h.format_date_time(db_user.created, request) }}</p>
+    {{ comments(request, thread, form, forum_reply, h, "Profile Comments:", "user", user) }}
+{% endblock %}

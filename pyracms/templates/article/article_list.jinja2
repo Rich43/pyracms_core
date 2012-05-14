@@ -1,0 +1,19 @@
+{% extends "main.jinja2" %}
+{% block title %} - List Articles{% endblock %}
+{% block content %}
+<h2>List Articles</h2>
+<p><form action="/redirect/article_create" method="post">
+  Add a new article: <input type="text" name="page_id" />
+  <input type="submit" value="Submit" />
+</form></p>
+<table>
+    <tr>
+        <th>Article Name</th>
+    </tr>
+    {% for page in pages %}
+    <tr>
+        <td><a href="/article/item/{{ page[0] }}">{{ page[1] }}</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "main.jinja2" %}
+{% block title %} - Login{% endblock %}
+{% block content %}
+    <h3>Login</h3>
+    {% if request.matched_route.name != "userarea_login" %}
+    <p><strong>You are unauthorised to visit 
+    this page, if you are not logged in, please login below.</strong></p>
+    {% endif %}
+    {{ form | safe }}
+{% endblock %}

@@ -1,0 +1,6 @@
+{% extends "main.jinja2" %}
+{% block title %} - Editing {{ page_id }}{% endblock %}
+{% block content %}
+    <h2>Editing {{ page_id }}</h2>
+    {{ form | safe }}
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "main.jinja2" %}
+{% block title %} - Viewing {{ page.display_name }}{% endblock %}
+{% block content %}
+    <h2>{{ page.display_name }}</h2>
+    {% if revision %}
+        {{ revision.article | safe }}
+    {% else %}
+        {{ page.revisions[0].article | safe }}
+    {% endif %}
+{% endblock content %}

@@ -1,0 +1,25 @@
+{% extends "main.jinja2" %}
+{% block title %} - List revisions for {{ page_id }}{% endblock %}
+{% block content %}
+<table style="width:100%; text-align:center;">
+    <tr>
+        <th>Article Name</th>
+        <th>Revision Summary</th>
+        <th>Revision ID</th>
+        <th>Username</th>
+        <th>Timestamp</th>
+        <th>Actions</th>
+    </tr>
+    {% for revision in page.revisions %}
+    <tr>
+        <td><a href="/article/item/{{ page.name }}">{{ page.display_name }}</a></td>
+        <td>{{ revision.summary }}</td>
+        <td>{{ revision.id }}</td>
+        <td>{{ revision.user.name }}</td>
+        <td>{{ h.format_date_time(revision.created, request) }}</td>
+        <td><a href="/article/item/{{ page.name }}/{{ revision.id }}">View</a>
+            | <a href="/article/revert/{{ page.name }}/{{ revision.id }}">Revert</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
