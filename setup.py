@@ -14,6 +14,13 @@ requires = [
     'pyramid_debugtoolbar',
     'zope.sqlalchemy',
     'waitress',
+	'Whoosh',
+	'pytz',
+	'pyramid_jinja2',
+	'postmarkup',
+	'docutils',
+	'deform',
+	'SQLAlchemy'
     ]
 
 setup(name='pyracms',
