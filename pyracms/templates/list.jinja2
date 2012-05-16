@@ -1,0 +1,15 @@
+{% extends "main.jinja2" %}
+{% block title %} - {{ title }}{% endblock %}
+{% block content %}
+<table>
+    <tr>
+        <th>{{ header }}</th>
+    </tr>
+    {% for item in items %}
+    <tr>
+        <td><a href="{{ item[0] }}">{{ item[1] }}</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+

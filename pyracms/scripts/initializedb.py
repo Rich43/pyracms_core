@@ -1,17 +1,17 @@
 from ..lib.userlib import UserLib
-from ..models import DBSession, Base
+from ..models import DBSession, Base, Menu, MenuGroup, Settings, RootFactory
 from pyramid.paster import get_appsettings, setup_logging
 from pyramid.security import Everyone, Allow, Authenticated
 from sqlalchemy import engine_from_config
 import os
 import sys
 import transaction
-from ..models import RootFactory
+from pyracms.models import ArticleRenderers
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
-    print('usage: %s <config_uri>\n'
-          '(example: "%s development.ini")' % (cmd, cmd)) 
+    print(('usage: %s <config_uri>\n'
+          '(example: "%s development.ini")' % (cmd, cmd))) 
     sys.exit(1)
 
 def main(argv=sys.argv):
@@ -26,12 +26,12 @@ def main(argv=sys.argv):
     with transaction.manager:
         # Default Users
         u = UserLib()
-        admin_user = u.create_user("admin", "admin@admin.com", "Admin User", 
+        admin_user = u.create_user("admin", "admin@admin.com", "Admin User",
                                    "admin")
         u.create_user(Everyone, "guest@guest.com", "Guest User", "guest")
     
         # Default Groups
-        u.create_group("article", "Ability to Add, Edit, Delete, " +
+        u.create_group("article", "Ability to Add, Edit, Delete, " + 
                        "Revert and Protect Articles.", [admin_user])
         u.create_group("admin", "All Access!", [admin_user])
     
@@ -56,3 +56,61 @@ def main(argv=sys.argv):
         acl.__acl__.add((Allow, "group:article", "article_delete"))
         acl.__acl__.add((Allow, "group:article", "article_revert"))
         acl.sync_to_database()
+        
+        # Add menu items
+        group = MenuGroup("main_menu")
+        DBSession.add(Menu("Home", "/", 1, group, Everyone))
+        DBSession.add(Menu("Articles", "/article/list", 2, group, Everyone))
+        
+        group = MenuGroup("user_area")
+        DBSession.add(Menu("Login", "/userarea/login", 1, group,
+                           'not_authenticated'))
+        DBSession.add(Menu("Recover Password", "/userarea/recover_password",
+                           2, group, 'not_authenticated'))
+        DBSession.add(Menu("Logout", "/userarea/logout", 3, group,
+                           Authenticated))
+        DBSession.add(Menu("Register", "/userarea/register", 4, group,
+                           'not_authenticated'))
+        DBSession.add(Menu("My Profile", "/userarea/profile", 5, group,
+                           Authenticated))
+        DBSession.add(Menu("Edit Profile", "/userarea/edit", 6, group,
+                           Authenticated))
+        DBSession.add(Menu("Change Password", "/userarea/change_password",
+                           7, group, Authenticated))
+        DBSession.add(Menu("User List", "/userarea/list", 8, group,
+                           Everyone))
+        
+        group = MenuGroup("admin_area")
+        DBSession.add(Menu("Edit Menu", "/userarea_admin/edit_menu", 1, group,
+                           'edit_menu'))
+        DBSession.add(Menu("Edit Menu Groups", "/userarea_admin/edit_menu_group",
+                           2, group, 'edit_menu'))
+        DBSession.add(Menu("Edit ACL", "/userarea_admin/edit_acl", 3, group,
+                           'edit_acl'))
+        
+        group = MenuGroup("article_not_revision")
+        DBSession.add(Menu("Edit", "/article/update/%(page_id)s", 1, group,
+                           'article_update'))
+        DBSession.add(Menu("Delete", "/article/delete/%(page_id)s", 2, group,
+                           'article_delete'))
+        DBSession.add(Menu("List Revisions",
+                           "/article/list_revisions/%(page_id)s",
+                           3, group, 'article_list_revisions'))
+       
+        group = MenuGroup("article_revision")
+        DBSession.add(Menu("List Revisions",
+                           "/article/list_revisions/%(page_id)s", 1, group))
+        DBSession.add(Menu("Revert",
+                           "/article/revert/%(page_id)s/%(revision)s", 2, group))
+        
+        # Add Settings
+        DBSession.add(Settings("CSS"))
+        DBSession.add(Settings("TITLE", "Untitled Website"))
+        DBSession.add(Settings("KEYWORDS"))
+        DBSession.add(Settings("DESCRIPTION"))
+        DBSession.add(Settings("DEFAULTRENDERER", "HTML"))
+        
+        # Add Renderers
+        DBSession.add(ArticleRenderers("HTML"))
+        DBSession.add(ArticleRenderers("BBCODE"))
+        DBSession.add(ArticleRenderers("RESTRUCTUREDTEXT"))

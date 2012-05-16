@@ -6,7 +6,8 @@ from sqlalchemy.schema import UniqueConstraint, ForeignKey
 from sqlalchemy.types import UnicodeText, DateTime, Boolean
 from zope.sqlalchemy import ZopeTransactionExtension
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
+import uuid
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
@@ -180,7 +181,11 @@ class Settings(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     name = Column(Unicode(16), unique=True, nullable=False)
     value = Column(UnicodeText)
-
+    
+    def __init__(self, name, value=""):
+        self.name = name
+        self.value = value
+        
 class Tags(Base):
     __tablename__ = 'tags'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
@@ -210,7 +215,17 @@ class ArticleRevision(Base):
         self.article = article
         self.summary = summary
         self.user = user
-        
+
+class ArticleRenderers(Base):
+    __tablename__ = 'articlerenderers'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode(128), index=True, unique=True, nullable=False)
+
+    def __init__(self, name):
+        self.name = name
+
 class ArticlePage(Base):
     __tablename__ = 'articlepage'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
@@ -221,12 +236,79 @@ class ArticlePage(Base):
     created = Column(DateTime, default=datetime.now)
     deleted = Column(Boolean, default=False, index=True)
     view_count = Column(Integer, default=0, index=True)
-    revisions = relationship(ArticleRevision, 
+    renderer_id = Column(Integer, ForeignKey('articlerenderers.id'),
+                         nullable=False, default=1)
+    revisions = relationship(ArticleRevision,
                              cascade="all, delete, delete-orphan",
                              lazy="dynamic",
                              order_by=desc(ArticleRevision.created))
     tags = relationship(Tags, cascade="all, delete, delete-orphan")
+    renderer = relationship(ArticleRenderers)
     
     def __init__(self, name, display_name):
         self.name = name
         self.display_name = display_name
+
+class Menu(Base):
+    __tablename__ = 'menu'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+    id = Column(Integer, primary_key=True)
+    group_id = Column(Integer, ForeignKey('menugroup.id'), nullable=False)
+    group = relationship("MenuGroup")
+    position = Column(Integer, default=1, nullable=False)
+    url = Column(Unicode(128), nullable=False)
+    name = Column(Unicode(128), nullable=False)
+    permissions = Column(Unicode(128), default='')
+    
+    def __init__(self, name, url, position, group, permissions=''):
+        self.name = name
+        self.url = url
+        self.position = position
+        self.group = group
+        self.permissions = permissions
+
+class MenuGroup(Base):
+    __tablename__ = 'menugroup'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode(128), index=True, unique=True, nullable=False)
+    menu_items = relationship(Menu, order_by=Menu.position,
+                              cascade="all, delete, delete-orphan")
+    
+    def __init__(self, name):
+        self.name = name
+
+def gen_token():
+    return str(uuid.uuid4())
+
+def expire_time():
+    return datetime.now() + timedelta(hours=24)
+
+class TokenPurpose(Base):
+    __tablename__ = 'tokenpurpose'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode(128), index=True, unique=True, nullable=False)
+
+    def __init__(self, name):
+        self.name = name
+
+class Token(Base):
+    __tablename__ = 'token'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode(128), index=True, unique=True,
+                  default=gen_token, nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user = relationship(User)
+    purpose_id = Column(Integer, ForeignKey('tokenpurpose.id'),
+                        nullable=False)
+    purpose = relationship(TokenPurpose)
+    created = Column(DateTime, default=datetime.now)
+    expires = Column(DateTime, default=expire_time)
+
+    def __init__(self, user, purpose):
+        self.user = user
+        self.purpose = purpose

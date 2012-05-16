@@ -1,3 +1,8 @@
 pyracms.db
 .project
 .pydevproject
+start_pyracms.bat
+pyracms_db.bat
+whoosh_index
+pyracms.egg-info
+__pycache__

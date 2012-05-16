@@ -1,0 +1,8 @@
+{% extends "main.jinja2" %}
+{% block title %} - {{ title }}{% endblock %}
+{% block content %}
+    {% if header %}
+    <h2>{{ header }}</h2>
+    {% endif %}
+    {{ form | safe }}
+{% endblock %}

@@ -1,18 +1,26 @@
 from .deform_schemas.article import EditArticleSchema
-from .errwarninfo import (INFO_DELETED, INFO, ERROR, ERROR_NOT_FOUND, 
-                          INFO_REVERT, ERROR_INVALID_USER_PASS, INFO_LOGIN)
-from .lib.articlelib import PageNotFound
-from .lib.helperlib import get_username, redirect, rapid_deform
+from .deform_schemas.userarea import (LoginSchema, RegisterSchema, 
+    ChangePasswordSchema, RecoverPasswordSchema, EditUserSchema)
+from .deform_schemas.userarea_admin import (EditACL, MenuGroup, EditMenuItems, 
+    Menu)
+from .errwarninfo import (INFO_DELETED, INFO, ERROR, ERROR_NOT_FOUND, INFO_REVERT, 
+    ERROR_INVALID_USER_PASS, INFO_LOGIN, INFO_LOGOUT, INFO_ACTIVATON_EMAIL_SENT, 
+    ERROR_TOKEN, INFO_PASS_CHANGE, INFO_RECOVERY_EMAIL_SENT, INFO_ACC_UPDATED, 
+    INFO_ACL_UPDATED, INFO_MENU_GROUP_UPDATED, INFO_MENU_UPDATED)
+from .lib.articlelib import ArticleLib, PageNotFound
+from .lib.helperlib import (acl_to_dict, dict_to_acl, serialize_relation, 
+    deserialize_relation, get_username, redirect, rapid_deform)
+from .lib.menulib import MenuLib
+from .lib.tokenlib import TokenLib, InvalidToken
 from .lib.userlib import UserLib
-from pyracms.deform_schemas.userarea import LoginSchema
-from pyracms.errwarninfo import INFO_LOGOUT
-from pyracms.lib.articlelib import ArticleLib
+from pyramid.exceptions import Forbidden
 from pyramid.httpexceptions import HTTPFound
-from pyramid.security import remember, forget
+from pyramid.security import remember, forget, authenticated_userid
 from pyramid.url import route_url
 from pyramid.view import view_config
 
 u = UserLib()
+t = TokenLib()
 
 @view_config(route_name='userarea_login', 
              renderer='userarea/login.jinja2')
@@ -34,7 +42,145 @@ def userarea_login(context, request):
             request.session.flash(ERROR_INVALID_USER_PASS, ERROR)
             return redirect(request, "userarea_login")
     return rapid_deform(context, request, LoginSchema, login_submit)
-    
+
+@view_config(route_name='userarea_profile', 
+             renderer='userarea/profile.jinja2')
+@view_config(route_name='userarea_profile_two', 
+             renderer='userarea/profile.jinja2')
+def userarea_profile(context, request):
+    """
+    Display either current or specified user's profile
+    """
+    user = request.matchdict.get('user') or authenticated_userid(request)
+    if not user:
+        raise Forbidden()
+    db_user = u.show(user)
+    result = {'user': user, 'db_user': db_user}
+    return result
+
+@view_config(route_name='userarea_recover_password', renderer='deform.jinja2')
+def userarea_recover_password(context, request):
+    """
+    Display password recovery form
+    """
+    def recover_password_submit(context, request, deserialized, bind_params):
+        """
+        Submit password recovery form, email a token
+        """
+        email = deserialized.get("email")
+        print(t.add_token(u.show_by_email(email), "password_recover"))
+        request.session.flash(INFO_RECOVERY_EMAIL_SENT % email, INFO)
+        return redirect(request, "home")
+    result = rapid_deform(context, request, RecoverPasswordSchema, 
+                          recover_password_submit)
+    if isinstance(result, dict):
+        message = "Send Password Recovery Email"
+        result.update({"title": message, "header": message})
+    return result
+
+def userarea_change_password_submit(context, request, deserialized, bind_params):
+    """
+    Submit change password form. 
+    If a token was used, expire it then send changes to database.
+    """
+    user = authenticated_userid(request)
+    token = bind_params.get("token")
+    if token:
+        user = token.user.name
+        t.expire_token(token)
+    password = deserialized.get("password")
+    u.change_password(user, password)
+    request.session.flash(INFO_PASS_CHANGE, INFO)
+    return HTTPFound(location="/userarea/login", headers=forget(request))
+
+@view_config(route_name='userarea_change_password_token', 
+             renderer='deform.jinja2')
+def userarea_change_password_token(context, request):
+    """
+    Change password form (with a token)
+    """
+    t = TokenLib()
+    token = None
+    try:
+        token = t.get_token(request.matchdict.get('token'), 
+                            False, "password_recover")
+    except InvalidToken:
+        request.session.flash(ERROR_TOKEN, ERROR)
+        return redirect(request, "home")
+    result = rapid_deform(context, request, ChangePasswordSchema, 
+                          userarea_change_password_submit, token=token)
+    if isinstance(result, dict):
+        message = "Change Password"
+        result.update({"title": message, "header": message})
+    return result
+
+@view_config(route_name='userarea_change_password', 
+             permission='userarea_edit', renderer='deform.jinja2')
+def userarea_change_password(context, request):
+    """
+    Change password form (without a token)
+    """
+    result = rapid_deform(context, request, ChangePasswordSchema, 
+                          userarea_change_password_submit)
+    if isinstance(result, dict):
+        message = "Change Password"
+        result.update({"title": message, "header": message})
+    return result
+
+@view_config(route_name='userarea_edit', permission='userarea_edit', 
+             renderer='deform.jinja2')
+def userarea_edit(context, request):
+    """
+    Edit the current user's profile
+    """
+    def edit_submit(context, request, deserialized, page_id, revision):
+        """
+        Submit profile data, save to database
+        """
+        user = authenticated_userid(request)
+        u.update_user(user, 
+                      deserialized.get("display_name"), 
+                      deserialized.get("email"), 
+                      u.show_sex(deserialized.get("sex")), 
+                      deserialized.get("website"), 
+                      deserialized.get("about_me"), 
+                      deserialized.get("timezone"), 
+                      deserialized.get("birthday"),
+                      deserialized.get("forum_signature"))
+        request.session.flash(INFO_ACC_UPDATED, INFO)
+        return redirect(request, "userarea_profile", user=user)
+    user = authenticated_userid(request)
+    result = rapid_deform(context, request, EditUserSchema, 
+                          edit_submit, user=user)
+    if isinstance(result, dict):
+        message = "Editing Profile"
+        result.update({"title": message, "header": message})
+    return result
+
+@view_config(route_name='userarea_register', renderer='deform.jinja2')
+def userarea_register(context, request):
+    """
+    Display register form
+    """
+    def register_submit(context, request, deserialized, bind_params):
+        """
+        Submit register form, add user to database
+        """
+        email = deserialized.get("email")
+        user = u.create_user(deserialized.get("username"), 
+                             deserialized.get("display_name"), 
+                             email, 
+                             deserialized.get("password"))
+        user.groups.append(u.show_group("article"))
+        print(t.add_token(user, "register"))
+        request.session.flash(INFO_ACTIVATON_EMAIL_SENT % email, INFO)
+        return redirect(request, "home")
+    result = rapid_deform(context, request, RegisterSchema, register_submit)
+    if isinstance(result, dict):
+        message = "Register"
+        result.update({"title": message, "header": message})
+    return result
+
 @view_config(route_name='userarea_logout')
 def userarea_logout(context, request):
     """
@@ -44,6 +190,109 @@ def userarea_logout(context, request):
     request.session.flash(INFO_LOGOUT, INFO)
     return redirect(request, "home", headers=headers)
 
+@view_config(route_name='userarea_list', renderer='list.jinja2')
+def userarea_list(context, request): #@ReservedAssignment
+    """
+    Display a list of users
+    """
+    message = "User List"
+    route_name = "userarea_profile_two"
+    return {'items': [(route_url(route_name, request, user=item[0]), item[1]) 
+                      for item in u.list()],
+            'title': message, 'header': message}
+
+@view_config(route_name='userarea_admin_edit_menu', permission='edit_menu', 
+             renderer='list.jinja2')
+def userarea_admin_edit_menu(context, request):
+    """
+    Allow user to pick a menu group which is needed for editing items.
+    See: edit_menu_item
+    """
+    m = MenuLib()
+    message = "Menu Groups"
+    route_name = "userarea_admin_edit_menu_item"
+    return {'items': [(route_url(route_name, request, 
+                                 group=item.name), item.name) 
+                      for item in m.list_groups()],
+            'title': message, 'header': message}
+
+@view_config(route_name='userarea_admin_edit_menu_item', 
+             permission='edit_menu', renderer='deform.jinja2')
+def userarea_admin_edit_menu_item(context, request):
+    """
+    Display form that lets you edit menu items from a specified group.
+    See: edit_menu
+    """
+    m = MenuLib()
+    def edit_menu_item_submit(context, request, deserialized, bind_params):
+        """
+        Save new list of menu items to database
+        """
+        group = bind_params["group"]
+        group.menu_items = deserialize_relation(deserialized['menu'], Menu,
+                                                {"group": group})
+        request.session.flash(INFO_MENU_UPDATED % group.name, INFO)
+        return redirect(request, 'userarea_admin_edit_menu')
+    group = m.show_group(request.matchdict.get('group'))
+    appstruct = {'menu': serialize_relation(group.menu_items)}
+    result = rapid_deform(context, request, EditMenuItems, 
+                          edit_menu_item_submit, appstruct=appstruct,
+                          group=group)
+    if isinstance(result, dict):
+        message = "Editing " + group.name
+        result.update({"title": message, "header": message})
+    return result
+
+@view_config(route_name='userarea_admin_edit_menu_group', 
+             permission='edit_menu', renderer='deform.jinja2')
+def userarea_admin_edit_menu_group(context, request):
+    """
+    Display form that lets you edit menu groups
+    """
+    m = MenuLib()
+    def edit_menu_group_submit(context, request, deserialized, bind_params):
+        """
+        Save new list of menu groups to database
+        """
+        groups = set([g.name for g in bind_params["groups"]])
+        deserialized_groups = set(deserialized['menu_groups'])
+        list(map(m.add_group, deserialized_groups - groups))
+        list(map(m.delete_group, groups - deserialized_groups))
+        request.session.flash(INFO_MENU_GROUP_UPDATED, INFO)
+        return redirect(request, 'userarea_admin_edit_menu')
+    groups = m.list_groups().all()
+    appstruct = {'menu_groups': 
+                 [x['name'] for x in serialize_relation(groups)]}
+    result = rapid_deform(context, request, MenuGroup, 
+                          edit_menu_group_submit, appstruct=appstruct,
+                          groups=groups)
+    if isinstance(result, dict):
+        message = "Editing Menu Groups"
+        result.update({"title": message, "header": message})
+    return result
+
+@view_config(route_name='userarea_admin_edit_acl', 
+             permission='edit_acl', renderer='deform.jinja2')
+def userarea_admin_edit_acl(context, request):
+    """
+    Display a form that lets you edit the access control list
+    """
+    def edit_acl_submit(context, request, deserialized, bind_params):
+        """
+        Save new access control list to database
+        """
+        context.__acl__ = set(map(dict_to_acl, deserialized['acl']))
+        context.sync_to_database()
+        request.session.flash(INFO_ACL_UPDATED, INFO)
+        return redirect(request, 'home')
+    appstruct = {'acl': list(map(acl_to_dict, context.__acl__))}
+    result = rapid_deform(context, request, EditACL, 
+                          edit_acl_submit, appstruct=appstruct)
+    if isinstance(result, dict):
+        message = "Editing Access Control List"
+        result.update({"title": message, "header": message})
+    return result
+
 @view_config(route_name='css')
 def css(request):
     res = request.response
@@ -51,6 +300,8 @@ def css(request):
     res.text = ""
     return res
 
+@view_config(route_name='home', renderer='article/article.jinja2', 
+             permission='article_view')
 @view_config(route_name='article_read', renderer='article/article.jinja2', 
              permission='article_view')
 @view_config(route_name='article_read_revision', 

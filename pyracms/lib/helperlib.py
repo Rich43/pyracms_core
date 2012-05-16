@@ -4,6 +4,7 @@ from pyramid.security import authenticated_userid, Everyone
 from deform.form import Form
 from deform.exception import ValidationFailure
 from colander import null
+import inspect
 
 def redirect(request, route_id, **optargs):
     """
@@ -62,3 +63,44 @@ def rapid_deform(context, request, schema, validated_callback=None,
     form_data = myform.render(appstruct)
     result.update({'form':form_data})
     return result
+
+def serialize_relation(obj):
+    """
+    Serialize a relationship into a list of dictionaries.
+    """
+    return [{k:v for k,v in x.__dict__.iteritems() if not k.startswith("_")} 
+            for x in obj]
+
+def deserialize_relation(l, obj, extra_vars={}):
+    """
+    Deserialize a serialized relationship
+    """
+    result = []
+    for d in l:
+        init_keys = []
+        if hasattr(obj, "__init__"):
+            init_keys = set(inspect.getargspec(obj.__init__).args)
+            init_keys = init_keys - set(["self"])
+        s = set(d.keys()) - set(init_keys) - set(["id"])
+        init_dict = {}
+        for key in init_keys:
+            if hasattr(obj, key) and key in d:
+                init_dict[key] = d[key]
+        init_dict.update(extra_vars)
+        obj_inst = obj(**init_dict)
+        for key in s:
+            setattr(obj_inst, key, d[key])
+        result.append(obj_inst)
+    return result
+
+def dict_to_acl(item):
+    """
+    Convert (converted) dictionary ACL to normal tuple format
+    """
+    return (item['allow_deny'], item['who'], item['permission'])
+
+def acl_to_dict(item):
+    """
+    Convert standard tuple ACL format to a dictionary
+    """
+    return {'allow_deny': item[0], 'who': item[1], 'permission': item[2]}

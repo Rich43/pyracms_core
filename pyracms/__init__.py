@@ -42,8 +42,29 @@ def main(global_config, **settings):
     
     # Userarea routes
     config.add_route('userarea_login', '/userarea/login')
+    config.add_view(view=".views.userarea_login", 
+                    context="pyramid.httpexceptions.HTTPForbidden", 
+                    renderer="userarea/login.jinja2")
     config.add_route('userarea_logout', '/userarea/logout')
-    
+    config.add_route('userarea_profile', '/userarea/profile')
+    config.add_route('userarea_profile_two', '/userarea/profile/{user}')
+    config.add_route('userarea_edit', '/userarea/edit')
+    config.add_route('userarea_recover_password', 
+                     '/userarea/recover_password')
+    config.add_route('userarea_change_password', '/userarea/change_password')
+    config.add_route('userarea_change_password_token', 
+                     '/userarea/change_password/{token}')
+    config.add_route('userarea_register', '/userarea/register')
+    config.add_route('userarea_list', '/userarea/list')
+
+    # Userarea Admin routes
+    config.add_route('userarea_admin_edit_menu', '/userarea_admin/edit_menu')
+    config.add_route('userarea_admin_edit_menu_item', 
+                     '/userarea_admin/edit_menu/{group}')
+    config.add_route('userarea_admin_edit_menu_group', 
+                     '/userarea_admin/edit_menu_group')
+    config.add_route('userarea_admin_edit_acl', '/userarea_admin/edit_acl')
+
     # Article Routes
     config.add_route('home', '/')
     config.add_route('article_read', '/article/item/{page_id}')
