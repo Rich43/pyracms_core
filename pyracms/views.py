@@ -133,20 +133,13 @@ def userarea_edit(context, request):
     """
     Edit the current user's profile
     """
-    def edit_submit(context, request, deserialized, page_id, revision):
+    def edit_submit(context, request, deserialized, bind_params):
         """
         Submit profile data, save to database
         """
         user = authenticated_userid(request)
-        u.update_user(user, 
-                      deserialized.get("display_name"), 
-                      deserialized.get("email"), 
-                      u.show_sex(deserialized.get("sex")), 
-                      deserialized.get("website"), 
-                      deserialized.get("about_me"), 
-                      deserialized.get("timezone"), 
-                      deserialized.get("birthday"),
-                      deserialized.get("forum_signature"))
+        u.update_user(user, deserialized.get("display_name"), 
+                      deserialized.get("email"))
         request.session.flash(INFO_ACC_UPDATED, INFO)
         return redirect(request, "userarea_profile", user=user)
     user = authenticated_userid(request)
@@ -198,7 +191,7 @@ def userarea_list(context, request): #@ReservedAssignment
     message = "User List"
     route_name = "userarea_profile_two"
     return {'items': [(route_url(route_name, request, user=item[0]), item[1]) 
-                      for item in u.list()],
+                      for item in u.list(False)],
             'title': message, 'header': message}
 
 @view_config(route_name='userarea_admin_edit_menu', permission='edit_menu', 
@@ -300,6 +293,15 @@ def css(request):
     res.text = ""
     return res
 
+@view_config(route_name='redirect_one')
+@view_config(route_name='redirect_two')
+def redirect_view(article, request):
+    route_name = request.matchdict.get('route_name')
+    gamedeptype = request.matchdict.get('type')
+    return HTTPFound(location=route_url(route_name, 
+                                        request, type=gamedeptype, 
+                                        **request.POST))
+
 @view_config(route_name='home', renderer='article/article.jinja2', 
              permission='article_view')
 @view_config(route_name='article_read', renderer='article/article.jinja2', 
@@ -312,10 +314,11 @@ def article_read(context, request):
     """
     c = ArticleLib()
     result = {}
-    matchdict_get = request.matchdict.get
+    page_id = request.matchdict.get('page_id') or "Front_Page"
+    revision_id = request.matchdict.get('revision') 
     try:
-        page = c.show_page(matchdict_get('page_id') or "Front_Page")
-        revision = c.show_revision(page, matchdict_get('revision'))
+        page = c.show_page(page_id)
+        revision = c.show_revision(page, revision_id)
         if page.deleted:
             return HTTPFound(location=route_url("article_update", 
                                                 request, page_id=page.name))
@@ -324,8 +327,7 @@ def article_read(context, request):
             result.update({'page': page, 'revision': revision})
             return result
     except PageNotFound:
-        return redirect(request, "article_create", 
-                        page_id=matchdict_get('page_id'))
+        return redirect(request, "article_create", page_id=page_id)
 
 @view_config(route_name='article_delete', permission='article_delete')
 def article_delete(context, request):

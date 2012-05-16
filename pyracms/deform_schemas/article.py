@@ -16,7 +16,7 @@ def deferred_edit_article_default(node, kw):
 @deferred
 def deferred_edit_display_name_default(node, kw):
     if kw.get('page'):
-        return kw.get('page').display_name
+        return kw.get('page').full_name
     else:
         return kw.get("page_id")
 

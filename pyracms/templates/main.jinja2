@@ -18,8 +18,31 @@
 </head>
 <body>
   <div class="menu">
+    <h3>Login</h3>
     {{ login_form.render() | safe }}
-    Logged in: {{ w.logged_in(request) }}
+    <h3>Main Menu</h3>
+    <ul>
+      {%- for item in w.generate_menu("main_menu", context, request): %}
+      <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
+      {%- endfor %}
+    </ul>
+    <h3>User Area</h3>
+    {% set userid = w.logged_in(request) %}
+    <h4>{% if not userid %}Not logged in.{% else %}Logged in as {{ userid }}.{% endif %}</h4>
+    <ul>
+      {%- for item in w.generate_menu("user_area", context, request): %}
+      <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
+      {%- endfor %}
+    </ul>
+  {% set adminarea = w.generate_menu("admin_area", context, request) %}
+  {% if adminarea %}
+    <h3>Admin Area</h3>
+    <ul>
+      {%- for item in adminarea: %}
+      <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
+      {%- endfor %}
+    </ul>
+  {% endif %}
   </div>
   <div class="content">
     {% block content %}{% endblock %}

@@ -105,6 +105,7 @@ class User(Base):
     full_name = Column(Unicode(128), nullable=False)
     email_address = Column(Unicode(128), unique=True, nullable=False,
                         info={'rum': {'field':'Email'}})
+    created = Column(DateTime, default=datetime.now)
     _password = Column('password', Unicode(80),
                         info={'rum': {'field':'Password'}}, nullable=False)
     groups = relationship('Group', secondary=UserGroup.__table__,

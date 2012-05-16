@@ -51,7 +51,7 @@ class UserLib():
         if first:
             return [x[0] for x in DBSession.query(User.name).all()]
         else:
-            return DBSession.query(User.name).all()
+            return DBSession.query(User.name, User.full_name).all()
 
     def list_groups(self):
         """
@@ -114,21 +114,13 @@ class UserLib():
         DBSession.add(user)
         return user
     
-    def update_user(self, name, email_address, full_name, address_line_one, 
-                    address_line_two, city, county, postcode, country, 
-                    password):
+    def update_user(self, name, full_name, email_address):
         """
         Update a user. Returns the user object.
         """
         user = self.show(name)
         user.email_address = email_address
         user.full_name = full_name
-        user.address_line_one = address_line_one
-        user.address_line_two = address_line_two
-        user.city = city
-        user.county = county
-        user.postcode = postcode
-        user.country = country
         return user
     
     def delete_user(self, name):

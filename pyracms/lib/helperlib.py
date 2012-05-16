@@ -47,7 +47,7 @@ def rapid_deform(context, request, schema, validated_callback=None,
     result = {'js_links': reqts['js'], 'css_links': reqts['css']}
     
     if 'submit' in request.POST:
-        controls = request.POST.items()
+        controls = list(request.POST.items())
         try:
             deserialized = myform.validate(controls)
         except ValidationFailure as e:
@@ -62,13 +62,14 @@ def rapid_deform(context, request, schema, validated_callback=None,
     # Add to cache and render.
     form_data = myform.render(appstruct)
     result.update({'form':form_data})
+    result.update(bind_params)
     return result
 
 def serialize_relation(obj):
     """
     Serialize a relationship into a list of dictionaries.
     """
-    return [{k:v for k,v in x.__dict__.iteritems() if not k.startswith("_")} 
+    return [{k:v for k,v in x.__dict__.items() if not k.startswith("_")} 
             for x in obj]
 
 def deserialize_relation(l, obj, extra_vars={}):

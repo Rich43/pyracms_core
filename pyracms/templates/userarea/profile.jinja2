@@ -3,6 +3,6 @@
 {% block content %}
     <h3>{{ user }}'s Profile</h3>
     <p>Username: {{ user }}</p>
-    <p>Display Name: {{ db_user.display_name }}</p>
-    <p>Member Since: {{ h.format_date_time(db_user.created, request) }}</p>
+    <p>Display Name: {{ db_user.full_name }}</p>
+    <p>Member Since: {{ db_user.created }}</p>
 {% endblock %}

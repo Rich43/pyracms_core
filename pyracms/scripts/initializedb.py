@@ -26,9 +26,9 @@ def main(argv=sys.argv):
     with transaction.manager:
         # Default Users
         u = UserLib()
-        admin_user = u.create_user("admin", "admin@admin.com", "Admin User",
+        admin_user = u.create_user("admin", "Admin User", "admin@admin.com",
                                    "admin")
-        u.create_user(Everyone, "guest@guest.com", "Guest User", "guest")
+        u.create_user(Everyone, "Guest User", "guest@guest.com", "guest")
     
         # Default Groups
         u.create_group("article", "Ability to Add, Edit, Delete, " + 
@@ -45,7 +45,7 @@ def main(argv=sys.argv):
         acl.__acl__.add((Allow, Everyone, "article_list"))
         acl.__acl__.add((Allow, Everyone, "article_list_revisions"))
         acl.__acl__.add((Allow, "group:admin", "group:admin"))
-        acl.__acl__.add((Allow, "group:admin", "edit_men"))
+        acl.__acl__.add((Allow, "group:admin", "edit_menu"))
         acl.__acl__.add((Allow, "group:admin", "edit_acl"))
         acl.__acl__.add((Allow, "group:article", "group:article"))
         acl.__acl__.add((Allow, "group:article", "article_view"))
