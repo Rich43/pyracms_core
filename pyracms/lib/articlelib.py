@@ -77,7 +77,7 @@ class ArticleLib():
         Raise PageNotFound if page does not exist
         """
         message = "Reverted revision %s" % revision.id
-        self.update(page, revision.article, message, user)
+        self.update(request, page, revision.article, message, user)
             
     def delete(self, request, page, user):
         """

@@ -18,8 +18,11 @@
 </head>
 <body>
   <div class="menu">
+    {% set userid = w.logged_in(request) %}
+    {% if not userid %}
     <h3>Login</h3>
     {{ login_form.render() | safe }}
+    {% endif %}
     <h3>Main Menu</h3>
     <ul>
       {%- for item in w.generate_menu("main_menu", context, request): %}
@@ -27,7 +30,6 @@
       {%- endfor %}
     </ul>
     <h3>User Area</h3>
-    {% set userid = w.logged_in(request) %}
     <h4>{% if not userid %}Not logged in.{% else %}Logged in as {{ userid }}.{% endif %}</h4>
     <ul>
       {%- for item in w.generate_menu("user_area", context, request): %}

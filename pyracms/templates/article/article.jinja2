@@ -7,4 +7,19 @@
     {% else %}
         {{ page.revisions[0].article | safe }}
     {% endif %}
+    <p>
+        {% if not revision %}
+          {% for item in w.generate_menu("article_not_revision", context, request, 
+                                        {"page_id": page.name}): %}
+            <a href="{{ item[0] }}">{{ item[1] }}</a> {% if not item[2] %}|{% endif %}
+          {% endfor %}
+        {% endif %}
+        
+        {% if revision %}
+          {% for item in w.generate_menu("article_revision", context, request, 
+                                {"page_id": page.name, "revision": revision.id}): %}
+          <a href="{{ item[0] }}">{{ item[1] }}</a> {% if item[2] %}|{% endif %}
+          {% endfor %}
+        {% endif %}
+    </p>
 {% endblock content %}

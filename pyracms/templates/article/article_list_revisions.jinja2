@@ -16,7 +16,7 @@
         <td>{{ revision.summary }}</td>
         <td>{{ revision.id }}</td>
         <td>{{ revision.user.name }}</td>
-        <td>{{ h.format_date_time(revision.created, request) }}</td>
+        <td>{{ revision.created }}</td>
         <td><a href="/article/item/{{ page.name }}/{{ revision.id }}">View</a>
             | <a href="/article/revert/{{ page.name }}/{{ revision.id }}">Revert</a></td>
     </tr>
