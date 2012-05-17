@@ -72,7 +72,9 @@ def main(global_config, **settings):
                      '/userarea_admin/list_settings')
     config.add_route('userarea_admin_edit_settings', 
                      '/userarea_admin/edit_setting/{name}')
-    
+    config.add_route('userarea_admin_edit_template', 
+                     '/userarea_admin/edit_template')
+        
     # Article Routes
     config.add_route('home', '/')
     config.add_route('article_read', '/article/item/{page_id}')

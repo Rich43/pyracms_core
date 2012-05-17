@@ -2,7 +2,7 @@ from .deform_schemas.article import EditArticleSchema
 from .deform_schemas.userarea import (LoginSchema, RegisterSchema, 
     ChangePasswordSchema, RecoverPasswordSchema, EditUserSchema)
 from .deform_schemas.userarea_admin import (EditACL, MenuGroup, EditMenuItems, 
-    Menu)
+    Menu, SettingSchema)
 from .errwarninfo import (INFO_DELETED, INFO, ERROR, ERROR_NOT_FOUND, INFO_REVERT, 
     ERROR_INVALID_USER_PASS, INFO_LOGIN, INFO_LOGOUT, INFO_ACTIVATON_EMAIL_SENT, 
     ERROR_TOKEN, INFO_PASS_CHANGE, INFO_RECOVERY_EMAIL_SENT, INFO_ACC_UPDATED, 
@@ -11,15 +11,15 @@ from .lib.articlelib import ArticleLib, PageNotFound
 from .lib.helperlib import (acl_to_dict, dict_to_acl, serialize_relation, 
     deserialize_relation, get_username, redirect, rapid_deform)
 from .lib.menulib import MenuLib
+from .lib.settingslib import SettingsLib
 from .lib.tokenlib import TokenLib, InvalidToken
 from .lib.userlib import UserLib
+from .templates import main_path
 from pyramid.exceptions import Forbidden
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import remember, forget, authenticated_userid
 from pyramid.url import route_url
 from pyramid.view import view_config
-from pyracms.lib.settingslib import SettingsLib
-from pyracms.deform_schemas.userarea_admin import SettingSchema
 
 u = UserLib()
 t = TokenLib()
@@ -323,6 +323,26 @@ def userarea_admin_edit_settings(context, request):
                           name=name)
     if isinstance(result, dict):
         message = "Editing Settings"
+        result.update({"title": message, "header": message})
+    return result
+
+@view_config(route_name='userarea_admin_edit_template', 
+             permission='edit_settings', renderer='deform.jinja2')
+def userarea_admin_edit_template(context, request):
+    """
+    Display a form that lets you edit the main template
+    """
+    def edit_template_submit(context, request, deserialized, bind_params):
+        """
+        Save new template
+        """
+        open(main_path, "w").write(deserialized['value'])
+        return redirect(request, 'home')
+    appstruct = {'value': open(main_path).read()}
+    result = rapid_deform(context, request, SettingSchema, 
+                          edit_template_submit, appstruct=appstruct)
+    if isinstance(result, dict):
+        message = "Editing Template"
         result.update({"title": message, "header": message})
     return result
 

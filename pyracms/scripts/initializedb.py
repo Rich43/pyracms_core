@@ -92,7 +92,9 @@ def main(argv=sys.argv):
                            4, group, 'edit_settings'))
         DBSession.add(Menu("Edit CSS", "/userarea_admin/edit_setting/CSS", 
                            5, group, 'edit_settings'))
-                        
+        DBSession.add(Menu("Edit Template", "/userarea_admin/edit_template", 
+                           6, group, 'edit_settings'))
+                                
         group = MenuGroup("article_not_revision")
         DBSession.add(Menu("Edit", "/article/update/%(page_id)s", 1, group,
                            'article_update'))
