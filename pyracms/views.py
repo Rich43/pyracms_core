@@ -336,7 +336,7 @@ def userarea_admin_edit_template(context, request):
         """
         Save new template
         """
-        open(main_path, "w").write(deserialized['value'])
+        open(main_path, "w", newline="\n").write(deserialized['value'])
         return redirect(request, 'home')
     appstruct = {'value': open(main_path).read()}
     result = rapid_deform(context, request, SettingSchema, 
@@ -384,7 +384,6 @@ def article_read(context, request):
             return HTTPFound(location=route_url("article_update", 
                                                 request, page_id=page.name))
         else:
-            page.view_count += 1
             result.update({'page': page, 'revision': revision})
             return result
     except PageNotFound:

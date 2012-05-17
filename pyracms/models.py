@@ -30,7 +30,6 @@ class RootFactory(object):
         """
         Load ACL records from database
         """
-        self.__acl__ = set()
         rows = DBSession.query(ACL)
         for row in rows:
             self.__acl__.add((row.allow_deny, row.who, row.permission))
