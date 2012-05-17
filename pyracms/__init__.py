@@ -1,15 +1,17 @@
+from .lib.settingslib import SettingsLib
+from .lib.widgetlib import WidgetLib
 from .models import DBSession
 from .security import groupfinder
-from .lib.widgetlib import WidgetLib
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
 from pyramid.events import BeforeRender
-from sqlalchemy import engine_from_config
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
+from sqlalchemy import engine_from_config
 
 def add_renderer_globals(event):
     event['w'] = WidgetLib()
+    event['s'] = SettingsLib()
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -66,7 +68,11 @@ def main(global_config, **settings):
     config.add_route('userarea_admin_edit_menu_group', 
                      '/userarea_admin/edit_menu_group')
     config.add_route('userarea_admin_edit_acl', '/userarea_admin/edit_acl')
-
+    config.add_route('userarea_admin_list_settings', 
+                     '/userarea_admin/list_settings')
+    config.add_route('userarea_admin_edit_settings', 
+                     '/userarea_admin/edit_setting/{name}')
+    
     # Article Routes
     config.add_route('home', '/')
     config.add_route('article_read', '/article/item/{page_id}')

@@ -18,6 +18,8 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.security import remember, forget, authenticated_userid
 from pyramid.url import route_url
 from pyramid.view import view_config
+from pyracms.lib.settingslib import SettingsLib
+from pyracms.deform_schemas.userarea_admin import SettingSchema
 
 u = UserLib()
 t = TokenLib()
@@ -199,7 +201,7 @@ def userarea_list(context, request): #@ReservedAssignment
 def userarea_admin_edit_menu(context, request):
     """
     Allow user to pick a menu group which is needed for editing items.
-    See: edit_menu_item
+    See: userarea_admin_edit_menu_item
     """
     m = MenuLib()
     message = "Menu Groups"
@@ -214,7 +216,7 @@ def userarea_admin_edit_menu(context, request):
 def userarea_admin_edit_menu_item(context, request):
     """
     Display form that lets you edit menu items from a specified group.
-    See: edit_menu
+    See: userarea_admin_edit_menu
     """
     m = MenuLib()
     def edit_menu_item_submit(context, request, deserialized, bind_params):
@@ -286,11 +288,50 @@ def userarea_admin_edit_acl(context, request):
         result.update({"title": message, "header": message})
     return result
 
+@view_config(route_name='userarea_admin_list_settings', 
+             permission='edit_settings', renderer='list.jinja2')
+def userarea_admin_list_settings(context, request):
+    """
+    Allow user to pick a setting which is needed for editing it.
+    See: userarea_admin_edit_settings
+    """
+    s = SettingsLib()
+    message = "Settings"
+    route_name = "userarea_admin_edit_settings"
+    return {'items': [(route_url(route_name, request, 
+                                 name=item.name), item.name) 
+                      for item in s.list()],
+            'title': message, 'header': message}
+
+@view_config(route_name='userarea_admin_edit_settings', 
+             permission='edit_settings', renderer='deform.jinja2')
+def userarea_admin_edit_settings(context, request):
+    """
+    Display a form that lets you edit the settings table
+    """
+    s = SettingsLib()
+    def edit_setting_submit(context, request, deserialized, bind_params):
+        """
+        Save new setting to database
+        """
+        s.update(bind_params['name'], deserialized['value'])
+        return redirect(request, 'userarea_admin_list_settings')
+    name = request.matchdict.get('name')
+    appstruct = {'value': s.show_setting(name).value}
+    result = rapid_deform(context, request, SettingSchema, 
+                          edit_setting_submit, appstruct=appstruct, 
+                          name=name)
+    if isinstance(result, dict):
+        message = "Editing Settings"
+        result.update({"title": message, "header": message})
+    return result
+
 @view_config(route_name='css')
 def css(request):
+    s = SettingsLib()
     res = request.response
     res.article_type = "text/css"
-    res.text = ""
+    res.text = s.show_setting("CSS").value
     return res
 
 @view_config(route_name='redirect_one')

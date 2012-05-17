@@ -1,6 +1,6 @@
 from colander import (Schema, SchemaNode, String, 
-                      OneOf, SequenceSchema, Integer)
-from deform.widget import SelectWidget
+                      OneOf, SequenceSchema, Integer, MappingSchema)
+from deform.widget import SelectWidget, TextAreaWidget
 
 class ACLItem(Schema):
     allow_deny = SchemaNode(String(), 
@@ -34,3 +34,6 @@ class MenuGroupItem(SequenceSchema):
 
 class MenuGroup(Schema):
     menu_groups = MenuGroupItem()
+
+class SettingSchema(MappingSchema):
+    value = SchemaNode(String(), widget=TextAreaWidget(cols=80, rows=20))

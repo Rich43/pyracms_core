@@ -47,6 +47,7 @@ def main(argv=sys.argv):
         acl.__acl__.add((Allow, "group:admin", "group:admin"))
         acl.__acl__.add((Allow, "group:admin", "edit_menu"))
         acl.__acl__.add((Allow, "group:admin", "edit_acl"))
+        acl.__acl__.add((Allow, "group:admin", "edit_settings"))
         acl.__acl__.add((Allow, "group:article", "group:article"))
         acl.__acl__.add((Allow, "group:article", "article_view"))
         acl.__acl__.add((Allow, "group:article", "article_list"))
@@ -87,7 +88,11 @@ def main(argv=sys.argv):
                            2, group, 'edit_menu'))
         DBSession.add(Menu("Edit ACL", "/userarea_admin/edit_acl", 3, group,
                            'edit_acl'))
-        
+        DBSession.add(Menu("Edit Settings", "/userarea_admin/list_settings", 
+                           4, group, 'edit_settings'))
+        DBSession.add(Menu("Edit CSS", "/userarea_admin/edit_setting/CSS", 
+                           5, group, 'edit_settings'))
+                        
         group = MenuGroup("article_not_revision")
         DBSession.add(Menu("Edit", "/article/update/%(page_id)s", 1, group,
                            'article_update'))
