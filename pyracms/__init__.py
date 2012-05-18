@@ -8,6 +8,10 @@ from pyramid.config import Configurator
 from pyramid.events import BeforeRender
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from sqlalchemy import engine_from_config
+from os.path import dirname, join
+
+main_path = join(dirname(__file__), "templates", "main.jinja2")
+static_path = join(dirname(__file__), "static")
 
 def add_renderer_globals(event):
     event['w'] = WidgetLib()
@@ -74,6 +78,8 @@ def main(global_config, **settings):
                      '/userarea_admin/edit_setting/{name}')
     config.add_route('userarea_admin_edit_template',
                      '/userarea_admin/edit_template')
+    config.add_route('userarea_admin_file_upload',
+                     '/userarea_admin/file_upload')
 
     # Article Routes
     config.add_route('home', '/')

@@ -29,7 +29,7 @@ def get_username(request):
         return userid
     else:
         return Everyone
-    
+
 def rapid_deform(context, request, schema, validated_callback=None,
                  appstruct=null, **bind_params):
     """
@@ -37,15 +37,15 @@ def rapid_deform(context, request, schema, validated_callback=None,
     """
     bind_params['request'] = request
     bind_params['context'] = context
-    
+
     # Initialise form library
     bound_schema = schema().bind(**bind_params)
     myform = Form(bound_schema, buttons=['submit'])
-    
+
     # Default template arguments
     reqts = myform.get_widget_resources()
     result = {'js_links': reqts['js'], 'css_links': reqts['css']}
-    
+
     if 'submit' in request.POST:
         controls = list(request.POST.items())
         try:
@@ -58,7 +58,7 @@ def rapid_deform(context, request, schema, validated_callback=None,
         if validated_callback:
             return validated_callback(context, request, deserialized,
                                       bind_params)
-    
+
     # Add to cache and render.
     form_data = myform.render(appstruct)
     result.update({'form':form_data})
@@ -69,7 +69,7 @@ def serialize_relation(obj):
     """
     Serialize a relationship into a list of dictionaries.
     """
-    return [{k:v for k,v in x.__dict__.items() if not k.startswith("_")} 
+    return [{k:v for k, v in x.__dict__.items() if not k.startswith("_")}
             for x in obj]
 
 def deserialize_relation(l, obj, extra_vars={}):

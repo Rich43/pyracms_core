@@ -49,6 +49,7 @@ def main(argv=sys.argv):
         acl.__acl__.add((Allow, "group:admin", "edit_acl"))
         acl.__acl__.add((Allow, "group:admin", "edit_settings"))
         acl.__acl__.add((Allow, "group:admin", "switch_renderer"))
+        acl.__acl__.add((Allow, "group:admin", "file_upload"))
         acl.__acl__.add((Allow, "group:article", "group:article"))
         acl.__acl__.add((Allow, "group:article", "article_view"))
         acl.__acl__.add((Allow, "group:article", "article_list"))

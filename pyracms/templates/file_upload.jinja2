@@ -1,0 +1,23 @@
+{% extends "main.jinja2" %}
+{% block title %} - {{ title }}{% endblock %}
+{% block content %}
+<h2>{{ title }} {% if request.GET.get("path") %}
+ - {{ request.GET.get("path") }} {% endif %}</h2>
+<form action="" enctype="multipart/form-data" method="post">
+Please specify a file, or a set of files:<br>
+<input type="file" name="datafile" size="40">
+<input type="submit">
+</form>
+<p><a href="/userarea_admin/file_upload">Go back to root</a></p>
+<table>
+    <tr>
+        <th>{{ header }}</th>
+    </tr>
+    {% for item in items %}
+    <tr>
+        <td><a href="{{ item[0] }}">{{ item[1] }}</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+
