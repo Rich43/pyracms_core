@@ -277,6 +277,7 @@ def userarea_admin_edit_acl(context, request):
         Save new access control list to database
         """
         context.__acl__ = set(map(dict_to_acl, deserialized['acl']))
+        request.session['groupfinder'] = {}
         context.sync_to_database()
         request.session.flash(INFO_ACL_UPDATED, INFO)
         return redirect(request, 'home')

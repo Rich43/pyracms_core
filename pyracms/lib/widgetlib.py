@@ -8,7 +8,7 @@ class WidgetLib():
         return authenticated_userid(request)
     
     def login_form(self):
-        form_instance = Form(LoginSchema(), action="/login", 
+        form_instance = Form(LoginSchema(), action="/userarea/login", 
                              buttons=('submit',))
         return form_instance
     
