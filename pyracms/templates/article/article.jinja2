@@ -3,14 +3,14 @@
 {% block content %}
     <h2>{{ page.display_name }}</h2>
     {% if revision %}
-        {{ revision.article | safe }}
+        {{ w.render_article(page, revision.article) | safe }}
     {% else %}
-        {{ page.revisions[0].article | safe }}
+        {{ w.render_article(page, page.revisions[0].article) | safe }}
     {% endif %}
     <p>
         {% if not revision %}
           {% for item in w.generate_menu("article_not_revision", context, request, 
-                                        {"page_id": page.name}): %}
+                                        {"page_id": page.name, "renderer": page.renderer.name}): %}
             <a href="{{ item[0] }}">{{ item[1] }}</a> {% if not item[2] %}|{% endif %}
           {% endfor %}
         {% endif %}

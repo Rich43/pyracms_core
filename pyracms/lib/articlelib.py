@@ -1,7 +1,8 @@
 from sqlalchemy.orm.exc import NoResultFound
-from ..models import DBSession, ArticleRevision, ArticlePage
+from ..models import DBSession, ArticleRevision, ArticlePage, ArticleRenderers
 from .searchlib import update_index, delete_from_index
 from .taglib import TagLib, ARTICLE
+from .settingslib import SettingsLib
 
 class RevisionNotFound(Exception):
     pass
@@ -16,10 +17,10 @@ class ArticleLib():
     """
     A library to manage the article database.
     """
-    
+
     def __init__(self):
         self.t = TagLib(ARTICLE)
-    
+
     def list(self): #@ReservedAssignment
         """
         List all the pages
@@ -28,17 +29,25 @@ class ArticleLib():
         if not pages:
             raise PageNotFound
         return [(page.name, page.display_name) for page in pages]
-    
+
     def update_article_index(self, request, page, revision, username):
         """
         Update search index
         """
-        update_index(page.display_name, request.route_url("article_read", 
-                                                          page_id=page.name), 
-                     revision.article, self.t.get_tags(page), 
+        update_index(page.display_name, request.route_url("article_read",
+                                                          page_id=page.name),
+                     revision.article, self.t.get_tags(page),
                      revision.created, "article", page.name, username)
-        
-    def create(self, request, name, display_name, article, summary, user, 
+
+    def switch_renderer(self, name):
+        page = self.show_page(name)
+        renderer_count = DBSession.query(ArticleRenderers).count()
+        if page.renderer_id == renderer_count:
+            page.renderer_id = 1
+            return
+        page.renderer_id += 1
+
+    def create(self, request, name, display_name, article, summary, user,
                tags=''):
         """
         Add a new page
@@ -49,9 +58,13 @@ class ArticleLib():
             raise PageFound
         except PageNotFound:
             pass
+        s = SettingsLib()
         page = ArticlePage(name, display_name)
         revision = ArticleRevision(article, summary, user)
         page.revisions.append(revision)
+        default_renderer = s.show_setting("DEFAULTRENDERER").value
+        page.renderer = DBSession.query(ArticleRenderers).filter_by(
+                                                name=default_renderer).one()
         self.t.set_tags(page, tags)
         self.update_article_index(request, page, revision, user.name)
         DBSession.add(page)
@@ -70,7 +83,7 @@ class ArticleLib():
         revision.page = page
         self.update_article_index(request, page, revision, user.name)
         DBSession.add(revision)
-        
+
     def revert(self, request, page, revision, user):
         """
         Revert a page
@@ -78,7 +91,7 @@ class ArticleLib():
         """
         message = "Reverted revision %s" % revision.id
         self.update(request, page, revision.article, message, user)
-            
+
     def delete(self, request, page, user):
         """
         Delete a page
@@ -88,7 +101,7 @@ class ArticleLib():
         page.revisions.append(revision)
         page.deleted = True
         delete_from_index(request.route_url("article_read", page_id=page.name))
-        
+
     def show_revision(self, page, revision, error=False):
         """
         Get revision objects.
@@ -101,7 +114,7 @@ class ArticleLib():
                 raise RevisionNotFound
             else:
                 pass
-        
+
     def show_page(self, name):
         """
         Get page objects.
