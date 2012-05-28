@@ -1,8 +1,8 @@
 from ..deform_schemas.userarea import LoginSchema
 from .menulib import MenuLib
+from .restlib import html_body
 from deform.form import Form
 from pyramid.security import authenticated_userid, Everyone, has_permission
-from docutils.core import publish_parts
 import postmarkup
 
 class WidgetLib():
@@ -27,7 +27,7 @@ class WidgetLib():
         elif renderer == "BBCODE":
             return postmarkup.render_bbcode(article)
         elif renderer == "RESTRUCTUREDTEXT":
-            return publish_parts(source=article, writer_name='html')["body"]
+            return html_body(article)
 
     def generate_menu(self, name, context, request, tmpl_args={}):
         """
