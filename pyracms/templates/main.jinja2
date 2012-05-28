@@ -6,40 +6,45 @@
     <meta name="keywords" content="{{ s.show_setting("KEYWORDS").value }}" />
     <meta name="description" content="{{ s.show_setting("DESCRIPTION").value }}" />
     <link rel="shortcut icon" href="/static/favicon.ico" />
-    {% set login_form = w.login_form() %}
-    {% for reqt in w.merge_res(login_form, js_links, 'js') %}
+    
+    <!-- Start of javascript and css needed for forms -->
+    {% for reqt in js_links %}
       <script type="text/javascript" src="/dstatic/{{ reqt | safe }}"></script>
     {%- endfor %}
-    {% for reqt in w.merge_res(login_form, css_links, 'css') %}
+    {% for reqt in css_links %}
       <link rel="stylesheet" href="/dstatic/{{ reqt | safe }}" type="text/css" />
     {%- endfor %}
+    <!-- End of javascript and css needed for forms -->
+    
     <link rel="stylesheet" href="/css" 
                             type="text/css" media="screen" charset="utf-8" />
 </head>
 <body>
   <div class="menu">
+    <!-- This variable contains the logged in user's username -->
     {% set userid = w.logged_in(request) %}
-    {% if not userid %}
-    <h3>Login</h3>
-    {{ login_form.render() | safe }}
-    {% endif %}
     <h3>Main Menu</h3>
     <ul>
+      <!-- A for loop that outputs all the menu items on the main menu -->
       {%- for item in w.generate_menu("main_menu", context, request): %}
       <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
       {%- endfor %}
     </ul>
     <h3>User Area</h3>
+    <!-- Display a small helpful message stating if you are logged in -->
     <h4>{% if not userid %}Not logged in.{% else %}Logged in as {{ userid }}.{% endif %}</h4>
     <ul>
+      <!-- A for loop that outputs all the menu items on the user area menu -->
       {%- for item in w.generate_menu("user_area", context, request): %}
       <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
       {%- endfor %}
     </ul>
+  <!-- Pre-generate the admin area menu so that I can conditionally ahow it, depending on if I am logged in -->
   {% set adminarea = w.generate_menu("admin_area", context, request) %}
   {% if adminarea %}
     <h3>Admin Area</h3>
     <ul>
+      <!-- A for loop that outputs all the menu items on the admin area menu -->
       {%- for item in adminarea: %}
       <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
       {%- endfor %}
@@ -47,6 +52,7 @@
   {% endif %}
   </div>
   <div class="content">
+    <!-- Display the main content on the page -->
     {% block content %}{% endblock %}
   </div>
 </body>
