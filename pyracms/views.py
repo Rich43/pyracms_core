@@ -370,16 +370,16 @@ def userarea_admin_file_upload(context, request):
     for item in os.listdir(new_static_path):
         if os.path.isdir(os.path.join(new_static_path, item)):
             if 'path' in request.GET:
-                result.append(("?path=%s/%s" % (request.GET['path'], item),
-                               item))
+                result.append((True, "?path=%s/%s" % 
+                               (request.GET['path'], item), item))
             else:
-                result.append(("?path=" + item, item))
+                result.append((True, "?path=" + item, item))
         else:
             if 'path' in request.GET:
-                result.append(("/static/%s/%s" % (request.GET['path'], item),
-                               item))
+                result.append((False, "/static/%s/%s" % 
+                               (request.GET['path'], item), item))
             else:
-                result.append(("/static/" + item, item))
+                result.append((False, "/static/" + item, item))
     return {'items': result, 'title': message, 'header': message}
 
 @view_config(route_name='css')

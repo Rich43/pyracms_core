@@ -11,11 +11,17 @@ Please specify a file, or a set of files:<br>
 <p><a href="/userarea_admin/file_upload">Go back to root</a></p>
 <table>
     <tr>
-        <th>{{ header }}</th>
+        <th>Type</th>
+        <th>Name</th>
     </tr>
     {% for item in items %}
     <tr>
-        <td><a href="{{ item[0] }}">{{ item[1] }}</a></td>
+        {% if item[0] %}
+        <td><img src="http://www.veryicon.com/icon/png/System/Radium/Folder.png" width="32" height="32"></td>
+        {% else %}
+        <td><img src="http://www.veryicon.com/icon/png/System/Radium/File.png" width="32" height="32"></td>
+        {% endif %}
+        <td><a href="{{ item[1] }}">{{ item[2] }}</a></td>
     </tr>
     {% endfor %}
 </table>
