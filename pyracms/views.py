@@ -1,22 +1,24 @@
 from .__init__ import main_path, static_path
 from .deform_schemas.article import EditArticleSchema
-from .deform_schemas.userarea import LoginSchema, RegisterSchema, \
-    ChangePasswordSchema, RecoverPasswordSchema, EditUserSchema
-from .deform_schemas.userarea_admin import EditACL, MenuGroup, EditMenuItems, \
-    Menu, SettingSchema
-from .errwarninfo import INFO_DELETED, INFO, ERROR, ERROR_NOT_FOUND, INFO_REVERT, \
-    ERROR_INVALID_USER_PASS, INFO_LOGIN, INFO_LOGOUT, INFO_ACTIVATON_EMAIL_SENT, \
-    ERROR_TOKEN, INFO_PASS_CHANGE, INFO_RECOVERY_EMAIL_SENT, INFO_ACC_UPDATED, \
-    INFO_ACL_UPDATED, INFO_MENU_GROUP_UPDATED, INFO_MENU_UPDATED
+from .deform_schemas.userarea import (LoginSchema, RegisterSchema, 
+    ChangePasswordSchema, RecoverPasswordSchema, EditUserSchema)
+from .deform_schemas.userarea_admin import (EditACL, MenuGroup, EditMenuItems, 
+    SettingSchema)
+from .errwarninfo import (INFO_DELETED, INFO, ERROR, ERROR_NOT_FOUND, INFO_REVERT, 
+    ERROR_INVALID_USER_PASS, INFO_LOGIN, INFO_LOGOUT, INFO_ACTIVATON_EMAIL_SENT, 
+    ERROR_TOKEN, INFO_PASS_CHANGE, INFO_RECOVERY_EMAIL_SENT, INFO_ACC_UPDATED, 
+    INFO_ACL_UPDATED, INFO_MENU_GROUP_UPDATED, INFO_MENU_UPDATED)
 from .lib.articlelib import ArticleLib, PageNotFound
-from .lib.helperlib import acl_to_dict, dict_to_acl, serialize_relation, \
-    deserialize_relation, get_username, redirect, rapid_deform
+from .lib.helperlib import (acl_to_dict, dict_to_acl, serialize_relation, 
+    deserialize_relation, get_username, redirect, rapid_deform)
 from .lib.menulib import MenuLib
 from .lib.settingslib import SettingsLib
 from .lib.tokenlib import TokenLib, InvalidToken
 from .lib.userlib import UserLib
+from .models import Menu
 from pyramid.exceptions import Forbidden
 from pyramid.httpexceptions import HTTPFound
+from pyramid.response import Response
 from pyramid.security import remember, forget, authenticated_userid
 from pyramid.url import route_url
 from pyramid.view import view_config
@@ -383,10 +385,10 @@ def userarea_admin_file_upload(context, request):
 @view_config(route_name='css')
 def css(request):
     s = SettingsLib()
-    res = request.response
-    res.article_type = "text/css"
-    res.text = s.show_setting("CSS").value
-    return res
+    css_data = s.show_setting("CSS").value
+    return Response(app_iter=[css_data.encode()],
+                    headerlist=[('Content-Type', "text/css"),
+                                ('Content-Length', str(len(css_data)))])
 
 @view_config(route_name='redirect_one')
 @view_config(route_name='redirect_two')

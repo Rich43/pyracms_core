@@ -1,6 +1,7 @@
 from colander import (Schema, SchemaNode, String, 
                       OneOf, SequenceSchema, Integer, MappingSchema)
 from deform.widget import SelectWidget, TextAreaWidget
+from pyramid.security import Everyone
 
 class ACLItem(Schema):
     allow_deny = SchemaNode(String(), 
@@ -20,7 +21,7 @@ class EditACL(Schema):
 class MenuItem(Schema):
     name = SchemaNode(String())
     url = SchemaNode(String())
-    permissions = SchemaNode(String())
+    permissions = SchemaNode(String(), default=Everyone)
     position = SchemaNode(Integer())
     
 class Menu(SequenceSchema):

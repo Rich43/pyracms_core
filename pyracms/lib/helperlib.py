@@ -93,7 +93,7 @@ def deserialize_relation(l, obj, extra_vars={}):
             setattr(obj_inst, key, d[key])
         result.append(obj_inst)
     return result
-
+    
 def dict_to_acl(item):
     """
     Convert (converted) dictionary ACL to normal tuple format
