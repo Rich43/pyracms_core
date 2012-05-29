@@ -28,7 +28,7 @@ class ArticleLib():
         pages = DBSession.query(ArticlePage).filter_by(deleted=False)
         if not pages:
             raise PageNotFound
-        return [(page.name, page.display_name) for page in pages]
+        return [(page.name, page.display_name or page.name) for page in pages]
 
     def update_article_index(self, request, page, revision, username):
         """

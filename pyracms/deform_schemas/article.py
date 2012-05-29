@@ -29,7 +29,8 @@ def deferred_edit_tags_default(node, kw):
     
 class EditArticleSchema(MappingSchema):
     display_name = SchemaNode(String(), widget=TextInputWidget(size=40),
-                              default=deferred_edit_display_name_default)
+                              default=deferred_edit_display_name_default,
+                              missing='')
     article = SchemaNode(String(), 
                          default=deferred_edit_article_default,
                          widget=TextAreaWidget(cols=80, rows=20))

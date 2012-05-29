@@ -121,7 +121,7 @@ gallery.content = True
 directives.register_directive('gallery', gallery)
 
 # Set to True if you want inline CSS styles instead of classes
-INLINESTYLES = False
+INLINESTYLES = True
 
 # The default formatter
 DEFAULT = HtmlFormatter(noclasses=INLINESTYLES)
