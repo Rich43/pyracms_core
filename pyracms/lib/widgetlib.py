@@ -1,5 +1,5 @@
 from ..deform_schemas.userarea import LoginSchema
-from .menulib import MenuLib
+from .menulib import MenuLib, MenuGroupNotFound
 from .restlib import html_body
 from deform.form import Form
 from pyramid.security import authenticated_userid, Everyone, has_permission
@@ -43,8 +43,12 @@ class WidgetLib():
         m = MenuLib()
         NOT_AUTH = 'not_authenticated'
         result = []
+        try:
+            items = m.show_group(name).menu_items
+        except MenuGroupNotFound:
+            return result
         # Get a list of items in its menu group
-        for item in m.show_group(name).menu_items:
+        for item in items:
             append = True
             # If the item has any permissions
             if item.permissions:
