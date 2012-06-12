@@ -230,7 +230,13 @@ def userarea_admin_edit_menu_item(context, request):
         Save new list of menu items to database
         """
         group = bind_params["group"]
-        group.menu_items = deserialize_relation(deserialized['menu'], Menu,
+        new_menu = []
+        for item in deserialized['menu']:
+            for key in item.keys():
+                if isinstance(item[key], str):
+                    item[key] = item[key].replace("%20", " ")
+            new_menu.append(item)
+        group.menu_items = deserialize_relation(new_menu, Menu,
                                                 {"group": group})
         request.session.flash(INFO_MENU_UPDATED % group.name, INFO)
         return redirect(request, 'userarea_admin_edit_menu')

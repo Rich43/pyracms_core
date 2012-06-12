@@ -33,7 +33,7 @@ class EditArticleSchema(MappingSchema):
                               missing='')
     article = SchemaNode(String(), 
                          default=deferred_edit_article_default,
-                         widget=TextAreaWidget(cols=80, rows=20))
+                         widget=TextAreaWidget(cols=140, rows=20))
     summary = SchemaNode(String(), widget=TextInputWidget(size=40))
     tags = SchemaNode(String(), widget=TextInputWidget(size=40),
                       missing='', default=deferred_edit_tags_default)

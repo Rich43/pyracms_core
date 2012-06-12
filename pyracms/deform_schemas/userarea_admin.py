@@ -1,10 +1,27 @@
-from colander import (Schema, SchemaNode, String, 
-                      OneOf, SequenceSchema, Integer, MappingSchema)
+from ..models import RootFactory
+from colander import Schema, SchemaNode, String, OneOf, SequenceSchema, Integer, \
+    MappingSchema
 from deform.widget import SelectWidget, TextAreaWidget
 from pyramid.security import Everyone
 
+def get_acl(single_result=False):
+    rf = RootFactory()
+    rf.sync_from_database()
+    result = []
+    for item in rf.__acl__:
+        if item != Everyone:
+            if single_result:
+                result.append(item[2])
+            else:
+                result.append((item[2], item[2]))
+    if single_result:
+        result.insert(0, Everyone)
+    else:
+        result.insert(0, (Everyone, Everyone))
+    return result
+
 class ACLItem(Schema):
-    allow_deny = SchemaNode(String(), 
+    allow_deny = SchemaNode(String(),
                  widget=SelectWidget(values=[("Allow", "Allow"),
                                              ("Deny", "Deny")],
                  validator=OneOf([("Allow", "Deny")]),
@@ -21,7 +38,10 @@ class EditACL(Schema):
 class MenuItem(Schema):
     name = SchemaNode(String())
     url = SchemaNode(String())
-    permissions = SchemaNode(String(), default=Everyone)
+    permissions = SchemaNode(String(),
+                             widget=SelectWidget(values=get_acl(),
+                                                 validator=OneOf(get_acl(True)),
+                                                 default=Everyone))
     position = SchemaNode(Integer())
     
 class Menu(SequenceSchema):
@@ -37,4 +57,4 @@ class MenuGroup(Schema):
     menu_groups = MenuGroupItem()
 
 class SettingSchema(MappingSchema):
-    value = SchemaNode(String(), widget=TextAreaWidget(cols=80, rows=20))
+    value = SchemaNode(String(), widget=TextAreaWidget(cols=140, rows=20))
