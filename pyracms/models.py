@@ -1,12 +1,13 @@
+from datetime import datetime, timedelta
 from hashlib import sha1
-from sqlalchemy import Column, Integer, Unicode, desc
+from sqlalchemy import (Column, Integer, Unicode, desc, UnicodeText, DateTime, 
+    Boolean, BigInteger, LargeBinary)
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker, relationship, synonym
+from sqlalchemy.orm import (scoped_session, sessionmaker, relationship, synonym, 
+    deferred)
 from sqlalchemy.schema import UniqueConstraint, ForeignKey
-from sqlalchemy.types import UnicodeText, DateTime, Boolean
 from zope.sqlalchemy import ZopeTransactionExtension
 import os
-from datetime import datetime, timedelta
 import uuid
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
@@ -312,3 +313,47 @@ class Token(Base):
     def __init__(self, user, purpose):
         self.user = user
         self.purpose = purpose
+
+class FilesData(Base):
+    __tablename__ = 'filesdata'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+
+    id = Column(Integer, primary_key=True)
+    file_id = Column(Integer, ForeignKey('files.id'), nullable=False)
+    data = deferred(Column(LargeBinary(10**6), nullable=False))
+
+    def __init__(self, data):
+        self.data = data
+
+class Files(Base):
+    __tablename__ = 'files'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode(128), index=True, nullable=False)
+    mimetype = Column(Unicode(128), index=True, nullable=False)
+    size = Column(BigInteger, index=True, default=0)
+    created = Column(DateTime, default=datetime.now)
+    upload_complete = Column(Boolean, default=False, index=True)
+    download_count = Column(Integer, default=0, index=True)
+    data = relationship(FilesData,
+                    cascade="all, delete, delete-orphan", single_parent=True)
+    def __init__(self, name, mimetype):
+        self.name = name
+        self.mimetype = mimetype
+
+class VotesArticle(Base):
+    __tablename__ = 'votesarticle'
+    __table_args__ = (UniqueConstraint('user_id', 'page_id'),
+                      {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'})
+    
+    id = Column(Integer, primary_key=True)
+    page_id = Column(Integer, ForeignKey('articlepage.id'))
+    page = relationship("ArticlePage")
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user = relationship("User")
+    like = Column(Boolean, nullable=False, index=True)
+    
+    def __init__(self, user, like):
+        self.user = user
+        self.like = like
