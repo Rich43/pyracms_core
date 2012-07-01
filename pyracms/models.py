@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 from hashlib import sha1
-from sqlalchemy import (Column, Integer, Unicode, desc, UnicodeText, DateTime, 
+from sqlalchemy import (Column, Integer, Unicode, desc, UnicodeText, DateTime,
     Boolean, BigInteger, LargeBinary)
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import (scoped_session, sessionmaker, relationship, synonym, 
+from sqlalchemy.orm import (scoped_session, sessionmaker, relationship, synonym,
     deferred)
 from sqlalchemy.schema import UniqueConstraint, ForeignKey
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -18,7 +18,7 @@ class RootFactory(object):
     Default context for views.
     """
     __acl__ = set()
-    
+
     def __init__(self, request=None):
         """
         Load ACL from database if there is none.
@@ -34,7 +34,7 @@ class RootFactory(object):
         rows = DBSession.query(ACL)
         for row in rows:
             self.__acl__.add((row.allow_deny, row.who, row.permission))
-        
+
     def sync_to_database(self):
         """
         Load ACL records into database
@@ -68,7 +68,7 @@ class Group(Base):
 
     __tablename__ = 'group'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
-    
+
     #{ Columns
     id = Column(Integer, autoincrement=True, primary_key=True)
     name = Column(Unicode(16), unique=True, nullable=False)
@@ -97,7 +97,7 @@ class User(Base):
     """
     __tablename__ = 'user'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
-    
+
     #{ Columns
 
     id = Column(Integer, autoincrement=True, primary_key=True)
@@ -110,7 +110,7 @@ class User(Base):
                         info={'rum': {'field':'Password'}}, nullable=False)
     groups = relationship('Group', secondary=UserGroup.__table__,
                           backref='user')
-    
+
     #{ Special methods
     def __init__(self, name):
         self.name = name
@@ -164,12 +164,12 @@ class User(Base):
 class ACL(Base):
     __tablename__ = 'acl'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
-    
+
     id = Column(Integer, autoincrement=True, primary_key=True)
     allow_deny = Column(Unicode(128), index=True)
     who = Column(Unicode(128), index=True)
     permission = Column(Unicode(128), index=True)
-    
+
     def __init__(self, allow_deny, who, permission):
         self.allow_deny = allow_deny
         self.who = who
@@ -178,31 +178,31 @@ class ACL(Base):
 class Settings(Base):
     __tablename__ = 'settings'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
-    
+
     id = Column(Integer, autoincrement=True, primary_key=True)
     name = Column(Unicode(16), unique=True, nullable=False)
     value = Column(UnicodeText)
-    
+
     def __init__(self, name, value=""):
         self.name = name
         self.value = value
-        
-class Tags(Base):
-    __tablename__ = 'tags'
+
+class ArticleTags(Base):
+    __tablename__ = 'articletags'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
-    
+
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(128), index=True, nullable=False)
     page_id = Column(Integer, ForeignKey('articlepage.id'))
     page = relationship("ArticlePage")
-    
+
     def __init__(self, name):
         self.name = name
 
 class ArticleRevision(Base):
     __tablename__ = 'articlerevision'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
-    
+
     id = Column(Integer, primary_key=True)
     page_id = Column(Integer, ForeignKey('articlepage.id'), nullable=False)
     article = Column(UnicodeText, default='')
@@ -220,7 +220,7 @@ class ArticleRevision(Base):
 class ArticleRenderers(Base):
     __tablename__ = 'articlerenderers'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
-    
+
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(128), index=True, unique=True, nullable=False)
 
@@ -230,7 +230,7 @@ class ArticleRenderers(Base):
 class ArticlePage(Base):
     __tablename__ = 'articlepage'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
-    
+
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(128), index=True, unique=True, nullable=False)
     display_name = Column(Unicode(128), index=True, nullable=False)
@@ -243,9 +243,9 @@ class ArticlePage(Base):
                              cascade="all, delete, delete-orphan",
                              lazy="dynamic",
                              order_by=desc(ArticleRevision.created))
-    tags = relationship(Tags, cascade="all, delete, delete-orphan")
+    tags = relationship(ArticleTags, cascade="all, delete, delete-orphan")
     renderer = relationship(ArticleRenderers)
-    
+
     def __init__(self, name, display_name):
         self.name = name
         self.display_name = display_name
@@ -260,7 +260,7 @@ class Menu(Base):
     url = Column(Unicode(128), nullable=False)
     name = Column(Unicode(128), nullable=False)
     permissions = Column(Unicode(128), default='')
-    
+
     def __init__(self, name, url, position, group, permissions=''):
         self.name = name
         self.url = url
@@ -275,7 +275,7 @@ class MenuGroup(Base):
     name = Column(Unicode(128), index=True, unique=True, nullable=False)
     menu_items = relationship(Menu, order_by=Menu.position,
                               cascade="all, delete, delete-orphan")
-    
+
     def __init__(self, name):
         self.name = name
 
@@ -320,7 +320,7 @@ class FilesData(Base):
 
     id = Column(Integer, primary_key=True)
     file_id = Column(Integer, ForeignKey('files.id'), nullable=False)
-    data = deferred(Column(LargeBinary(10**6), nullable=False))
+    data = deferred(Column(LargeBinary(10 ** 6), nullable=False))
 
     def __init__(self, data):
         self.data = data
@@ -342,18 +342,18 @@ class Files(Base):
         self.name = name
         self.mimetype = mimetype
 
-class VotesArticle(Base):
-    __tablename__ = 'votesarticle'
+class ArticleVotes(Base):
+    __tablename__ = 'articlevotes'
     __table_args__ = (UniqueConstraint('user_id', 'page_id'),
                       {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'})
-    
+
     id = Column(Integer, primary_key=True)
     page_id = Column(Integer, ForeignKey('articlepage.id'))
     page = relationship("ArticlePage")
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     user = relationship("User")
     like = Column(Boolean, nullable=False, index=True)
-    
+
     def __init__(self, user, like):
         self.user = user
         self.like = like
