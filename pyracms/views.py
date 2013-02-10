@@ -19,7 +19,8 @@ from .models import Menu
 from pyramid.exceptions import Forbidden
 from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
-from pyramid.security import remember, forget, authenticated_userid
+from pyramid.security import (remember, forget, authenticated_userid, 
+                              has_permission)
 from pyramid.url import route_url
 from pyramid.view import view_config
 import os
@@ -425,6 +426,9 @@ def article_read(context, request):
         if page.deleted:
             return HTTPFound(location=route_url("article_update",
                                                 request, page_id=page.name))
+        elif page.private and not has_permission("set_private", context, 
+                                                 request):
+            raise Forbidden()
         else:
             result.update({'page': page, 'revision': revision})
             return result
@@ -549,4 +553,14 @@ def article_switch_renderer(context, request):
     c = ArticleLib()
     page_id = request.matchdict.get('page_id')
     c.switch_renderer(page_id)
+    return redirect(request, "article_read", page_id=page_id)
+
+@view_config(route_name='article_set_private', permission='set_private')
+def article_set_private(context, request):
+    """
+    Make page private
+    """
+    c = ArticleLib()
+    page_id = request.matchdict.get('page_id')
+    c.set_private(page_id)
     return redirect(request, "article_read", page_id=page_id)

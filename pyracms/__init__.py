@@ -96,6 +96,8 @@ def main(global_config, **settings):
                      '/article/list_revisions/{page_id}')
     config.add_route('article_switch_renderer',
                      '/article/switch_renderer/{page_id}')
+    config.add_route('article_set_private',
+                     '/article/set_private/{page_id}')
     config.scan()
     return config.make_wsgi_app()
 

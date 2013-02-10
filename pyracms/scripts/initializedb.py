@@ -58,6 +58,7 @@ def main(argv=sys.argv):
         acl.__acl__.add((Allow, "group:article", "article_update"))
         acl.__acl__.add((Allow, "group:article", "article_delete"))
         acl.__acl__.add((Allow, "group:article", "article_revert"))
+        acl.__acl__.add((Allow, "group:article", "set_private"))
         acl.sync_to_database()
 
         # Add menu items
@@ -107,9 +108,12 @@ def main(argv=sys.argv):
         DBSession.add(Menu("Switch Renderer [%(renderer)s]",
                            "/article/switch_renderer/%(page_id)s", 3, group,
                            'switch_renderer'))
+        DBSession.add(Menu("Make %(private)s",
+                           "/article/set_private/%(page_id)s", 4, group,
+                           'set_private'))
         DBSession.add(Menu("List Revisions",
                            "/article/list_revisions/%(page_id)s",
-                           4, group, 'article_list_revisions'))
+                           5, group, 'article_list_revisions'))
 
         group = MenuGroup("article_revision")
         DBSession.add(Menu("List Revisions",

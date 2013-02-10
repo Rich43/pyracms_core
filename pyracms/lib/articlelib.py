@@ -102,6 +102,14 @@ class ArticleLib():
         page.deleted = True
         delete_from_index(request.route_url("article_read", page_id=page.name))
 
+    def set_private(self, name):
+        """
+        Flip private switch.
+        Raise PageNotFound if page does not exist.
+        """
+        page = self.show_page(name)
+        page.private = not page.private
+
     def show_revision(self, page, revision, error=False):
         """
         Get revision objects.

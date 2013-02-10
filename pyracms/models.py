@@ -236,6 +236,7 @@ class ArticlePage(Base):
     display_name = Column(Unicode(128), index=True, nullable=False)
     created = Column(DateTime, default=datetime.now)
     deleted = Column(Boolean, default=False, index=True)
+    private = Column(Boolean, default=False, index=True)
     view_count = Column(Integer, default=0, index=True)
     renderer_id = Column(Integer, ForeignKey('articlerenderers.id'),
                          nullable=False, default=1)
