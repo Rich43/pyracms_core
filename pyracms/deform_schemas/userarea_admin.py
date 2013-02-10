@@ -1,8 +1,17 @@
 from ..models import RootFactory
-from colander import Schema, SchemaNode, String, OneOf, SequenceSchema, Integer, \
-    MappingSchema
-from deform.widget import SelectWidget, TextAreaWidget
+from colander import (Schema, SchemaNode, String, OneOf, SequenceSchema, Integer, 
+    MappingSchema)
+from deform import FileData
+from deform.widget import SelectWidget, TextAreaWidget, FileUploadWidget
 from pyramid.security import Everyone
+
+class MemoryTmpStore(dict):
+    """ Instances of this class implement the
+    :class:`deform.interfaces.FileUploadTempStore` interface"""
+    def preview_url(self, uid):
+        return None
+
+tmpstore = MemoryTmpStore()
 
 def get_acl(single_result=False):
     rf = RootFactory()
@@ -58,3 +67,7 @@ class MenuGroup(Schema):
 
 class SettingSchema(MappingSchema):
     value = SchemaNode(String(), widget=TextAreaWidget(cols=140, rows=20))
+
+class RestoreBackupSchema(Schema):
+    restore_backup_json_file = SchemaNode(FileData(), 
+                                          widget=FileUploadWidget(tmpstore))

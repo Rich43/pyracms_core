@@ -3,7 +3,7 @@ from .deform_schemas.article import EditArticleSchema
 from .deform_schemas.userarea import (LoginSchema, RegisterSchema, 
     ChangePasswordSchema, RecoverPasswordSchema, EditUserSchema)
 from .deform_schemas.userarea_admin import (EditACL, MenuGroup, EditMenuItems, 
-    SettingSchema)
+    SettingSchema, RestoreBackupSchema)
 from .errwarninfo import (INFO_DELETED, INFO, ERROR, ERROR_NOT_FOUND, INFO_REVERT, 
     ERROR_INVALID_USER_PASS, INFO_LOGIN, INFO_LOGOUT, INFO_ACTIVATON_EMAIL_SENT, 
     ERROR_TOKEN, INFO_PASS_CHANGE, INFO_RECOVERY_EMAIL_SENT, INFO_ACC_UPDATED, 
@@ -203,6 +203,29 @@ def userarea_list(context, request): #@ReservedAssignment
                       for item in u.list(False)],
             'title': message, 'header': message}
 
+@view_config(route_name='userarea_admin_backup_articles', permission='backup')
+def userarea_admin_backup_articles(context, request):
+    a = ArticleLib()
+    res = request.response
+    res.content_type = "application/json"
+    res.text = str(a.to_json())
+    return res
+
+@view_config(route_name='userarea_admin_restore_articles', permission='backup',
+             renderer='deform.jinja2')
+def userarea_admin_restore_articles(context, request):
+    def restore_backup_submit(context, request, deserialized, bind_params):
+        a = ArticleLib()
+        a.from_json(request, deserialized['restore_backup_json_file']
+                    ['fp'].read().decode())
+        return redirect(request, "article_list")
+    result = rapid_deform(context, request, RestoreBackupSchema,
+                          restore_backup_submit)
+    if isinstance(result, dict):
+        message = "Restore Articles from JSON File"
+        result.update({"title": message, "header": message})
+    return result
+
 @view_config(route_name='userarea_admin_edit_menu', permission='edit_menu',
              renderer='list.jinja2')
 def userarea_admin_edit_menu(context, request):
@@ -361,7 +384,7 @@ def userarea_admin_edit_template(context, request):
     return result
 
 @view_config(route_name='userarea_admin_file_upload',
-             permission='file_upload', renderer='file_upload.jinja2')
+             permission='file_upload', renderer='userarea/file_upload.jinja2')
 def userarea_admin_file_upload(context, request):
     message = "File Upload"
     result = []

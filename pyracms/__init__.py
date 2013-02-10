@@ -80,7 +80,11 @@ def main(global_config, **settings):
                      '/userarea_admin/edit_template')
     config.add_route('userarea_admin_file_upload',
                      '/userarea_admin/file_upload')
-
+    config.add_route('userarea_admin_backup_articles',
+                     '/userarea_admin/backup_articles')
+    config.add_route('userarea_admin_restore_articles',
+                     '/userarea_admin/restore_articles')
+    
     # Article Routes
     config.add_route('home', '/')
     config.add_route('article_read', '/article/item/{page_id}')

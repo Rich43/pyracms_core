@@ -50,6 +50,8 @@ def main(argv=sys.argv):
         acl.__acl__.add((Allow, "group:admin", "edit_settings"))
         acl.__acl__.add((Allow, "group:admin", "switch_renderer"))
         acl.__acl__.add((Allow, "group:admin", "file_upload"))
+        acl.__acl__.add((Allow, "group:admin", "backup"))
+        acl.__acl__.add((Allow, "group:admin", "set_private"))
         acl.__acl__.add((Allow, "group:article", "group:article"))
         acl.__acl__.add((Allow, "group:article", "article_view"))
         acl.__acl__.add((Allow, "group:article", "article_list"))
@@ -58,7 +60,6 @@ def main(argv=sys.argv):
         acl.__acl__.add((Allow, "group:article", "article_update"))
         acl.__acl__.add((Allow, "group:article", "article_delete"))
         acl.__acl__.add((Allow, "group:article", "article_revert"))
-        acl.__acl__.add((Allow, "group:article", "set_private"))
         acl.sync_to_database()
 
         # Add menu items
@@ -99,7 +100,12 @@ def main(argv=sys.argv):
                            6, group, 'edit_settings'))
         DBSession.add(Menu("Upload Files", "/userarea_admin/file_upload",
                            7, group, 'file_upload'))
-        
+        DBSession.add(Menu("Backup Articles", "/userarea_admin/backup_articles",
+                           8, group, 'backup'))
+        DBSession.add(Menu("Restore Articles", 
+                           "/userarea_admin/restore_articles", 9, group, 
+                           'backup'))
+                
         group = MenuGroup("article_not_revision")
         DBSession.add(Menu("Edit", "/article/update/%(page_id)s", 1, group,
                            'article_update'))

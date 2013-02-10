@@ -212,10 +212,11 @@ class ArticleRevision(Base):
     page = relationship("ArticlePage")
     created = Column(DateTime, default=datetime.now)
 
-    def __init__(self, article, summary, user):
+    def __init__(self, article="", summary="", user=None):
         self.article = article
         self.summary = summary
-        self.user = user
+        if user:
+            self.user = user
 
 class ArticleRenderers(Base):
     __tablename__ = 'articlerenderers'
@@ -247,7 +248,7 @@ class ArticlePage(Base):
     tags = relationship(ArticleTags, cascade="all, delete, delete-orphan")
     renderer = relationship(ArticleRenderers)
 
-    def __init__(self, name, display_name):
+    def __init__(self, name="", display_name=""):
         self.name = name
         self.display_name = display_name
 

@@ -22,11 +22,9 @@ class UserLib():
             raise UserNotFound
         
         try:
-            usr = DBSession.query(User).filter_by(name=name).one()
+            return DBSession.query(User).filter_by(name=name).one()
         except NoResultFound:
             raise UserNotFound
-        
-        return usr
     
     def show_by_email(self, email):
         """
@@ -38,11 +36,19 @@ class UserLib():
             raise UserNotFound
         
         try:
-            usr = DBSession.query(User).filter_by(email_address=email).one()
+            return DBSession.query(User).filter_by(email_address=email).one()
         except NoResultFound:
             raise UserNotFound
-        
-        return usr
+    
+    def show_by_id(self, user_id):
+        """
+        Get a user from his database id
+        Raise UserNotFound if user does not exist
+        """
+        try:
+            return DBSession.query(User).filter_by(id=user_id).one()
+        except NoResultFound:
+            raise UserNotFound
     
     def list(self, first=True):
         """

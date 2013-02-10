@@ -1,8 +1,12 @@
-from sqlalchemy.orm.exc import NoResultFound
 from ..models import DBSession, ArticleRevision, ArticlePage, ArticleRenderers
+from .helperlib import serialize_relation
 from .searchlib import update_index, delete_from_index
-from .taglib import TagLib, ARTICLE
 from .settingslib import SettingsLib
+from .taglib import TagLib, ARTICLE
+from .userlib import UserLib
+from sqlalchemy.orm.exc import NoResultFound
+import datetime
+import json
 
 class RevisionNotFound(Exception):
     pass
@@ -134,3 +138,52 @@ class ArticleLib():
         except NoResultFound:
             raise PageNotFound
         return page
+
+    def to_json(self):
+        pages = DBSession.query(ArticlePage)
+        items = serialize_relation(pages)
+        result = []
+        for item in items:
+            item['revisions'] = serialize_relation(self.show_page(item["name"]
+                                                                  ).revisions)
+            result.append(item)
+        dthandler = (lambda obj: obj.isoformat() 
+                     if isinstance(obj, datetime.datetime) else None)
+        return json.dumps(result, default=dthandler)
+    
+    def from_json(self, request, data):
+        u = UserLib()
+        data = json.loads(data)
+        def convert_date(date):
+            date_format = "%Y-%m-%dT%H:%M:%S.%f"
+            return datetime.datetime.strptime(date, date_format)
+        # Convert the dates back
+        for k, dummy in enumerate(data):
+            data[k]['created'] = convert_date(data[k]['created'])
+            for k2, dummy in enumerate(data[k]['revisions']):
+                data[k]['revisions'][k2]['created'] = \
+                            convert_date(data[k]['revisions'][k2]['created'])
+        # Delete all articles
+        for page in DBSession.query(ArticlePage):
+            DBSession.delete(page)
+            delete_from_index(request.route_url("article_read", 
+                                                page_id=page.name))
+        # Add articles back again
+        for row in data:
+            # Delete revisions and store in memory for later use
+            revisions = row['revisions']
+            del(row['revisions'])
+            # Create page
+            page = ArticlePage()
+            for k, v in row.items():
+                setattr(page, k, v)
+            # Add revisions
+            for row2 in revisions:
+                revision = ArticleRevision()
+                for k, v in row2.items():
+                    setattr(revision, k, v)
+                page.revisions.append(revision)
+                self.update_article_index(request, page, revision, 
+                                          u.show_by_id(revision.user_id).name)
+            # Commit changes
+            DBSession.add(page)
