@@ -176,12 +176,18 @@ class ArticleLib():
             # Create page
             page = ArticlePage()
             for k, v in row.items():
-                setattr(page, k, v)
+                try:
+                    setattr(page, k, v)
+                except:
+                    pass
             # Add revisions
             for row2 in revisions:
                 revision = ArticleRevision()
                 for k, v in row2.items():
-                    setattr(revision, k, v)
+                    try:
+                        setattr(revision, k, v)
+                    except:
+                        pass
                 page.revisions.append(revision)
                 self.update_article_index(request, page, revision, 
                                           u.show_by_id(revision.user_id).name)
