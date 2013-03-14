@@ -1,4 +1,3 @@
-from .__init__ import main_path, static_path
 from .deform_schemas.article import EditArticleSchema
 from .deform_schemas.userarea import (LoginSchema, RegisterSchema, 
     ChangePasswordSchema, RecoverPasswordSchema, EditUserSchema)
@@ -23,12 +22,13 @@ from pyramid.security import (remember, forget, authenticated_userid,
                               has_permission)
 from pyramid.url import route_url
 from pyramid.view import view_config
+from pyramid.path import AssetResolver
 import os
 import shutil
 
-
 u = UserLib()
 t = TokenLib()
+resolve = AssetResolver().resolve
 
 @view_config(route_name='userarea_login',
              renderer='userarea/login.jinja2')
@@ -369,6 +369,7 @@ def userarea_admin_edit_template(context, request):
     """
     Display a form that lets you edit the main template
     """
+    main_path = resolve(request.registry.settings.get("main_template"))
     def edit_template_submit(context, request, deserialized, bind_params):
         """
         Save new template
@@ -388,6 +389,7 @@ def userarea_admin_edit_template(context, request):
 def userarea_admin_file_upload(context, request):
     message = "File Upload"
     result = []
+    static_path = resolve(request.registry.settings.get("static_path"))
     if 'path' in request.GET:
         new_static_path = os.path.join(static_path, request.GET['path'])
     else:

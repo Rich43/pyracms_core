@@ -8,10 +8,6 @@ from pyramid.config import Configurator
 from pyramid.events import BeforeRender
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from sqlalchemy import engine_from_config
-from os.path import dirname, join
-
-main_path = join(dirname(__file__), "templates", "main.jinja2")
-static_path = join(dirname(__file__), "static")
 
 def add_renderer_globals(event):
     event['w'] = WidgetLib()
@@ -40,10 +36,12 @@ def main(global_config, **settings):
                           authorization_policy=authorization_policy,
                           session_factory=session_factory)
     config.include('pyramid_jinja2')
-    config.add_jinja2_search_path("pyracms:templates")
+    config.add_jinja2_search_path(settings.get('jinja2_search_path'))
     config.add_subscriber(add_renderer_globals, BeforeRender)
-    config.add_static_view('static', 'static', cache_max_age=3600)
-    config.add_static_view("dstatic", "deform:static", cache_max_age=3600)
+    config.add_static_view('static', settings.get('static_path'), 
+                           cache_max_age=3600)
+    config.add_static_view("dstatic", "deform:static", 
+                           cache_max_age=3600)
     config.add_route('css', '/css')
     config.add_route('redirect_one', '/redirect/{route_name}')
     config.add_route('redirect_two', '/redirect/{route_name}/{type}')
