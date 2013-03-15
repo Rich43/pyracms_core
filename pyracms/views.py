@@ -369,7 +369,8 @@ def userarea_admin_edit_template(context, request):
     """
     Display a form that lets you edit the main template
     """
-    main_path = resolve(request.registry.settings.get("main_template")).abs()
+    setting_data = request.registry.settings.get("main_template")
+    main_path = resolve(setting_data).abspath()
     def edit_template_submit(context, request, deserialized, bind_params):
         """
         Save new template
@@ -389,7 +390,8 @@ def userarea_admin_edit_template(context, request):
 def userarea_admin_file_upload(context, request):
     message = "File Upload"
     result = []
-    static_path = resolve(request.registry.settings.get("static_path")).abs()
+    setting_data = request.registry.settings.get("static_path")
+    static_path = resolve(setting_data).abspath()
     if 'path' in request.GET:
         new_static_path = os.path.join(static_path, request.GET['path'])
     else:
