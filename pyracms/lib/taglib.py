@@ -60,6 +60,6 @@ class TagLib():
 
         # Add new set of tags
         for tag in tags:
-            db_tag = self.obj(tag)
+            db_tag = self.cls(tag)
             setattr(db_tag, self.tag_type, db_obj)
             db_obj.tags.append(db_tag)
