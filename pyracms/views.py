@@ -30,8 +30,7 @@ u = UserLib()
 t = TokenLib()
 resolve = AssetResolver().resolve
 
-@view_config(route_name='userarea_login',
-             renderer='userarea/login.jinja2')
+@view_config(route_name='userarea_login', renderer='userarea/login.jinja2')
 def userarea_login(context, request):
     """
     Display login form
@@ -51,9 +50,8 @@ def userarea_login(context, request):
             return redirect(request, "userarea_login")
     return rapid_deform(context, request, LoginSchema, login_submit)
 
-@view_config(route_name='userarea_profile',
-             renderer='userarea/profile.jinja2')
-@view_config(route_name='userarea_profile_two',
+@view_config(route_name='userarea_profile', renderer='userarea/profile.jinja2')
+@view_config(route_name='userarea_profile_two', 
              renderer='userarea/profile.jinja2')
 def userarea_profile(context, request):
     """

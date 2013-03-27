@@ -1,4 +1,3 @@
-from ..models import ArticleTags as Tags
 import string
 
 ARTICLE = "page"
@@ -16,12 +15,13 @@ class TagLib():
     A library to get and set tags to/from database.
     Also handles votes (To save code!)
     """
-
-    def __init__(self, tag_type):
+    
+    def __init__(self, cls, tag_type):
         if not tag_type in [ARTICLE, GAMEDEP, BOARD]:
             raise InvalidTagType
         self.tag_type = tag_type
-
+        self.cls = cls
+        
     def filter_tags(self, tags):
         """
         Convert command seperated list to a list
@@ -60,6 +60,6 @@ class TagLib():
 
         # Add new set of tags
         for tag in tags:
-            db_tag = Tags(tag)
+            db_tag = self.obj(tag)
             setattr(db_tag, self.tag_type, db_obj)
             db_obj.tags.append(db_tag)

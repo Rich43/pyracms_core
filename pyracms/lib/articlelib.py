@@ -1,4 +1,5 @@
-from ..models import DBSession, ArticleRevision, ArticlePage, ArticleRenderers
+from ..models import (DBSession, ArticleRevision, ArticlePage, ArticleRenderers, 
+    ArticleTags)
 from .helperlib import serialize_relation
 from .searchlib import update_index, delete_from_index
 from .settingslib import SettingsLib
@@ -23,7 +24,7 @@ class ArticleLib():
     """
 
     def __init__(self):
-        self.t = TagLib(ARTICLE)
+        self.t = TagLib(ArticleTags, ARTICLE)
 
     def list(self): #@ReservedAssignment
         """
