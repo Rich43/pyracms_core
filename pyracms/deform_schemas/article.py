@@ -4,7 +4,8 @@ Deform Schemas for article module.
 from colander import MappingSchema, SchemaNode, String, deferred
 from deform.widget import TextAreaWidget, TextInputWidget
 from ..lib.taglib import ARTICLE, TagLib
-t = TagLib(ARTICLE)
+from ..models import ArticleTags
+t = TagLib(ArticleTags, ARTICLE)
 
 @deferred
 def deferred_edit_article_default(node, kw):
