@@ -20,7 +20,10 @@ requires = [
 	'postmarkup',
 	'docutils',
 	'deform',
-	'SQLAlchemy'
+	'SQLAlchemy',
+    'Markdown',
+    'Pillow',
+    'pyramid_mailer'
     ]
 
 setup(name='pyracms',

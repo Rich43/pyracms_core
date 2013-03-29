@@ -138,3 +138,4 @@ def main(argv=sys.argv):
         DBSession.add(ArticleRenderers("HTML"))
         DBSession.add(ArticleRenderers("BBCODE"))
         DBSession.add(ArticleRenderers("RESTRUCTUREDTEXT"))
+        DBSession.add(ArticleRenderers("MARKDOWN"))

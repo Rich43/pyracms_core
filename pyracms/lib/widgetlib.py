@@ -4,6 +4,7 @@ from .restlib import html_body
 from deform.form import Form
 from pyramid.security import authenticated_userid, Everyone, has_permission
 import postmarkup
+import markdown
 
 class WidgetLib():
     def logged_in(self, request):
@@ -28,7 +29,9 @@ class WidgetLib():
             return postmarkup.render_bbcode(article)
         elif renderer == "RESTRUCTUREDTEXT":
             return html_body(article)
-
+        elif renderer == "MARKDOWN":
+            return markdown.markdown(article)
+        
     def generate_menu(self, name, context, request, tmpl_args={}):
         """
         A quite complicated function which generates a list of menu items.
