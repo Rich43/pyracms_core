@@ -1,5 +1,7 @@
-from sqlalchemy.orm.exc import NoResultFound
 from ..models import DBSession, Settings
+from .helperlib import serialize_relation
+from sqlalchemy.orm.exc import NoResultFound
+import json
 
 class SettingNotFound(Exception):
     pass
@@ -33,3 +35,7 @@ class SettingsLib():
         except NoResultFound:
             raise SettingNotFound
         return page
+    
+    def to_dict(self):
+        return dict(DBSession.query(Settings.name, Settings.value))
+    

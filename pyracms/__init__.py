@@ -86,6 +86,10 @@ def main(global_config, **settings):
                      '/userarea_admin/backup_articles')
     config.add_route('userarea_admin_restore_articles',
                      '/userarea_admin/restore_articles')
+    config.add_route('userarea_admin_backup_settings',
+                     '/userarea_admin/backup_settings')
+    #config.add_route('userarea_admin_restore_settings',
+    #                 '/userarea_admin/restore_settings')
     
     # Article Routes
     config.add_route('home', '/')
@@ -102,8 +106,7 @@ def main(global_config, **settings):
                      '/article/list_revisions/{page_id}')
     config.add_route('article_switch_renderer',
                      '/article/switch_renderer/{page_id}')
-    config.add_route('article_set_private',
-                     '/article/set_private/{page_id}')
+    config.add_route('article_set_private', '/article/set_private/{page_id}')
     config.scan()
     return config.make_wsgi_app()
 

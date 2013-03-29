@@ -109,7 +109,9 @@ def main(argv=sys.argv):
         DBSession.add(Menu("Restore Articles", 
                            "/userarea_admin/restore_articles", 9, group, 
                            'backup'))
-                
+        DBSession.add(Menu("Backup Settings", "/userarea_admin/backup_settings",
+                           10, group, 'backup'))
+        
         group = MenuGroup("article_not_revision")
         DBSession.add(Menu("Edit", "/article/update/%(page_id)s", 1, group,
                            'article_update'))

@@ -1,4 +1,5 @@
 from ..models import DBSession, MenuGroup
+from .helperlib import serialize_relation
 from sqlalchemy.orm.exc import NoResultFound
 
 class MenuGroupNotFound(Exception):
@@ -35,3 +36,10 @@ class MenuLib():
         Delete menu group by name
         """
         DBSession.delete(self.show_group(name))
+    
+    def to_dict(self):
+        output = {}
+        groups = self.list_groups()
+        for item in groups:
+            output[item.name] = serialize_relation(item.menu_items)
+        return output

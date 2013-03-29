@@ -24,6 +24,7 @@ from pyramid_mailer.message import Message
 from string import Template
 import os
 import shutil
+import json
 
 u = UserLib()
 t = TokenLib()
@@ -274,6 +275,14 @@ def userarea_admin_restore_articles(context, request):
         message = "Restore Articles from JSON File"
         result.update({"title": message, "header": message})
     return result
+
+@view_config(route_name='userarea_admin_backup_settings', permission='backup')
+def userarea_admin_backup_settings(context, request):
+    m = MenuLib()
+    res = request.response
+    res.content_type = "application/json"
+    res.text = str(json.dumps({"menus": m.to_dict(), "settings": s.to_dict()}))
+    return res
 
 @view_config(route_name='userarea_admin_edit_menu', permission='edit_menu',
              renderer='list.jinja2')
