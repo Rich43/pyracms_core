@@ -90,12 +90,13 @@ def main(argv=sys.argv):
                            Everyone))
         
         group = MenuGroup("admin_area")
-        DBSession.add(Menu("Edit Menu", "/userarea_admin/edit_menu", 1, group,
-                           'edit_menu'))
-        DBSession.add(Menu("Edit Menu Groups", "/userarea_admin/edit_menu_group",
+        DBSession.add(Menu("Edit Menu", "/userarea_admin/edit_menu", 
+                           1, group, 'edit_menu'))
+        DBSession.add(Menu("Edit Menu Groups", 
+                           "/userarea_admin/edit_menu_group", 
                            2, group, 'edit_menu'))
-        DBSession.add(Menu("Edit ACL", "/userarea_admin/edit_acl", 3, group,
-                           'edit_acl'))
+        DBSession.add(Menu("Edit ACL", "/userarea_admin/edit_acl", 
+                           3, group, 'edit_acl'))
         DBSession.add(Menu("Edit Settings", "/userarea_admin/list_settings",
                            4, group, 'edit_settings'))
         DBSession.add(Menu("Edit CSS", "/userarea_admin/edit_setting/CSS",
@@ -107,22 +108,25 @@ def main(argv=sys.argv):
         DBSession.add(Menu("Backup Articles", "/userarea_admin/backup_articles",
                            8, group, 'backup'))
         DBSession.add(Menu("Restore Articles", 
-                           "/userarea_admin/restore_articles", 9, group, 
-                           'backup'))
+                           "/userarea_admin/restore_articles", 
+                           9, group, 'backup'))
         DBSession.add(Menu("Backup Settings", "/userarea_admin/backup_settings",
                            10, group, 'backup'))
+        DBSession.add(Menu("Restore Settings", 
+                           "/userarea_admin/restore_settings", 
+                           11, group, 'backup'))
         
         group = MenuGroup("article_not_revision")
-        DBSession.add(Menu("Edit", "/article/update/%(page_id)s", 1, group,
-                           'article_update'))
-        DBSession.add(Menu("Delete", "/article/delete/%(page_id)s", 2, group,
-                           'article_delete'))
+        DBSession.add(Menu("Edit", "/article/update/%(page_id)s", 
+                           1, group, 'article_update'))
+        DBSession.add(Menu("Delete", "/article/delete/%(page_id)s", 
+                           2, group, 'article_delete'))
         DBSession.add(Menu("Switch Renderer [%(renderer)s]",
-                           "/article/switch_renderer/%(page_id)s", 3, group,
-                           'switch_renderer'))
+                           "/article/switch_renderer/%(page_id)s", 
+                           3, group, 'switch_renderer'))
         DBSession.add(Menu("Make %(private)s",
-                           "/article/set_private/%(page_id)s", 4, group,
-                           'set_private'))
+                           "/article/set_private/%(page_id)s", 
+                           4, group, 'set_private'))
         DBSession.add(Menu("List Revisions",
                            "/article/list_revisions/%(page_id)s",
                            5, group, 'article_list_revisions'))
@@ -131,7 +135,8 @@ def main(argv=sys.argv):
         DBSession.add(Menu("List Revisions",
                            "/article/list_revisions/%(page_id)s", 1, group))
         DBSession.add(Menu("Revert",
-                           "/article/revert/%(page_id)s/%(revision)s", 2, group))
+                           "/article/revert/%(page_id)s/%(revision)s", 
+                           2, group))
         
         # Add Settings
         def add_dict(d):

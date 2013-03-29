@@ -2,7 +2,7 @@ from .deform_schemas.article import EditArticleSchema
 from .deform_schemas.userarea import (LoginSchema, RegisterSchema, 
     ChangePasswordSchema, RecoverPasswordSchema, EditUserSchema)
 from .deform_schemas.userarea_admin import (EditACL, MenuGroup, EditMenuItems, 
-    SettingSchema, RestoreBackupSchema)
+    SettingSchema, RestoreBackupSchema, RestoreSettingsSchema)
 from .lib.articlelib import ArticleLib, PageNotFound
 from .lib.helperlib import (acl_to_dict, dict_to_acl, serialize_relation, 
     deserialize_relation, get_username, redirect, rapid_deform)
@@ -283,6 +283,22 @@ def userarea_admin_backup_settings(context, request):
     res.content_type = "application/json"
     res.text = str(json.dumps({"menus": m.to_dict(), "settings": s.to_dict()}))
     return res
+
+@view_config(route_name='userarea_admin_restore_settings', permission='backup',
+             renderer='deform.jinja2')
+def userarea_admin_restore_settings(context, request):
+    def restore_settings_submit(context, request, deserialized, bind_params):
+        data = json.loads(deserialized['restore_settings_json_file']
+                          ['fp'].read().decode())
+        s.from_dict(data['settings'])
+        MenuLib().from_dict(data['menus'])
+        return redirect(request, "article_list")
+    result = rapid_deform(context, request, RestoreSettingsSchema,
+                          restore_settings_submit)
+    if isinstance(result, dict):
+        message = "Restore Settings from JSON File"
+        result.update({"title": message, "header": message})
+    return result
 
 @view_config(route_name='userarea_admin_edit_menu', permission='edit_menu',
              renderer='list.jinja2')

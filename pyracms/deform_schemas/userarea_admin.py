@@ -71,3 +71,7 @@ class SettingSchema(MappingSchema):
 class RestoreBackupSchema(Schema):
     restore_backup_json_file = SchemaNode(FileData(), 
                                           widget=FileUploadWidget(tmpstore))
+
+class RestoreSettingsSchema(Schema):
+    restore_settings_json_file = SchemaNode(FileData(), 
+                                            widget=FileUploadWidget(tmpstore))

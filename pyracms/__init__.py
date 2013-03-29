@@ -88,8 +88,8 @@ def main(global_config, **settings):
                      '/userarea_admin/restore_articles')
     config.add_route('userarea_admin_backup_settings',
                      '/userarea_admin/backup_settings')
-    #config.add_route('userarea_admin_restore_settings',
-    #                 '/userarea_admin/restore_settings')
+    config.add_route('userarea_admin_restore_settings',
+                     '/userarea_admin/restore_settings')
     
     # Article Routes
     config.add_route('home', '/')

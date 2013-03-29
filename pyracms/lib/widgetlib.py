@@ -68,9 +68,12 @@ class WidgetLib():
                         permission != Everyone):
                         append = False
             if append:
-                result.append([item.url % tmpl_args,
-                               item.name % tmpl_args,
-                               False])
+                try:
+                    result.append([item.url % tmpl_args,
+                                   item.name % tmpl_args,
+                                   False])
+                except KeyError:
+                    pass
         if len(result):
             result[-1][-1] = True
         return result

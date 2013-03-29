@@ -1,4 +1,4 @@
-from ..models import DBSession, MenuGroup
+from ..models import DBSession, MenuGroup, Menu
 from .helperlib import serialize_relation
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -43,3 +43,14 @@ class MenuLib():
         for item in groups:
             output[item.name] = serialize_relation(item.menu_items)
         return output
+    
+    def from_dict(self, data):
+        DBSession.query(MenuGroup).delete()
+        DBSession.query(Menu).delete()
+        for k, v in data.items():
+            group = MenuGroup(k)
+            for item in v:
+                group.menu_items.append(Menu(item["name"], item["url"], 
+                                             item["position"], group, 
+                                             item["permissions"]))
+            DBSession.add(group)
