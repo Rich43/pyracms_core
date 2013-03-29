@@ -36,6 +36,7 @@ def main(global_config, **settings):
                           authorization_policy=authorization_policy,
                           session_factory=session_factory)
     config.include('pyramid_jinja2')
+    config.include('pyramid_mailer')
     config.add_jinja2_search_path(settings.get('jinja2_search_path'))
     config.add_subscriber(add_renderer_globals, BeforeRender)
     config.add_static_view('static', settings.get('static_path'), 
@@ -45,7 +46,10 @@ def main(global_config, **settings):
     config.add_route('css', '/css')
     config.add_route('redirect_one', '/redirect/{route_name}')
     config.add_route('redirect_two', '/redirect/{route_name}/{type}')
-
+    
+    # Tokens
+    config.add_route('token_get', '/token/{token}')
+    
     # Userarea routes
     config.add_route('userarea_login', '/userarea/login')
     config.add_view(view=".views.userarea_login",

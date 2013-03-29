@@ -8,6 +8,10 @@ import sys
 import transaction
 from pyracms.models import ArticleRenderers
 
+email = "Hello %username.\nYou have recently signed up for $title, "
+email += "You need to confirm your $what request"
+email += " by clicking the link below:\n$url"
+
 def usage(argv):
     cmd = os.path.basename(argv[0])
     print(('usage: %s <config_uri>\n'
@@ -29,12 +33,12 @@ def main(argv=sys.argv):
         admin_user = u.create_user("admin", "Admin User", "admin@admin.com",
                                    "admin")
         u.create_user(Everyone, "Guest User", "guest@guest.com", "guest")
-
+        
         # Default Groups
         u.create_group("article", "Ability to Add, Edit, Delete, " +
                        "Revert and Protect Articles.", [admin_user])
         u.create_group("admin", "All Access!", [admin_user])
-
+        
         # Default ACL
         acl = RootFactory()
         acl.__acl__.add((Allow, Everyone, Everyone))
@@ -61,12 +65,12 @@ def main(argv=sys.argv):
         acl.__acl__.add((Allow, "group:article", "article_delete"))
         acl.__acl__.add((Allow, "group:article", "article_revert"))
         acl.sync_to_database()
-
+        
         # Add menu items
         group = MenuGroup("main_menu")
         DBSession.add(Menu("Home", "/", 1, group, Everyone))
         DBSession.add(Menu("Articles", "/article/list", 2, group, Everyone))
-
+        
         group = MenuGroup("user_area")
         DBSession.add(Menu("Login", "/userarea/login", 1, group,
                            'not_authenticated'))
@@ -84,7 +88,7 @@ def main(argv=sys.argv):
                            7, group, Authenticated))
         DBSession.add(Menu("User List", "/userarea/list", 8, group,
                            Everyone))
-
+        
         group = MenuGroup("admin_area")
         DBSession.add(Menu("Edit Menu", "/userarea_admin/edit_menu", 1, group,
                            'edit_menu'))
@@ -120,20 +124,52 @@ def main(argv=sys.argv):
         DBSession.add(Menu("List Revisions",
                            "/article/list_revisions/%(page_id)s",
                            5, group, 'article_list_revisions'))
-
+        
         group = MenuGroup("article_revision")
         DBSession.add(Menu("List Revisions",
                            "/article/list_revisions/%(page_id)s", 1, group))
         DBSession.add(Menu("Revert",
                            "/article/revert/%(page_id)s/%(revision)s", 2, group))
-
+        
         # Add Settings
-        DBSession.add(Settings("CSS"))
-        DBSession.add(Settings("TITLE", "Untitled Website"))
-        DBSession.add(Settings("KEYWORDS"))
-        DBSession.add(Settings("DESCRIPTION"))
-        DBSession.add(Settings("DEFAULTRENDERER", "HTML"))
-
+        def add_dict(d):
+            for k, v in d.items():
+                if not v:
+                    DBSession.add(Settings(k))
+                else:
+                    DBSession.add(Settings(k, v))
+        d = {"CSS": ".menu {float: left;}", "TITLE": "Untitled Website",
+             "KEYWORDS": None, "DESCRIPTION": None, "DEFAULTRENDERER": "HTML",
+             "RECOVER_PASSWORD": "recover password", 
+             "RECOVER_PASSWORD_SUBJECT": "Password recovery for %s", 
+             "REGISTRATION": "registration", "EMAIL": email,
+             "REGISTRATION_SUBJECT": 
+             "Welcome to %s, Please confirm your account.", 
+             "MAIL_SENDER": "noreply@example.com",
+             "INFO_UPDATED": "%s has been updated.",
+             "INFO_CREATED": "%s has been created.",
+             "INFO_REVERT": "%s was reverted.",
+             "INFO_DELETED": "%s was deleted.",
+             "INFO_LOGIN": "You have been logged in.",
+             "INFO_LOGOUT": "You have been logged out.",
+             "INFO_PASS_CHANGE": "Your password has been changed.",
+             "INFO_ACTIVATON_EMAIL_SENT": 
+             "An activation email has been sent to %s.",
+             "INFO_RECOVERY_EMAIL_SENT": 
+             "An password recovery email has been sent to %s.",
+             "INFO_ACC_UPDATED": "Your account information has been updated.",
+             "INFO_ACC_CREATED": "Your account has been activated.",
+             "INFO_MENU_UPDATED": "The menu (%s) has been updated.",
+             "INFO_MENU_GROUP_UPDATED": 
+             "The list of menu groups has been updated.",
+             "INFO_FORUM_CATEGORY_UPDATED": 
+             "The list of forum categories has been updated.",
+             "INFO_ACL_UPDATED": "The access control list has been updated.",
+             "ERROR_NOT_FOUND": "%s was not found.",
+             "ERROR_INVALID_USER_PASS": "Invalid username or password.",
+             "ERROR_TOKEN": "Token could not be found."}
+        add_dict(d)
+        
         # Add Renderers
         DBSession.add(ArticleRenderers("HTML"))
         DBSession.add(ArticleRenderers("BBCODE"))

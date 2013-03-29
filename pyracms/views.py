@@ -3,10 +3,6 @@ from .deform_schemas.userarea import (LoginSchema, RegisterSchema,
     ChangePasswordSchema, RecoverPasswordSchema, EditUserSchema)
 from .deform_schemas.userarea_admin import (EditACL, MenuGroup, EditMenuItems, 
     SettingSchema, RestoreBackupSchema)
-from .errwarninfo import (INFO_DELETED, INFO, ERROR, ERROR_NOT_FOUND, INFO_REVERT, 
-    ERROR_INVALID_USER_PASS, INFO_LOGIN, INFO_LOGOUT, INFO_ACTIVATON_EMAIL_SENT, 
-    ERROR_TOKEN, INFO_PASS_CHANGE, INFO_RECOVERY_EMAIL_SENT, INFO_ACC_UPDATED, 
-    INFO_ACL_UPDATED, INFO_MENU_GROUP_UPDATED, INFO_MENU_UPDATED)
 from .lib.articlelib import ArticleLib, PageNotFound
 from .lib.helperlib import (acl_to_dict, dict_to_acl, serialize_relation, 
     deserialize_relation, get_username, redirect, rapid_deform)
@@ -23,13 +19,34 @@ from pyramid.security import (remember, forget, authenticated_userid,
 from pyramid.url import route_url
 from pyramid.view import view_config
 from pyramid.path import AssetResolver
-from pprint import pprint
+from pyramid_mailer import get_mailer
+from pyramid_mailer.message import Message
+from string import Template
 import os
 import shutil
 
 u = UserLib()
 t = TokenLib()
+s = SettingsLib()
 resolve = AssetResolver().resolve
+ERROR = 'error'
+WARN = 'warn'
+INFO = 'info'
+
+@view_config(route_name='token_get')
+def token_get(context, request):
+    """
+    Get a token, take action on it depending on its purpose
+    """
+    try:
+        token = t.get_token(request.matchdict.get("token"))
+        if token.purpose.name == "register":
+            token.user.banned = False
+            request.session.flash(s.show_setting("INFO_ACC_CREATED"), INFO)
+            return redirect(request, "userarea_login")
+    except InvalidToken:
+        request.session.flash(s.show_setting("ERROR_TOKEN"), ERROR)
+    return redirect(request, "home")
 
 @view_config(route_name='userarea_login', renderer='userarea/login.jinja2')
 def userarea_login(context, request):
@@ -42,15 +59,14 @@ def userarea_login(context, request):
         """
         username = deserialized.get("username")
         password = deserialized.get("password")
-        print(username, password, u.login(username, password))
-        print("-" * 100)
         if u.login(username, password):
             headers = remember(request, username)
-            request.session.flash(INFO_LOGIN, INFO)
+            request.session.flash(s.show_setting("INFO_LOGIN"), INFO)
             return HTTPFound(location=deserialized.get("redirect_url"),
                              headers=headers)
         else:
-            request.session.flash(ERROR_INVALID_USER_PASS, ERROR)
+            request.session.flash(s.show_setting("ERROR_INVALID_USER_PASS"), 
+                                  ERROR)
             return redirect(request, "userarea_login")
     if request.matched_route.name == "userarea_login":
         redirect_url = route_url("home", request)
@@ -83,8 +99,22 @@ def userarea_recover_password(context, request):
         Submit password recovery form, email a token
         """
         email = deserialized.get("email")
-        print(t.add_token(u.show_by_email(email), "password_recover"))
-        request.session.flash(INFO_RECOVERY_EMAIL_SENT % email, INFO)
+        user = u.show_by_email(email)
+        token = t.add_token(user, "password_recover")
+        parsed = Template(s.show_setting("EMAIL"))
+        route_name = "userarea_change_password_token"
+        url = route_url(route_name, request, token=token)
+        parsed = parsed.safe_substitute(what=s.show_setting("CHANGE_PASSWORD"),
+                                        username=user.name, url=url,
+                                        title=s.show_setting("TITLE"))
+        mailer = get_mailer(request)
+        message = Message(subject=s.show_setting("RECOVER_PASSWORD_SUBJECT"),
+                          sender=s.show_setting("MAIL_SENDER"),
+                          recipients=[user.email_address],
+                          body=parsed)
+        mailer.send(message)
+        request.session.flash(s.show_setting("INFO_RECOVERY_EMAIL_SENT")
+                              % email, INFO)
         return redirect(request, "home")
     result = rapid_deform(context, request, RecoverPasswordSchema,
                           recover_password_submit)
@@ -105,7 +135,7 @@ def userarea_change_password_submit(context, request, deserialized, bind_params)
         t.expire_token(token)
     password = deserialized.get("password")
     u.change_password(user, password)
-    request.session.flash(INFO_PASS_CHANGE, INFO)
+    request.session.flash(s.show_setting("INFO_PASS_CHANGE"), INFO)
     return HTTPFound(location="/userarea/login", headers=forget(request))
 
 @view_config(route_name='userarea_change_password_token',
@@ -120,7 +150,7 @@ def userarea_change_password_token(context, request):
         token = t.get_token(request.matchdict.get('token'),
                             False, "password_recover")
     except InvalidToken:
-        request.session.flash(ERROR_TOKEN, ERROR)
+        request.session.flash(s.show_setting("ERROR_TOKEN"), ERROR)
         return redirect(request, "home")
     result = rapid_deform(context, request, ChangePasswordSchema,
                           userarea_change_password_submit, token=token)
@@ -155,7 +185,7 @@ def userarea_edit(context, request):
         user = authenticated_userid(request)
         u.update_user(user, deserialized.get("display_name"),
                       deserialized.get("email"))
-        request.session.flash(INFO_ACC_UPDATED, INFO)
+        request.session.flash(s.show_setting("INFO_ACC_UPDATED"), INFO)
         return redirect(request, "userarea_profile", user=user)
     user = authenticated_userid(request)
     result = rapid_deform(context, request, EditUserSchema,
@@ -179,9 +209,21 @@ def userarea_register(context, request):
                              deserialized.get("display_name"),
                              email,
                              deserialized.get("password"))
+        token = t.add_token(user, "register")
+        parsed = Template(s.show_setting("EMAIL"))
+        url = route_url("token_get", request, token=token)
+        parsed = parsed.safe_substitute(what=s.show_setting("REGISTRATION"),
+                                        username=user.name, url=url,
+                                        title=s.show_setting("TITLE"))
+        mailer = get_mailer(request)
+        message = Message(subject=s.show_setting("REGISTRATION_SUBJECT"),
+                          sender=s.show_setting("MAIL_SENDER"),
+                          recipients=[user.email_address],
+                          body=parsed)
+        mailer.send(message)
         user.groups.append(u.show_group("article"))
-        print(t.add_token(user, "register"))
-        request.session.flash(INFO_ACTIVATON_EMAIL_SENT % email, INFO)
+        request.session.flash(s.show_setting("INFO_ACTIVATON_EMAIL_SENT")
+                              % email, INFO)
         return redirect(request, "home")
     result = rapid_deform(context, request, RegisterSchema, register_submit)
     if isinstance(result, dict):
@@ -196,7 +238,7 @@ def userarea_logout(context, request):
     """
     request.session['groupfinder'] = {}
     headers = forget(request)
-    request.session.flash(INFO_LOGOUT, INFO)
+    request.session.flash(s.show_setting("INFO_LOGOUT"), INFO)
     return redirect(request, "home", headers=headers)
 
 @view_config(route_name='userarea_list', renderer='list.jinja2')
@@ -269,7 +311,8 @@ def userarea_admin_edit_menu_item(context, request):
             new_menu.append(item)
         group.menu_items = deserialize_relation(new_menu, Menu,
                                                 {"group": group})
-        request.session.flash(INFO_MENU_UPDATED % group.name, INFO)
+        request.session.flash(s.show_setting("INFO_MENU_UPDATED")
+                              % group.name, INFO)
         return redirect(request, 'userarea_admin_edit_menu')
     group = m.show_group(request.matchdict.get('group'))
     appstruct = {'menu': serialize_relation(group.menu_items)}
@@ -296,7 +339,7 @@ def userarea_admin_edit_menu_group(context, request):
         deserialized_groups = set(deserialized['menu_groups'])
         list(map(m.add_group, deserialized_groups - groups))
         list(map(m.delete_group, groups - deserialized_groups))
-        request.session.flash(INFO_MENU_GROUP_UPDATED, INFO)
+        request.session.flash(s.show_setting("INFO_MENU_GROUP_UPDATED"), INFO)
         return redirect(request, 'userarea_admin_edit_menu')
     groups = m.list_groups().all()
     appstruct = {'menu_groups':
@@ -322,7 +365,7 @@ def userarea_admin_edit_acl(context, request):
         context.__acl__ = set(map(dict_to_acl, deserialized['acl']))
         request.session['groupfinder'] = {}
         context.sync_to_database()
-        request.session.flash(INFO_ACL_UPDATED, INFO)
+        request.session.flash(s.show_setting("INFO_ACL_UPDATED"), INFO)
         return redirect(request, 'home')
     appstruct = {'acl': list(map(acl_to_dict, context.__acl__))}
     result = rapid_deform(context, request, EditACL,
@@ -339,7 +382,6 @@ def userarea_admin_list_settings(context, request):
     Allow user to pick a setting which is needed for editing it.
     See: userarea_admin_edit_settings
     """
-    s = SettingsLib()
     message = "Settings"
     route_name = "userarea_admin_edit_settings"
     return {'items': [(route_url(route_name, request,
@@ -353,7 +395,6 @@ def userarea_admin_edit_settings(context, request):
     """
     Display a form that lets you edit the settings table
     """
-    s = SettingsLib()
     def edit_setting_submit(context, request, deserialized, bind_params):
         """
         Save new setting to database
@@ -425,7 +466,6 @@ def userarea_admin_file_upload(context, request):
 
 @view_config(route_name='css')
 def css(request):
-    s = SettingsLib()
     css_data = s.show_setting("CSS").value
     return Response(app_iter=[css_data.encode()],
                     headerlist=[('Content-Type', "text/css"),
@@ -478,10 +518,12 @@ def article_delete(context, request):
     page_id = request.matchdict.get('page_id')
     try:
         c.delete(request, c.show_page(page_id), u.show(get_username(request)))
-        request.session.flash(INFO_DELETED % page_id, INFO)
+        request.session.flash(s.show_setting("INFO_DELETED")
+                              % page_id, INFO)
         return redirect(request, "article_list")
     except PageNotFound:
-        request.session.flash(ERROR_NOT_FOUND % page_id, ERROR)
+        request.session.flash(s.show_setting("ERROR_NOT_FOUND")
+                              % page_id, ERROR)
         return redirect(request, "article_list")
 
 @view_config(route_name='article_list', permission='article_list',
@@ -506,7 +548,8 @@ def article_list_revisions(context, request):
     try:
         page = c.show_page(page_id)
     except PageNotFound:
-        request.session.flash(ERROR_NOT_FOUND % page_id, ERROR)
+        request.session.flash(s.show_setting("ERROR_NOT_FOUND")
+                              % page_id, ERROR)
         return redirect(request, "article_list")
     return {'page': page}
 
@@ -572,11 +615,12 @@ def article_revert(context, request):
         c.revert(request, page,
                  c.show_revision(page, matchdict_get('revision')),
                  u.show(get_username(request)))
-        request.session.flash(INFO_REVERT % page.name, INFO)
+        request.session.flash(s.show_setting("INFO_REVERT")
+                              % page.name, INFO)
         return redirect(request, "article_read", page_id=page.name)
     except PageNotFound:
-        request.session.flash(ERROR_NOT_FOUND % matchdict_get('page_id'),
-                              ERROR)
+        request.session.flash(s.show_setting("ERROR_NOT_FOUND")
+                              % matchdict_get('page_id'), ERROR)
         return redirect(request, "article_list")
 
 @view_config(route_name='article_switch_renderer', permission='switch_renderer')
