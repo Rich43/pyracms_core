@@ -4,7 +4,8 @@ Deform Schemas for userarea module.
 from ..lib.userlib import UserLib, UserNotFound
 from colander import (MappingSchema, SchemaNode, String, Length, Email, All, 
     Invalid, deferred, SequenceSchema, Schema)
-from deform.widget import TextInputWidget, PasswordWidget, CheckedPasswordWidget
+from deform.widget import (TextInputWidget, PasswordWidget, CheckedPasswordWidget, 
+    HiddenWidget)
 from pyramid.security import authenticated_userid, Everyone, Authenticated
 u = UserLib()
 
@@ -93,7 +94,8 @@ class EditUserSchema(MappingSchema):
 class LoginSchema(MappingSchema):
     username = SchemaNode(String(), widget=TextInputWidget(size=40))
     password = SchemaNode(String(), widget=PasswordWidget(size=40))
-
+    redirect_url = SchemaNode(String(), widget=HiddenWidget())
+    
 class ChangePasswordSchema(MappingSchema):
     password = SchemaNode(
         String(),

@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
-from hashlib import sha1
-from sqlalchemy import (Column, Integer, Unicode, desc, UnicodeText, DateTime,
+from sqlalchemy import (Column, Integer, Unicode, desc, UnicodeText, DateTime, 
     Boolean, BigInteger, LargeBinary)
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import (scoped_session, sessionmaker, relationship, synonym,
+from sqlalchemy.orm import (scoped_session, sessionmaker, relationship, synonym, 
     deferred)
 from sqlalchemy.schema import UniqueConstraint, ForeignKey
 from zope.sqlalchemy import ZopeTransactionExtension
+import hashlib
 import os
 import uuid
 
@@ -106,8 +106,7 @@ class User(Base):
     email_address = Column(Unicode(128), unique=True, nullable=False,
                         info={'rum': {'field':'Email'}})
     created = Column(DateTime, default=datetime.now)
-    _password = Column('password', Unicode(80),
-                        info={'rum': {'field':'Password'}}, nullable=False)
+    _password = Column('password', Unicode(128), nullable=False)
     groups = relationship('Group', secondary=UserGroup.__table__,
                           backref='user')
 
@@ -129,12 +128,7 @@ class User(Base):
 
     def _set_password(self, password):
         """Hash ``password`` on the fly and store its hashed version."""
-        salt = sha1()
-        salt.update(os.urandom(60))
-        sha_hash = sha1()
-        sha_hash.update((password + salt.hexdigest()).encode("ascii"))
-        password = salt.hexdigest() + sha_hash.hexdigest()
-        self._password = password
+        self._password = hashlib.sha512(password.encode()).hexdigest()
 
     def _get_password(self):
         """Return the hashed version of the password."""
@@ -142,9 +136,7 @@ class User(Base):
 
     password = synonym('_password', descriptor=property(_get_password,
                                                         _set_password))
-
-    #}
-
+    
     def validate_password(self, password):
         """
         Check the password against existing credentials.
@@ -157,9 +149,8 @@ class User(Base):
         :rtype: bool
 
         """
-        sha_hash = sha1()
-        sha_hash.update((password + self.password[:40]).encode("ascii"))
-        return self.password[40:] == sha_hash.hexdigest()
+        password = hashlib.sha512(password.encode()).hexdigest()
+        return self.password == password
 
 class ACL(Base):
     __tablename__ = 'acl'

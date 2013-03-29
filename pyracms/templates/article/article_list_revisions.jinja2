@@ -1,7 +1,7 @@
 {% extends "main.jinja2" %}
-{% block title %} - List revisions for {{ page_id }}{% endblock %}
+{% block title %} - List revisions for {{ page.display_name }}{% endblock %}
 {% block content %}
-<h2>List revisions for {{ page_id }}</h2>
+<h2>List revisions for {{ page.display_name }}</h2>
 <table style="width:100%; text-align:center;">
     <tr>
         <th>Article Name</th>

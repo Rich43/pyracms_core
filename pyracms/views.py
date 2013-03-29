@@ -23,6 +23,7 @@ from pyramid.security import (remember, forget, authenticated_userid,
 from pyramid.url import route_url
 from pyramid.view import view_config
 from pyramid.path import AssetResolver
+from pprint import pprint
 import os
 import shutil
 
@@ -41,14 +42,22 @@ def userarea_login(context, request):
         """
         username = deserialized.get("username")
         password = deserialized.get("password")
+        print(username, password, u.login(username, password))
+        print("-" * 100)
         if u.login(username, password):
             headers = remember(request, username)
             request.session.flash(INFO_LOGIN, INFO)
-            return redirect(request, "home", headers=headers)
+            return HTTPFound(location=deserialized.get("redirect_url"),
+                             headers=headers)
         else:
             request.session.flash(ERROR_INVALID_USER_PASS, ERROR)
             return redirect(request, "userarea_login")
-    return rapid_deform(context, request, LoginSchema, login_submit)
+    if request.matched_route.name == "userarea_login":
+        redirect_url = route_url("home", request)
+    else:
+        redirect_url = request.url
+    return rapid_deform(context, request, LoginSchema, login_submit,
+                        appstruct={"redirect_url":redirect_url})
 
 @view_config(route_name='userarea_profile', renderer='userarea/profile.jinja2')
 @view_config(route_name='userarea_profile_two', 
