@@ -20,6 +20,7 @@
                             type="text/css" media="screen" charset="utf-8" />
 </head>
 <body>
+  {{ w.search_html|safe }}
   <div class="menu">
     <!-- This variable contains the logged in user's username -->
     {% set userid = w.logged_in(request) %}

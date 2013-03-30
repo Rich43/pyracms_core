@@ -1,0 +1,13 @@
+{% extends "main.jinja2" %}
+{% block title %} - Search{% endblock %}
+{% block content %}
+    <h2>Search Results</h2>
+    {{ debug }}
+{% for item in items %}
+<div class="search">
+    <div class="searchlink"><a href="{{ item['path'] }}">{{ item['title'] }}</a></div>
+    <div class="searchurl">{{ item['path'] }}</div>
+    <div class="searchdescription">{{ item.highlights("content")|safe or item['content']|striptags|truncate(200) }}</div>
+</div>
+{% endfor %}
+{% endblock %}

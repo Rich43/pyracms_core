@@ -1,9 +1,9 @@
-from pyramid.httpexceptions import HTTPFound
-from pyramid.url import route_url
-from pyramid.security import authenticated_userid, Everyone
-from deform.form import Form
-from deform.exception import ValidationFailure
 from colander import null
+from deform.exception import ValidationFailure
+from deform.form import Form
+from pyramid.httpexceptions import HTTPFound
+from pyramid.security import authenticated_userid, Everyone
+from pyramid.url import route_url
 import inspect
 
 def redirect(request, route_id, **optargs):

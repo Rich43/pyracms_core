@@ -7,24 +7,25 @@ from .lib.articlelib import ArticleLib, PageNotFound
 from .lib.helperlib import (acl_to_dict, dict_to_acl, serialize_relation, 
     deserialize_relation, get_username, redirect, rapid_deform)
 from .lib.menulib import MenuLib
+from .lib.searchlib import SearchLib
 from .lib.settingslib import SettingsLib
 from .lib.tokenlib import TokenLib, InvalidToken
 from .lib.userlib import UserLib
 from .models import Menu
 from pyramid.exceptions import Forbidden
 from pyramid.httpexceptions import HTTPFound
+from pyramid.path import AssetResolver
 from pyramid.response import Response
 from pyramid.security import (remember, forget, authenticated_userid, 
-                              has_permission)
+    has_permission)
 from pyramid.url import route_url
 from pyramid.view import view_config
-from pyramid.path import AssetResolver
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
 from string import Template
+import json
 import os
 import shutil
-import json
 
 u = UserLib()
 t = TokenLib()
@@ -48,6 +49,30 @@ def token_get(context, request):
     except InvalidToken:
         request.session.flash(s.show_setting("ERROR_TOKEN"), ERROR)
     return redirect(request, "home")
+
+@view_config(route_name='search', renderer='search.jinja2')
+def search(context, request):
+    """
+    Handle search queries
+    """
+    s = SearchLib()
+    return {"items": s.search(request.matchdict['query'])}
+
+@view_config(route_name='css')
+def css(request):
+    css_data = s.show_setting("CSS").value
+    return Response(app_iter=[css_data.encode()],
+                    headerlist=[('Content-Type', "text/css"),
+                                ('Content-Length', str(len(css_data)))])
+
+@view_config(route_name='redirect_one')
+@view_config(route_name='redirect_two')
+def redirect_view(article, request):
+    route_name = request.matchdict.get('route_name')
+    gamedeptype = request.matchdict.get('type')
+    return HTTPFound(location=route_url(route_name,
+                                        request, type=gamedeptype,
+                                        **request.POST))
 
 @view_config(route_name='userarea_login', renderer='userarea/login.jinja2')
 def userarea_login(context, request):
@@ -489,22 +514,6 @@ def userarea_admin_file_upload(context, request):
                 result.append((False, "/static/" + item, item))
     return {'items': result, 'title': message, 'header': message}
 
-@view_config(route_name='css')
-def css(request):
-    css_data = s.show_setting("CSS").value
-    return Response(app_iter=[css_data.encode()],
-                    headerlist=[('Content-Type', "text/css"),
-                                ('Content-Length', str(len(css_data)))])
-
-@view_config(route_name='redirect_one')
-@view_config(route_name='redirect_two')
-def redirect_view(article, request):
-    route_name = request.matchdict.get('route_name')
-    gamedeptype = request.matchdict.get('type')
-    return HTTPFound(location=route_url(route_name,
-                                        request, type=gamedeptype,
-                                        **request.POST))
-
 @view_config(route_name='home', renderer='article/article.jinja2',
              permission='article_view')
 @view_config(route_name='article_read', renderer='article/article.jinja2',
@@ -594,9 +603,9 @@ def article_update(context, request):
         article = deserialized.get("article")
         summary = deserialized.get("summary")
         tags = deserialized.get("tags")
+        page.display_name = deserialized.get("display_name")
         c.update(request, page, article, summary,
                  u.show(get_username(request)), tags)
-        page.display_name = deserialized.get("display_name")
         return redirect(request, "article_read", page_id=name)
     matchdict_get = request.matchdict.get
     page = c.show_page(matchdict_get('page_id'))

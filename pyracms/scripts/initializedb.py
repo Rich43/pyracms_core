@@ -145,7 +145,8 @@ def main(argv=sys.argv):
                     DBSession.add(Settings(k))
                 else:
                     DBSession.add(Settings(k, v))
-        d = {"CSS": ".menu {float: left;}", "TITLE": "Untitled Website",
+        d = {"CSS": ".menu {float: left;}\n.searchform {float: right;}", 
+             "TITLE": "Untitled Website",
              "KEYWORDS": None, "DESCRIPTION": None, "DEFAULTRENDERER": "HTML",
              "RECOVER_PASSWORD": "recover password", 
              "RECOVER_PASSWORD_SUBJECT": "Password recovery for %s", 

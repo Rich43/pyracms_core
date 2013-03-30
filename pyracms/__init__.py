@@ -47,8 +47,9 @@ def main(global_config, **settings):
     config.add_route('redirect_one', '/redirect/{route_name}')
     config.add_route('redirect_two', '/redirect/{route_name}/{type}')
     
-    # Tokens
+    # Tokens and Search
     config.add_route('token_get', '/token/{token}')
+    config.add_route('search', '/search/{query}')
     
     # Userarea routes
     config.add_route('userarea_login', '/userarea/login')

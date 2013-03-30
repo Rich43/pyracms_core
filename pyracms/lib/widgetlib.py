@@ -3,10 +3,21 @@ from .menulib import MenuLib, MenuGroupNotFound
 from .restlib import html_body
 from deform.form import Form
 from pyramid.security import authenticated_userid, Everyone, has_permission
-import postmarkup
 import markdown
+import postmarkup
+
+search_html = """
+<form action="/redirect/search" method="post" class="searchform">
+  <label for="query">Search: </label>
+  <input type="text" name="query" />
+  <input type="submit" value="Submit" />
+</form>
+"""
 
 class WidgetLib():
+    def __init__(self):
+        self.search_html = search_html
+        
     def logged_in(self, request):
         return authenticated_userid(request)
 

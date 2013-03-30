@@ -1,10 +1,11 @@
 from ..models import (DBSession, ArticleRevision, ArticlePage, ArticleRenderers, 
     ArticleTags)
 from .helperlib import serialize_relation
-from .searchlib import update_index, delete_from_index
+from .searchlib import SearchLib
 from .settingslib import SettingsLib
 from .taglib import TagLib, ARTICLE
 from .userlib import UserLib
+from .widgetlib import WidgetLib
 from sqlalchemy.orm.exc import NoResultFound
 import datetime
 import json
@@ -25,7 +26,8 @@ class ArticleLib():
 
     def __init__(self):
         self.t = TagLib(ArticleTags, ARTICLE)
-
+        self.s = SearchLib()
+        
     def list(self): #@ReservedAssignment
         """
         List all the pages
@@ -39,10 +41,13 @@ class ArticleLib():
         """
         Update search index
         """
-        update_index(page.display_name, request.route_url("article_read",
-                                                          page_id=page.name),
-                     revision.article, self.t.get_tags(page),
-                     revision.created, "article", page.name, username)
+        w = WidgetLib()
+        self.s.update_index(page.display_name, 
+                            request.route_url("article_read", 
+                                              page_id=page.name), 
+                            w.render_article(page, revision.article), 
+                            self.t.get_tags(page), revision.created, 
+                            "article", page.name, username)
 
     def switch_renderer(self, name):
         page = self.show_page(name)
@@ -86,7 +91,8 @@ class ArticleLib():
         self.t.set_tags(page, tags)
         revision = ArticleRevision(article, summary, user)
         revision.page = page
-        self.update_article_index(request, page, revision, user.name)
+        if not page.private:
+            self.update_article_index(request, page, revision, user.name)
         DBSession.add(revision)
 
     def revert(self, request, page, revision, user):
@@ -105,15 +111,18 @@ class ArticleLib():
         revision = ArticleRevision("", "Deleted %s" % page.name, user)
         page.revisions.append(revision)
         page.deleted = True
-        delete_from_index(request.route_url("article_read", page_id=page.name))
+        self.s.delete_from_index(request.route_url("article_read", 
+                                                   page_id=page.name))
 
-    def set_private(self, name):
+    def set_private(self, request, name):
         """
         Flip private switch.
         Raise PageNotFound if page does not exist.
         """
         page = self.show_page(name)
         page.private = not page.private
+        self.s.delete_from_index(request.route_url("article_read", 
+                                                   page_id=page.name))
 
     def show_revision(self, page, revision, error=False):
         """
@@ -167,7 +176,7 @@ class ArticleLib():
         # Delete all articles
         for page in DBSession.query(ArticlePage):
             DBSession.delete(page)
-            delete_from_index(request.route_url("article_read", 
+            self.s.delete_from_index(request.route_url("article_read", 
                                                 page_id=page.name))
         # Add articles back again
         for row in data:
