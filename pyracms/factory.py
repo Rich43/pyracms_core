@@ -19,12 +19,16 @@ class JsonList(UserList):
         except KeyError:
             pass
         self.settings = SettingsLib(session)
-        try:
-            db_data = self.settings.show_setting("ACL")
-            super().__init__(json.loads(db_data.value))
-        except SettingNotFound:
-            super().__init__()
+        if args:
+            super().__init__(*args, **kwargs)
             save(self)
+        else:
+            try:
+                db_data = self.settings.show_setting("ACL")
+                super().__init__(json.loads(db_data.value))
+            except SettingNotFound:
+                super().__init__()
+                save(self)
             
     def __getattribute__(self,name):
         attr = super(UserList, self).__getattribute__(name)
