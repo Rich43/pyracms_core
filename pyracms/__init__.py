@@ -31,7 +31,7 @@ def main(global_config, **settings):
 
     # Add basic configuration
     config = Configurator(settings=settings,
-                          root_factory='.models.RootFactory',
+                          root_factory='.factory.RootFactory',
                           authentication_policy=authentication_policy,
                           authorization_policy=authorization_policy,
                           session_factory=session_factory)

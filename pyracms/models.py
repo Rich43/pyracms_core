@@ -7,43 +7,10 @@ from sqlalchemy.orm import (scoped_session, sessionmaker, relationship, synonym,
 from sqlalchemy.schema import UniqueConstraint, ForeignKey
 from zope.sqlalchemy import ZopeTransactionExtension
 import hashlib
-import os
 import uuid
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
-
-class RootFactory(object):
-    """
-    Default context for views.
-    """
-    __acl__ = set()
-
-    def __init__(self, request=None):
-        """
-        Load ACL from database if there is none.
-        """
-        self.request = request
-        if len(self.__acl__) == 0:
-            self.sync_from_database()
-
-    def sync_from_database(self):
-        """
-        Load ACL records from database
-        """
-        rows = DBSession.query(ACL)
-        for row in rows:
-            self.__acl__.add((row.allow_deny, row.who, row.permission))
-
-    def sync_to_database(self):
-        """
-        Load ACL records into database
-        """
-        rows = DBSession.query(ACL)
-        for row in rows:
-            DBSession.delete(row)
-        for row in self.__acl__:
-            DBSession.add(ACL(row[0], row[1], row[2]))
 
 class UserGroup(Base):
     """
@@ -151,20 +118,6 @@ class User(Base):
         """
         password = hashlib.sha512(password.encode()).hexdigest()
         return self.password == password
-
-class ACL(Base):
-    __tablename__ = 'acl'
-    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
-
-    id = Column(Integer, autoincrement=True, primary_key=True)
-    allow_deny = Column(Unicode(128), index=True)
-    who = Column(Unicode(128), index=True)
-    permission = Column(Unicode(128), index=True)
-
-    def __init__(self, allow_deny, who, permission):
-        self.allow_deny = allow_deny
-        self.who = who
-        self.permission = permission
 
 class Settings(Base):
     __tablename__ = 'settings'

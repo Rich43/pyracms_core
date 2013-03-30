@@ -3,6 +3,7 @@ from .deform_schemas.userarea import (LoginSchema, RegisterSchema,
     ChangePasswordSchema, RecoverPasswordSchema, EditUserSchema)
 from .deform_schemas.userarea_admin import (EditACL, MenuGroup, EditMenuItems, 
     SettingSchema, RestoreBackupSchema, RestoreSettingsSchema)
+from .factory import JsonList
 from .lib.articlelib import ArticleLib, PageNotFound
 from .lib.helperlib import (acl_to_dict, dict_to_acl, serialize_relation, 
     deserialize_relation, get_username, redirect, rapid_deform)
@@ -412,12 +413,11 @@ def userarea_admin_edit_acl(context, request):
         """
         Save new access control list to database
         """
-        context.__acl__ = set(map(dict_to_acl, deserialized['acl']))
+        context.__acl__ = JsonList(map(dict_to_acl, deserialized['acl']))
         request.session['groupfinder'] = {}
-        context.sync_to_database()
         request.session.flash(s.show_setting("INFO_ACL_UPDATED"), INFO)
         return redirect(request, 'home')
-    appstruct = {'acl': list(map(acl_to_dict, context.__acl__))}
+    appstruct = {'acl': map(acl_to_dict, context.__acl__)}
     result = rapid_deform(context, request, EditACL,
                           edit_acl_submit, appstruct=appstruct)
     if isinstance(result, dict):

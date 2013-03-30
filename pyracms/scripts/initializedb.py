@@ -1,12 +1,13 @@
+from ..factory import RootFactory
 from ..lib.userlib import UserLib
-from ..models import DBSession, Base, Menu, MenuGroup, Settings, RootFactory
+from ..models import DBSession, Base, Menu, MenuGroup, Settings
+from pyracms.models import ArticleRenderers
 from pyramid.paster import get_appsettings, setup_logging
 from pyramid.security import Everyone, Allow, Authenticated
 from sqlalchemy import engine_from_config
 import os
 import sys
 import transaction
-from pyracms.models import ArticleRenderers
 
 email = "Hello %username.\nYou have recently signed up for $title, "
 email += "You need to confirm your $what request"
@@ -40,31 +41,30 @@ def main(argv=sys.argv):
         u.create_group("admin", "All Access!", [admin_user])
         
         # Default ACL
-        acl = RootFactory()
-        acl.__acl__.add((Allow, Everyone, Everyone))
-        acl.__acl__.add((Allow, Authenticated, Authenticated))
-        acl.__acl__.add((Allow, Authenticated, "not_authenticated"))
-        acl.__acl__.add((Allow, Authenticated, "userarea_edit"))
-        acl.__acl__.add((Allow, Everyone, "article_view"))
-        acl.__acl__.add((Allow, Everyone, "article_list"))
-        acl.__acl__.add((Allow, Everyone, "article_list_revisions"))
-        acl.__acl__.add((Allow, "group:admin", "group:admin"))
-        acl.__acl__.add((Allow, "group:admin", "edit_menu"))
-        acl.__acl__.add((Allow, "group:admin", "edit_acl"))
-        acl.__acl__.add((Allow, "group:admin", "edit_settings"))
-        acl.__acl__.add((Allow, "group:admin", "switch_renderer"))
-        acl.__acl__.add((Allow, "group:admin", "file_upload"))
-        acl.__acl__.add((Allow, "group:admin", "backup"))
-        acl.__acl__.add((Allow, "group:admin", "set_private"))
-        acl.__acl__.add((Allow, "group:article", "group:article"))
-        acl.__acl__.add((Allow, "group:article", "article_view"))
-        acl.__acl__.add((Allow, "group:article", "article_list"))
-        acl.__acl__.add((Allow, "group:article", "article_list_revisions"))
-        acl.__acl__.add((Allow, "group:article", "article_create"))
-        acl.__acl__.add((Allow, "group:article", "article_update"))
-        acl.__acl__.add((Allow, "group:article", "article_delete"))
-        acl.__acl__.add((Allow, "group:article", "article_revert"))
-        acl.sync_to_database()
+        acl = RootFactory(session=DBSession)
+        acl.__acl__.append((Allow, Everyone, Everyone))
+        acl.__acl__.append((Allow, Authenticated, Authenticated))
+        acl.__acl__.append((Allow, Authenticated, "not_authenticated"))
+        acl.__acl__.append((Allow, Authenticated, "userarea_edit"))
+        acl.__acl__.append((Allow, Everyone, "article_view"))
+        acl.__acl__.append((Allow, Everyone, "article_list"))
+        acl.__acl__.append((Allow, Everyone, "article_list_revisions"))
+        acl.__acl__.append((Allow, "group:admin", "group:admin"))
+        acl.__acl__.append((Allow, "group:admin", "edit_menu"))
+        acl.__acl__.append((Allow, "group:admin", "edit_acl"))
+        acl.__acl__.append((Allow, "group:admin", "edit_settings"))
+        acl.__acl__.append((Allow, "group:admin", "switch_renderer"))
+        acl.__acl__.append((Allow, "group:admin", "file_upload"))
+        acl.__acl__.append((Allow, "group:admin", "backup"))
+        acl.__acl__.append((Allow, "group:admin", "set_private"))
+        acl.__acl__.append((Allow, "group:article", "group:article"))
+        acl.__acl__.append((Allow, "group:article", "article_view"))
+        acl.__acl__.append((Allow, "group:article", "article_list"))
+        acl.__acl__.append((Allow, "group:article", "article_list_revisions"))
+        acl.__acl__.append((Allow, "group:article", "article_create"))
+        acl.__acl__.append((Allow, "group:article", "article_update"))
+        acl.__acl__.append((Allow, "group:article", "article_delete"))
+        acl.__acl__.append((Allow, "group:article", "article_revert"))
         
         # Add menu items
         group = MenuGroup("main_menu")

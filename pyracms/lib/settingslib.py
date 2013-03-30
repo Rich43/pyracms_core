@@ -8,12 +8,24 @@ class SettingsLib():
     """
     A library to manage the settings database.
     """
-    
+    def __init__(self, session=None):
+        if session:
+            self.DBSession = session
+        else:
+            self.DBSession = DBSession
+            
     def list(self): #@ReservedAssignment
         """
         List all the settings
         """
-        return DBSession.query(Settings.name, Settings.value)
+        return self.DBSession.query(Settings.name, Settings.value)
+
+    def create(self, name, value):
+        """
+        Update a page
+        Raise PageNotFound if page does not exist
+        """
+        self.DBSession.add(Settings(name, value))
 
     def update(self, name, value):
         """
@@ -29,15 +41,15 @@ class SettingsLib():
         Raise SettingNotFound if setting does not exist.
         """
         try:
-            page = DBSession.query(Settings).filter_by(name=name).one()
+            page = self.DBSession.query(Settings).filter_by(name=name).one()
         except NoResultFound:
             raise SettingNotFound
         return page
     
     def to_dict(self):
-        return dict(DBSession.query(Settings.name, Settings.value))
+        return dict(self.DBSession.query(Settings.name, Settings.value))
     
     def from_dict(self, data):
-        DBSession.query(Settings).delete()
+        self.DBSession.query(Settings).delete()
         for k, v in data.items():
-            DBSession.add(Settings(k, v))
+            self.DBSession.add(Settings(k, v))

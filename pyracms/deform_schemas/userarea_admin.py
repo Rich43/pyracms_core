@@ -1,9 +1,10 @@
-from ..models import RootFactory
+from ..factory import RootFactory
 from colander import (Schema, SchemaNode, String, OneOf, SequenceSchema, Integer, 
     MappingSchema)
 from deform import FileData
 from deform.widget import SelectWidget, TextAreaWidget, FileUploadWidget
 from pyramid.security import Everyone
+from ..models import DBSession
 
 class MemoryTmpStore(dict):
     """ Instances of this class implement the
@@ -14,8 +15,7 @@ class MemoryTmpStore(dict):
 tmpstore = MemoryTmpStore()
 
 def get_acl(single_result=False):
-    rf = RootFactory()
-    rf.sync_from_database()
+    rf = RootFactory(session=DBSession)
     result = []
     for item in rf.__acl__:
         if item != Everyone:
