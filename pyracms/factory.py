@@ -4,7 +4,8 @@ from collections import UserList
 import json
 
 def save(obj):
-    obj.json = json.dumps(list(set(obj.data)), indent=4)
+    hashable = tuple([tuple(x) for x in obj])
+    obj.json = json.dumps(list(set(hashable)), indent=4)
     try:
         obj.settings.update("ACL", obj.json)
     except SettingNotFound:
