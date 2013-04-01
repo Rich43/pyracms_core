@@ -210,8 +210,13 @@ def userarea_edit(context, request):
         Submit profile data, save to database
         """
         user = authenticated_userid(request)
-        u.update_user(user, deserialized.get("display_name"),
-                      deserialized.get("email"))
+        db_user = u.update_user(user, deserialized.get("full_name"),
+                                deserialized.get("email"))
+        db_user.sex = u.show_sex(deserialized.get("sex"))
+        db_user.website = deserialized.get("website")
+        db_user.aboutme = deserialized.get("about_me")
+        db_user.timezone = deserialized.get("timezone")
+        db_user.birthday = deserialized.get("birthday")
         request.session.flash(s.show_setting("INFO_ACC_UPDATED"), INFO)
         return redirect(request, "userarea_profile", user=user)
     user = authenticated_userid(request)
@@ -233,9 +238,14 @@ def userarea_register(context, request):
         """
         email = deserialized.get("email")
         user = u.create_user(deserialized.get("username"),
-                             deserialized.get("display_name"),
+                             deserialized.get("full_name"),
                              email,
                              deserialized.get("password"))
+        user.sex = u.show_sex(deserialized.get("sex"))
+        user.website = deserialized.get("website")
+        user.aboutme = deserialized.get("about_me")
+        user.timezone = deserialized.get("timezone")
+        user.birthday = deserialized.get("birthday")
         token = t.add_token(user, "register")
         parsed = Template(s.show_setting("EMAIL"))
         url = route_url("token_get", request, token=token)

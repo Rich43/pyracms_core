@@ -67,6 +67,17 @@ class UserLib():
         
         return sex
 
+    def sexes_dropdown(self, with_display_name=True):
+        """
+        Get all the gubbins needed to display a dropdown list of sexes.
+        """
+        sexes = DBSession.query(Sexes.name)
+        if with_display_name:
+            result = [(x.name, x.name) for x in sexes]
+        else:
+            result = [x.name for x in sexes]
+        return result
+
     def list(self, first=True):
         """
         List all the users
