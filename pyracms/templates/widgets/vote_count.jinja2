@@ -1,0 +1,1 @@
+{% macro vote_count(obj, vote) %}{{ obj.votes.filter_by(like=vote).count() }}{% endmacro %}

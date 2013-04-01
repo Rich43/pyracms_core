@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from sqlalchemy import (Column, Integer, Unicode, desc, UnicodeText, DateTime, 
-    Boolean, BigInteger, LargeBinary)
+    Boolean, BigInteger, LargeBinary, Date)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import (scoped_session, sessionmaker, relationship, synonym, 
     deferred)
@@ -49,7 +49,42 @@ class Group(Base):
     def __unicode__(self):
         return self.name
 
-    #}
+class FilesData(Base):
+    __tablename__ = 'filesdata'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+
+    id = Column(Integer, primary_key=True)
+    file_id = Column(Integer, ForeignKey('files.id'), nullable=False)
+    data = deferred(Column(LargeBinary(10 ** 6), nullable=False))
+
+    def __init__(self, data):
+        self.data = data
+
+class Files(Base):
+    __tablename__ = 'files'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode(128), index=True, nullable=False)
+    mimetype = Column(Unicode(128), index=True, nullable=False)
+    size = Column(BigInteger, index=True, default=0)
+    created = Column(DateTime, default=datetime.now)
+    upload_complete = Column(Boolean, default=False, index=True)
+    download_count = Column(Integer, default=0, index=True)
+    data = relationship(FilesData,
+                    cascade="all, delete, delete-orphan", single_parent=True)
+    def __init__(self, name, mimetype):
+        self.name = name
+        self.mimetype = mimetype
+
+class Sexes(Base):
+    __tablename__ = 'sexes'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode(6), index=True, unique=True, nullable=False)
+    def __init__(self, name):
+        self.name = name
 
 # The 'info' argument we're passing to the email_address and password columns
 # contain metadata that Rum (http://python-rum.org/) can use generate an
@@ -70,9 +105,17 @@ class User(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     name = Column(Unicode(16), unique=True, nullable=False)
     full_name = Column(Unicode(128), nullable=False)
-    email_address = Column(Unicode(128), unique=True, nullable=False,
-                        info={'rum': {'field':'Email'}})
+    email_address = Column(Unicode(128), unique=True, nullable=False)
+    website = Column(Unicode(128), default='')
+    birthday = Column(Date, default=datetime.date(datetime.now()))
+    sex_id = Column(Integer, ForeignKey('sexes.id'), nullable=False)
+    sex = relationship(Sexes, uselist=False)
+    aboutme = Column(UnicodeText, default='')
     created = Column(DateTime, default=datetime.now)
+    banned = Column(Boolean, default=True)
+    timezone = Column(Unicode(16), nullable=False, default="Europe/London")
+    file_id = Column(Integer, ForeignKey('files.id'))
+    file_obj = relationship(Files, cascade="all, delete")
     _password = Column('password', Unicode(128), nullable=False)
     groups = relationship('Group', secondary=UserGroup.__table__,
                           backref='user')
@@ -259,34 +302,6 @@ class Token(Base):
     def __init__(self, user, purpose):
         self.user = user
         self.purpose = purpose
-
-class FilesData(Base):
-    __tablename__ = 'filesdata'
-    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
-
-    id = Column(Integer, primary_key=True)
-    file_id = Column(Integer, ForeignKey('files.id'), nullable=False)
-    data = deferred(Column(LargeBinary(10 ** 6), nullable=False))
-
-    def __init__(self, data):
-        self.data = data
-
-class Files(Base):
-    __tablename__ = 'files'
-    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
-
-    id = Column(Integer, primary_key=True)
-    name = Column(Unicode(128), index=True, nullable=False)
-    mimetype = Column(Unicode(128), index=True, nullable=False)
-    size = Column(BigInteger, index=True, default=0)
-    created = Column(DateTime, default=datetime.now)
-    upload_complete = Column(Boolean, default=False, index=True)
-    download_count = Column(Integer, default=0, index=True)
-    data = relationship(FilesData,
-                    cascade="all, delete, delete-orphan", single_parent=True)
-    def __init__(self, name, mimetype):
-        self.name = name
-        self.mimetype = mimetype
 
 class ArticleVotes(Base):
     __tablename__ = 'articlevotes'

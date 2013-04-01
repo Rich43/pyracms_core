@@ -1,10 +1,16 @@
-from ..models import DBSession, User, Group
+from ..models import DBSession, User, Group, Sexes
 from sqlalchemy.orm.exc import NoResultFound
 
 class UserNotFound(Exception):
     pass
 
 class GroupNotFound(Exception):
+    pass
+
+class SexNotFound(Exception):
+    """
+    Commonly happens in real life!
+    """
     pass
 
 class UserLib():
@@ -49,7 +55,18 @@ class UserLib():
             return DBSession.query(User).filter_by(id=user_id).one()
         except NoResultFound:
             raise UserNotFound
-    
+
+    def show_sex(self, name):
+        """
+        Get sex object from its name
+        """
+        try:
+            sex = DBSession.query(Sexes).filter_by(name=name).one()
+        except NoResultFound:
+            raise SexNotFound
+        
+        return sex
+
     def list(self, first=True):
         """
         List all the users
@@ -109,7 +126,7 @@ class UserLib():
         
         return grp
 
-    def create_user(self, name, full_name, email_address, password):
+    def create_user(self, name, full_name, email_address, password, sex):
         """
         Create a user. Returns the user object.
         """
@@ -117,6 +134,7 @@ class UserLib():
         user.email_address = email_address
         user.full_name = full_name
         user.password = password
+        user.sex = self.show_sex(sex)
         DBSession.add(user)
         return user
     

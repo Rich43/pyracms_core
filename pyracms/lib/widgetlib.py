@@ -1,10 +1,14 @@
 from ..deform_schemas.userarea import LoginSchema
+from .helperlib import get_username
 from .menulib import MenuLib, MenuGroupNotFound
 from .restlib import html_body
+from .userlib import UserLib, UserNotFound
+from datetime import datetime, date, timedelta
 from deform.form import Form
 from pyramid.security import authenticated_userid, Everyone, has_permission
 import markdown
 import postmarkup
+import pytz
 
 search_html = """
 <form action="/redirect/search" method="post" class="searchform">
@@ -17,7 +21,62 @@ search_html = """
 class WidgetLib():
     def __init__(self):
         self.search_html = search_html
+        self.bbcode = postmarkup.render_bbcode
         
+    def format_time(self, time, request=None, tz='UTC', time_format='%H:%M:%S'):
+        """
+        Format the time, adjusting with timezone
+        """
+        u = UserLib()
+        try:
+            if not request:
+                raise UserNotFound
+            tz = u.show(get_username(request)).timezone
+        except UserNotFound:
+            pass
+        
+        timezone = pytz.timezone(tz)
+        usertime = timezone.localize(time)
+        time = time.replace(tzinfo=pytz.timezone('UTC'))
+        unformatted_time = time + (time - usertime)
+        return unformatted_time.strftime(time_format)
+    
+    def format_date(self, date_obj, request=None, tz='UTC', 
+                    date_format='%A %d %b %Y'):
+        """
+        Format the date, adjusting with timezone
+        """
+        u = UserLib()
+        if isinstance(date_obj, date):
+            date_obj = datetime.combine(date_obj, datetime.now().time())
+        try:
+            if not request:
+                raise UserNotFound
+            tz = u.show(get_username(request)).timezone
+        except UserNotFound:
+            pass
+        
+        timezone = pytz.timezone(tz)
+        userdate = timezone.localize(date_obj)
+        formatted_date = userdate.strftime(date_format)
+        today = datetime.now(timezone)
+        yesterday = today - timedelta(days= -1)
+        
+        if formatted_date == today.strftime(date_format):
+            return "Today"
+        
+        if formatted_date == yesterday.strftime(date_format):
+            return "Yesterday"
+    
+        return formatted_date
+    
+    def format_date_time(self, date_time, request=None, tz='UTC'):
+        """
+        Format date and time using above functions
+        """
+        return "%s %s" % (self.format_date(date_time, request, tz),
+                          self.format_time(date_time, request, tz))
+
     def logged_in(self, request):
         return authenticated_userid(request)
 
