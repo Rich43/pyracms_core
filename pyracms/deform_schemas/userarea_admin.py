@@ -1,10 +1,10 @@
 from ..factory import RootFactory
+from ..models import DBSession
 from colander import (Schema, SchemaNode, String, OneOf, SequenceSchema, Integer, 
-    MappingSchema)
+    MappingSchema, deferred)
 from deform import FileData
 from deform.widget import SelectWidget, TextAreaWidget, FileUploadWidget
 from pyramid.security import Everyone
-from ..models import DBSession
 
 class MemoryTmpStore(dict):
     """ Instances of this class implement the
@@ -44,13 +44,18 @@ class ACL(SequenceSchema):
 class EditACL(Schema):
     acl = ACL()
     
+@deferred
+def deferred_acl_widget(node, kw):
+    return SelectWidget(values=get_acl())
+
+@deferred
+def deferred_acl_validator(node, kw):
+    return OneOf(get_acl(True))
 class MenuItem(Schema):
     name = SchemaNode(String())
     url = SchemaNode(String())
-    permissions = SchemaNode(String(),
-                             widget=SelectWidget(values=get_acl(),
-                                                 validator=OneOf(get_acl(True)),
-                                                 default=Everyone))
+    permissions = SchemaNode(String(), widget=deferred_acl_widget,
+                             validator=deferred_acl_validator, default=Everyone)
     position = SchemaNode(Integer())
     
 class Menu(SequenceSchema):
