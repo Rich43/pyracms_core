@@ -7,9 +7,6 @@ BOARD = "thread"
 class InvalidTagType(Exception):
     pass
 
-class AlreadyVoted(Exception):
-    pass
-
 class TagLib():
     """
     A library to get and set tags to/from database.
