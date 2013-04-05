@@ -57,7 +57,6 @@ def main(argv=sys.argv):
         acl.__acl__.append((Allow, Authenticated, "article_list_revisions"))
         acl.__acl__.append((Allow, Everyone, "article_view"))
         acl.__acl__.append((Allow, Everyone, "article_list"))
-        acl.__acl__.append((Allow, Everyone, "article_list_revisions"))
         acl.__acl__.append((Allow, "group:admin", "group:admin"))
         acl.__acl__.append((Allow, "group:admin", "edit_menu"))
         acl.__acl__.append((Allow, "group:admin", "edit_acl"))
