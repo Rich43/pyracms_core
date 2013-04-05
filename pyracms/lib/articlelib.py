@@ -1,14 +1,16 @@
 from ..models import (DBSession, ArticleRevision, ArticlePage, ArticleRenderers, 
-    ArticleTags)
+    ArticleTags, ArticleVotes)
 from .helperlib import serialize_relation
 from .searchlib import SearchLib
 from .settingslib import SettingsLib
 from .taglib import TagLib, ARTICLE
 from .userlib import UserLib
 from .widgetlib import WidgetLib
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 import datetime
 import json
+import transaction
 
 class RevisionNotFound(Exception):
     pass
@@ -17,6 +19,9 @@ class PageNotFound(Exception):
     pass
 
 class PageFound(Exception):
+    pass
+
+class AlreadyVoted(Exception):
     pass
 
 class ArticleLib():
@@ -148,6 +153,20 @@ class ArticleLib():
         except NoResultFound:
             raise PageNotFound
         return page
+
+    def add_vote(self, db_obj, user, like):
+        """
+        Add a vote to the database
+        """
+        
+        vote = ArticleVotes(user, like)
+        vote.page = db_obj
+        try:
+            DBSession.add(vote)
+            transaction.commit()
+        except IntegrityError:
+            transaction.abort()
+            raise AlreadyVoted
 
     def to_json(self):
         pages = DBSession.query(ArticlePage)

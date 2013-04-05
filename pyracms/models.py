@@ -233,6 +233,8 @@ class ArticlePage(Base):
                              lazy="dynamic",
                              order_by=desc(ArticleRevision.created))
     tags = relationship(ArticleTags, cascade="all, delete, delete-orphan")
+    votes = relationship("ArticleVotes", lazy="dynamic", 
+                         cascade="all, delete, delete-orphan")
     renderer = relationship(ArticleRenderers)
 
     def __init__(self, name="", display_name=""):
@@ -310,7 +312,7 @@ class ArticleVotes(Base):
 
     id = Column(Integer, primary_key=True)
     page_id = Column(Integer, ForeignKey('articlepage.id'))
-    page = relationship("ArticlePage")
+    page = relationship(ArticlePage)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     user = relationship("User")
     like = Column(Boolean, nullable=False, index=True)

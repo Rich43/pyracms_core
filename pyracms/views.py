@@ -4,7 +4,7 @@ from .deform_schemas.userarea import (LoginSchema, RegisterSchema,
 from .deform_schemas.userarea_admin import (EditACL, MenuGroup, EditMenuItems, 
     SettingSchema, RestoreBackupSchema, RestoreSettingsSchema)
 from .factory import JsonList
-from .lib.articlelib import ArticleLib, PageNotFound
+from .lib.articlelib import ArticleLib, PageNotFound, AlreadyVoted
 from .lib.helperlib import (acl_to_dict, dict_to_acl, serialize_relation, 
     deserialize_relation, get_username, redirect, rapid_deform)
 from .lib.menulib import MenuLib
@@ -686,3 +686,19 @@ def article_set_private(context, request):
     page_id = request.matchdict.get('page_id')
     c.set_private(page_id)
     return redirect(request, "article_read", page_id=page_id)
+
+@view_config(route_name='article_add_vote', permission='vote')
+def article_add_vote(context, request):
+    """
+    Add a vote to an article
+    """
+    vote_id = request.matchdict.get('vote_id')
+    like = request.matchdict.get('like').lower() == "true"
+    a = ArticleLib()
+    article = a.show_page(vote_id)
+    try:
+        a.add_vote(article, u.show(get_username(request)), like)
+        request.session.flash(s.show_setting("INFO_VOTE"), INFO)
+    except AlreadyVoted:
+        request.session.flash(s.show_setting("ERROR_VOTE"), ERROR)
+    return redirect(request, "article_read", page_id=vote_id)

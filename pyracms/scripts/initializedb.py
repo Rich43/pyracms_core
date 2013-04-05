@@ -53,6 +53,7 @@ def main(argv=sys.argv):
         acl.__acl__.append((Allow, Authenticated, Authenticated))
         acl.__acl__.append((Allow, Authenticated, "not_authenticated"))
         acl.__acl__.append((Allow, Authenticated, "userarea_edit"))
+        acl.__acl__.append((Allow, Authenticated, 'vote'))
         acl.__acl__.append((Allow, Everyone, "article_view"))
         acl.__acl__.append((Allow, Everyone, "article_list"))
         acl.__acl__.append((Allow, Everyone, "article_list_revisions"))
@@ -134,9 +135,15 @@ def main(argv=sys.argv):
         DBSession.add(Menu("Make %(private)s",
                            "/article/set_private/%(page_id)s", 
                            4, group, 'set_private'))
+        DBSession.add(Menu("Vote Up (%(up_count)s)", 
+                           "/vote/article/%(page_id)s/True", 5, 
+                           group, 'vote'))
+        DBSession.add(Menu("Vote Down (%(down_count)s)", 
+                           "/vote/article/%(page_id)s/False", 6, 
+                           group, 'vote'))
         DBSession.add(Menu("List Revisions",
                            "/article/list_revisions/%(page_id)s",
-                           5, group, 'article_list_revisions'))
+                           7, group, 'article_list_revisions'))
         
         group = MenuGroup("article_revision")
         DBSession.add(Menu("List Revisions",
@@ -180,9 +187,11 @@ def main(argv=sys.argv):
              "INFO_FORUM_CATEGORY_UPDATED": 
              "The list of forum categories has been updated.",
              "INFO_ACL_UPDATED": "The access control list has been updated.",
+             "INFO_VOTE": "Your vote has been added.",
              "ERROR_NOT_FOUND": "%s was not found.",
              "ERROR_INVALID_USER_PASS": "Invalid username or password.",
-             "ERROR_TOKEN": "Token could not be found."}
+             "ERROR_TOKEN": "Token could not be found.",
+             "ERROR_VOTE": "You have already voted."}
         add_dict(d)
         
         # Add Renderers
