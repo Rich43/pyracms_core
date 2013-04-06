@@ -134,8 +134,6 @@ def main(argv=sys.argv):
              "INFO_MENU_UPDATED": "The menu (%s) has been updated.",
              "INFO_MENU_GROUP_UPDATED": 
              "The list of menu groups has been updated.",
-             "INFO_FORUM_CATEGORY_UPDATED": 
-             "The list of forum categories has been updated.",
              "INFO_ACL_UPDATED": "The access control list has been updated.",
              "INFO_VOTE": "Your vote has been added.",
              "ERROR_NOT_FOUND": "%s was not found.",
