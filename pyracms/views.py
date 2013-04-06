@@ -33,7 +33,6 @@ ERROR = 'error'
 WARN = 'warn'
 INFO = 'info'
 
-@view_config(route_name='dummy_home', renderer='dummy_home.jinja2')
 def dummy_home(context, request):
     return {}
 

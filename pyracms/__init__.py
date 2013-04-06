@@ -8,6 +8,7 @@ from pyramid.config import Configurator
 from pyramid.events import BeforeRender
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from sqlalchemy import engine_from_config
+from .views import dummy_home
 
 def add_renderer_globals(event):
     event['w'] = WidgetLib()
@@ -43,7 +44,10 @@ def main(global_config, **settings):
                            cache_max_age=3600)
     config.add_static_view("dstatic", "deform:static", 
                            cache_max_age=3600)
-    config.add_route('dummy_home', '/')
+    if settings.get("enable_pyracms_home"):
+        config.add_view(dummy_home, route_name="home", 
+                        renderer="dummy_home.jinja2")
+        config.add_route('home', '/')
     config.add_route('css', '/css')
     config.add_route('redirect_one', '/redirect/{route_name}')
     config.add_route('redirect_two', '/redirect/{route_name}/{type}')
