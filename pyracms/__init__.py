@@ -43,6 +43,7 @@ def main(global_config, **settings):
                            cache_max_age=3600)
     config.add_static_view("dstatic", "deform:static", 
                            cache_max_age=3600)
+    config.add_route('dummy_home', '/')
     config.add_route('css', '/css')
     config.add_route('redirect_one', '/redirect/{route_name}')
     config.add_route('redirect_two', '/redirect/{route_name}/{type}')
