@@ -120,7 +120,7 @@ class RegisterSchema(MappingSchema):
     birthday = SchemaNode(Date(), validator=deffered_birthday_validator)
     about_me = SchemaNode(String(), widget=TextAreaWidget(cols=50, rows=5),
                           default=default_about_me)
-    sex = SchemaNode(String(), widget=SelectWidget(["Male", "Female"]),
+    sex = SchemaNode(String(), widget=SelectWidget(values=["Male", "Female"]),
                      validator=OneOf(["Male", "Female"]))
     timezone = SchemaNode(String(), 
                     widget=SelectWidget(values=all_tz, size=20),
@@ -140,7 +140,7 @@ class EditUserSchema(MappingSchema):
                           validator=deffered_birthday_validator)
     about_me = SchemaNode(String(), widget=TextAreaWidget(cols=50, rows=5),
                           default=deferred_default_aboutme)
-    sex = SchemaNode(String(), widget=SelectWidget(["Male", "Female"]), 
+    sex = SchemaNode(String(), widget=SelectWidget(values=["Male", "Female"]), 
                      validator=OneOf(["Male", "Female"]), 
                      default=deferred_default_sex)
     timezone = SchemaNode(String(), 

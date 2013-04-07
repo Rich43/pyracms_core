@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from pytz import all_timezones
 from sqlalchemy import (Column, Integer, Unicode, UnicodeText, DateTime, Boolean, 
     BigInteger, LargeBinary, Date, Enum)
 from sqlalchemy.ext.declarative import declarative_base
@@ -105,7 +104,7 @@ class User(Base):
     aboutme = Column(UnicodeText, default='')
     created = Column(DateTime, default=datetime.now)
     banned = Column(Boolean, default=True)
-    timezone = Column(Enum(all_timezones), nullable=False, 
+    timezone = Column(Unicode(128), nullable=False, 
                       default="Europe/London")
     file_id = Column(Integer, ForeignKey('files.id'))
     file_obj = relationship(Files, cascade="all, delete")
