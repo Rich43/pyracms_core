@@ -60,7 +60,7 @@ def rapid_deform(context, request, schema, validated_callback=None,
                                       bind_params)
 
     # Add to cache and render.
-    form_data = myform.render(appstruct)
+    form_data = myform.render(bind_params)
     result.update({'form':form_data})
     result.update(bind_params)
     return result

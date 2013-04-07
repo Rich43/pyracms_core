@@ -63,42 +63,10 @@ def deferred_email_validator(node, kw):
     return All(Email(), ValidEmail(request))
 
 @deferred
-def deferred_default_full_name(node, kw):
-    return u.show(kw.get('user')).full_name
-
-@deferred
-def deferred_default_email_address(node, kw):
-    return u.show(kw.get('user')).email_address
-
-@deferred
-def deferred_default_website(node, kw):
-    return u.show(kw.get('user')).website
-
-@deferred
-def deferred_default_birthday(node, kw):
-    return u.show(kw.get('user')).birthday
-
-@deferred
 def deffered_birthday_validator(node, kw):
     max_date = date.today() - timedelta(days=730)
     return Range(max=max_date, 
                  max_err='${val} is newer than newest date ${max}')
-
-@deferred
-def deferred_default_sex(node, kw):
-    return u.show(kw.get('user')).sex.name
-
-@deferred
-def deferred_default_aboutme(node, kw):
-    return u.show(kw.get('user')).aboutme
-
-@deferred
-def deferred_default_signature(node, kw):
-    return u.show(kw.get('user')).signature
-
-@deferred
-def deferred_default_timezone(node, kw):
-    return u.show(kw.get('user')).timezone
 
 class RecoverPasswordSchema(MappingSchema):
     email = SchemaNode(String(), widget=TextInputWidget(size=40), 
@@ -109,10 +77,8 @@ class RegisterSchema(MappingSchema):
                           validator=All(Length(min=3), valid_username))
     full_name = SchemaNode(String(), widget=TextInputWidget(size=40), 
                            validator=Length(min=3))
-    password = SchemaNode(
-        String(),
-        validator=Length(min=8),
-        widget=CheckedPasswordWidget(size=40))
+    password = SchemaNode(String(), validator=Length(min=8),
+                          widget=CheckedPasswordWidget(size=40))
     email = SchemaNode(String(), widget=TextInputWidget(size=40), 
                        validator=All(Email(), ValidEmail()))
     website = SchemaNode(String(), widget=TextInputWidget(size=40), 
@@ -120,33 +86,25 @@ class RegisterSchema(MappingSchema):
     birthday = SchemaNode(Date(), validator=deffered_birthday_validator)
     about_me = SchemaNode(String(), widget=TextAreaWidget(cols=50, rows=5),
                           default=default_about_me)
-    sex = SchemaNode(String(), widget=SelectWidget(values=["Male", "Female"]),
+    sex = SchemaNode(String(), widget=SelectWidget(values=[["Male"] * 2,
+                                                           ["Female"] * 2]),
                      validator=OneOf(["Male", "Female"]))
-    timezone = SchemaNode(String(), 
-                    widget=SelectWidget(values=all_tz, size=20),
+    timezone = SchemaNode(String(), widget=SelectWidget(values=all_tz, size=20),
                     validator=OneOf(all_timezones))
 
 class EditUserSchema(MappingSchema):
-    full_name = SchemaNode(String(), 
-                              widget=TextInputWidget(size=40),
-                              validator=Length(min=3),
-                              default=deferred_default_full_name)
+    full_name = SchemaNode(String(), widget=TextInputWidget(size=40),
+                           validator=Length(min=3))
     email = SchemaNode(String(), widget=TextInputWidget(size=40), 
-                       validator=deferred_email_validator,
-                       default=deferred_default_email_address)
-    website = SchemaNode(String(), widget=TextInputWidget(size=40),
-                         default=deferred_default_website)
-    birthday = SchemaNode(Date(), default=deferred_default_birthday,
-                          validator=deffered_birthday_validator)
-    about_me = SchemaNode(String(), widget=TextAreaWidget(cols=50, rows=5),
-                          default=deferred_default_aboutme)
-    sex = SchemaNode(String(), widget=SelectWidget(values=["Male", "Female"]), 
-                     validator=OneOf(["Male", "Female"]), 
-                     default=deferred_default_sex)
-    timezone = SchemaNode(String(), 
-                          widget=SelectWidget(values=all_tz, size=20),
-                          validator=OneOf(all_timezones),
-                          default=deferred_default_timezone)
+                       validator=deferred_email_validator)
+    website = SchemaNode(String(), widget=TextInputWidget(size=40))
+    birthday = SchemaNode(Date(), validator=deffered_birthday_validator)
+    about_me = SchemaNode(String(), widget=TextAreaWidget(cols=50, rows=5))
+    sex = SchemaNode(String(), widget=SelectWidget(values=[["Male"] * 2,
+                                                           ["Female"] * 2]),
+                     validator=OneOf(["Male", "Female"]))
+    timezone = SchemaNode(String(), widget=SelectWidget(values=all_tz, size=20),
+                          validator=OneOf(all_timezones))
 
 class LoginSchema(MappingSchema):
     username = SchemaNode(String(), widget=TextInputWidget(size=40))

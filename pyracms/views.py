@@ -205,14 +205,15 @@ def userarea_edit(context, request):
     """
     Edit the current user's profile
     """
+    user = authenticated_userid(request)
+    db_user = u.show(user)
     def edit_submit(context, request, deserialized, bind_params):
         """
         Submit profile data, save to database
         """
-        user = authenticated_userid(request)
         db_user = u.update_user(user, deserialized.get("full_name"),
                                 deserialized.get("email"))
-        db_user.sex = u.show_sex(deserialized.get("sex"))
+        db_user.sex = deserialized.get("sex")
         db_user.website = deserialized.get("website")
         db_user.aboutme = deserialized.get("about_me")
         db_user.timezone = deserialized.get("timezone")
@@ -221,7 +222,10 @@ def userarea_edit(context, request):
         return redirect(request, "userarea_profile", user=user)
     user = authenticated_userid(request)
     result = rapid_deform(context, request, EditUserSchema,
-                          edit_submit, user=user)
+                          edit_submit, user=user, full_name=db_user.full_name,
+                          email=db_user.email_address, sex=db_user.sex,
+                          website=db_user.website, about_me=db_user.aboutme,
+                          timezone=db_user.timezone, birthday=db_user.birthday)
     if isinstance(result, dict):
         message = "Editing Profile"
         result.update({"title": message, "header": message})
@@ -239,9 +243,8 @@ def userarea_register(context, request):
         email = deserialized.get("email")
         user = u.create_user(deserialized.get("username"),
                              deserialized.get("full_name"),
-                             email,
-                             deserialized.get("password"))
-        user.sex = u.show_sex(deserialized.get("sex"))
+                             email, deserialized.get("password"))
+        user.sex = deserialized.get("sex")
         user.website = deserialized.get("website")
         user.aboutme = deserialized.get("about_me")
         user.timezone = deserialized.get("timezone")
@@ -255,8 +258,7 @@ def userarea_register(context, request):
         mailer = get_mailer(request)
         message = Message(subject=s.show_setting("REGISTRATION_SUBJECT"),
                           sender=s.show_setting("MAIL_SENDER"),
-                          recipients=[user.email_address],
-                          body=parsed)
+                          recipients=[user.email_address], body=parsed)
         mailer.send(message)
         user.groups.append(u.show_group("article"))
         request.session.flash(s.show_setting("INFO_ACTIVATON_EMAIL_SENT")

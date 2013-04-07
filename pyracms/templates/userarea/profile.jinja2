@@ -6,7 +6,7 @@
     <p>Display Name: {{ db_user.full_name }}</p>
     <p>Website: {{ db_user.website }}</p>
     <p>Birthday: {{ w.format_date(db_user.birthday, request) }}</p>
-    <p>Sex: {{ db_user.sex.name }}</p>
+    <p>Sex: {{ db_user.sex }}</p>
     <p>About Me: {{ db_user.aboutme }}</p>
     <p>Timezone: {{ db_user.timezone }}</p>
     <p>Member Since: {{ db_user.created }}</p>
