@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
+from pytz import all_timezones
 from sqlalchemy import (Column, Integer, Unicode, UnicodeText, DateTime, Boolean, 
-    BigInteger, LargeBinary, Date)
+    BigInteger, LargeBinary, Date, Enum)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import (scoped_session, sessionmaker, relationship, synonym, 
     deferred)
@@ -76,14 +77,6 @@ class Files(Base):
     def __init__(self, name, mimetype):
         self.name = name
         self.mimetype = mimetype
-
-class Sexes(Base):
-    __tablename__ = 'sexes'
-    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
-    
-    id = Column(Integer, primary_key=True)
-    name = Column(Unicode(6), index=True, unique=True, nullable=False)
-    def __init__(self, name):
         self.name = name
 
 # The 'info' argument we're passing to the email_address and password columns
@@ -108,12 +101,12 @@ class User(Base):
     email_address = Column(Unicode(128), unique=True, nullable=False)
     website = Column(Unicode(128), default='')
     birthday = Column(Date, default=datetime.date(datetime.now()))
-    sex_id = Column(Integer, ForeignKey('sexes.id'), nullable=False)
-    sex = relationship(Sexes, uselist=False)
+    sex = Column(Enum("Male", "Female"), nullable=False)
     aboutme = Column(UnicodeText, default='')
     created = Column(DateTime, default=datetime.now)
     banned = Column(Boolean, default=True)
-    timezone = Column(Unicode(16), nullable=False, default="Europe/London")
+    timezone = Column(Enum(all_timezones), nullable=False, 
+                      default="Europe/London")
     file_id = Column(Integer, ForeignKey('files.id'))
     file_obj = relationship(Files, cascade="all, delete")
     _password = Column('password', Unicode(128), nullable=False)

@@ -1,6 +1,6 @@
 from ..factory import RootFactory
 from ..lib.userlib import UserLib
-from ..models import DBSession, Base, Menu, MenuGroup, Settings, Sexes
+from ..models import DBSession, Base, Menu, MenuGroup, Settings
 from pyramid.paster import get_appsettings, setup_logging
 from pyramid.security import Everyone, Allow, Authenticated
 from sqlalchemy import engine_from_config
@@ -28,12 +28,6 @@ def main(argv=sys.argv):
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
     with transaction.manager:
-        # Add Sexes
-        male = Sexes("Male")
-        female = Sexes("Female")
-        DBSession.add(male)
-        DBSession.add(female)
-        
         # Default Users
         u = UserLib()
         admin_user = u.create_user("admin", "Admin User", "admin@admin.com",

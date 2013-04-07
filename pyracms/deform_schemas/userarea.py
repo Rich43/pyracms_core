@@ -89,14 +89,6 @@ def deferred_default_sex(node, kw):
     return u.show(kw.get('user')).sex.name
 
 @deferred
-def deferred_sex_validator(node, kw):
-    return OneOf(u.sexes_dropdown(False))
-
-@deferred
-def deferred_sex_widget(node, kw):
-    return SelectWidget(values=u.sexes_dropdown())
-
-@deferred
 def deferred_default_aboutme(node, kw):
     return u.show(kw.get('user')).aboutme
 
@@ -128,8 +120,8 @@ class RegisterSchema(MappingSchema):
     birthday = SchemaNode(Date(), validator=deffered_birthday_validator)
     about_me = SchemaNode(String(), widget=TextAreaWidget(cols=50, rows=5),
                           default=default_about_me)
-    sex = SchemaNode(String(), widget=deferred_sex_widget,
-                     validator=deferred_sex_validator)
+    sex = SchemaNode(String(), widget=SelectWidget(["Male", "Female"]),
+                     validator=OneOf(["Male", "Female"]))
     timezone = SchemaNode(String(), 
                     widget=SelectWidget(values=all_tz, size=20),
                     validator=OneOf(all_timezones))
@@ -148,8 +140,8 @@ class EditUserSchema(MappingSchema):
                           validator=deffered_birthday_validator)
     about_me = SchemaNode(String(), widget=TextAreaWidget(cols=50, rows=5),
                           default=deferred_default_aboutme)
-    sex = SchemaNode(String(), widget=deferred_sex_widget, 
-                     validator=deferred_sex_validator, 
+    sex = SchemaNode(String(), widget=SelectWidget(["Male", "Female"]), 
+                     validator=OneOf(["Male", "Female"]), 
                      default=deferred_default_sex)
     timezone = SchemaNode(String(), 
                           widget=SelectWidget(values=all_tz, size=20),
