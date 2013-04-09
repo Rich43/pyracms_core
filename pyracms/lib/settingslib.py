@@ -35,7 +35,7 @@ class SettingsLib():
         setting = self.show_setting(name)
         setting.value = value
         
-    def show_setting(self, name):
+    def show_setting(self, name, as_obj=False):
         """
         Get setting object.
         Raise SettingNotFound if setting does not exist.
@@ -44,7 +44,10 @@ class SettingsLib():
             page = self.DBSession.query(Settings).filter_by(name=name).one()
         except NoResultFound:
             raise SettingNotFound
-        return page
+        if as_obj:
+            return page
+        else:
+            return page.value
     
     def to_dict(self):
         return dict(self.DBSession.query(Settings.name, Settings.value))

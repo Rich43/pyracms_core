@@ -62,7 +62,7 @@ def search(context, request):
 
 @view_config(route_name='css')
 def css(request):
-    css_data = s.show_setting("CSS").value
+    css_data = s.show_setting("CSS")
     return Response(app_iter=[css_data.encode()],
                     headerlist=[('Content-Type', "text/css"),
                                 ('Content-Length', str(len(css_data)))])
