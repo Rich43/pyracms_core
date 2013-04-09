@@ -441,7 +441,7 @@ def userarea_admin_edit_settings(context, request):
         return redirect(request, 'userarea_admin_list_settings')
     name = request.matchdict.get('name')
     result = rapid_deform(context, request, SettingSchema, edit_setting_submit, 
-                          name=name, value=s.show_setting(name).value)
+                          name=name, value=s.show_setting(name))
     if isinstance(result, dict):
         message = "Editing Settings"
         result.update({"title": message, "header": message})
