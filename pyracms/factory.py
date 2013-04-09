@@ -26,7 +26,7 @@ class JsonList(UserList):
         else:
             try:
                 db_data = self.settings.show_setting("ACL")
-                super().__init__(json.loads(db_data.value))
+                super().__init__(json.loads(db_data))
             except SettingNotFound:
                 super().__init__()
                 save(self)
