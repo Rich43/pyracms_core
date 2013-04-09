@@ -32,7 +32,7 @@ class SettingsLib():
         Update a page
         Raise PageNotFound if page does not exist
         """
-        setting = self.show_setting(name)
+        setting = self.show_setting(name, True)
         setting.value = value
         
     def show_setting(self, name, as_obj=False):
