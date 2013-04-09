@@ -1,7 +1,7 @@
 from .deform_schemas.userarea import (LoginSchema, RegisterSchema, 
     ChangePasswordSchema, RecoverPasswordSchema, EditUserSchema)
 from .deform_schemas.userarea_admin import (EditACL, MenuGroup, EditMenuItems, 
-    SettingSchema, RestoreSettingsSchema)
+    SettingSchema, RestoreSettingsSchema, EditAdminUserSchema)
 from .factory import JsonList
 from .lib.helperlib import (acl_to_dict, dict_to_acl, serialize_relation, 
     deserialize_relation, redirect, rapid_deform)
@@ -15,7 +15,7 @@ from pyramid.exceptions import Forbidden
 from pyramid.httpexceptions import HTTPFound
 from pyramid.path import AssetResolver
 from pyramid.response import Response
-from pyramid.security import (remember, forget, authenticated_userid)
+from pyramid.security import remember, forget, authenticated_userid
 from pyramid.url import route_url
 from pyramid.view import view_config
 from pyramid_mailer import get_mailer
@@ -24,6 +24,7 @@ from string import Template
 import json
 import os
 import shutil
+import transaction
 
 u = UserLib()
 t = TokenLib()
@@ -100,7 +101,7 @@ def userarea_login(context, request):
     else:
         redirect_url = request.url
     return rapid_deform(context, request, LoginSchema, login_submit,
-                        appstruct={"redirect_url":redirect_url})
+                        redirect_url=redirect_url)
 
 @view_config(route_name='userarea_profile', renderer='userarea/profile.jinja2')
 @view_config(route_name='userarea_profile_two', 
@@ -211,13 +212,14 @@ def userarea_edit(context, request):
         """
         Submit profile data, save to database
         """
-        db_user = u.update_user(user, deserialized.get("full_name"),
-                                deserialized.get("email"))
+        db_user.full_name = deserialized.get("full_name")
+        db_user.email_address = deserialized.get("email")
         db_user.sex = deserialized.get("sex")
         db_user.website = deserialized.get("website")
         db_user.aboutme = deserialized.get("about_me")
         db_user.timezone = deserialized.get("timezone")
         db_user.birthday = deserialized.get("birthday")
+        transaction.commit()
         request.session.flash(s.show_setting("INFO_ACC_UPDATED"), INFO)
         return redirect(request, "userarea_profile", user=user)
     user = authenticated_userid(request)
@@ -355,10 +357,9 @@ def userarea_admin_edit_menu_item(context, request):
                               % group.name, INFO)
         return redirect(request, 'userarea_admin_edit_menu')
     group = m.show_group(request.matchdict.get('group'))
-    appstruct = {'menu': serialize_relation(group.menu_items)}
     result = rapid_deform(context, request, EditMenuItems,
-                          edit_menu_item_submit, appstruct=appstruct,
-                          group=group)
+                          edit_menu_item_submit, group=group,
+                          menu=serialize_relation(group.menu_items))
     if isinstance(result, dict):
         message = "Editing " + group.name
         result.update({"title": message, "header": message})
@@ -382,11 +383,10 @@ def userarea_admin_edit_menu_group(context, request):
         request.session.flash(s.show_setting("INFO_MENU_GROUP_UPDATED"), INFO)
         return redirect(request, 'userarea_admin_edit_menu')
     groups = m.list_groups().all()
-    appstruct = {'menu_groups':
-                 [x['name'] for x in serialize_relation(groups)]}
+    menu_groups = [x['name'] for x in serialize_relation(groups)]
     result = rapid_deform(context, request, MenuGroup,
-                          edit_menu_group_submit, appstruct=appstruct,
-                          groups=groups)
+                          edit_menu_group_submit, groups=groups,
+                          menu_groups=menu_groups)
     if isinstance(result, dict):
         message = "Editing Menu Groups"
         result.update({"title": message, "header": message})
@@ -406,9 +406,8 @@ def userarea_admin_edit_acl(context, request):
         request.session['groupfinder'] = {}
         request.session.flash(s.show_setting("INFO_ACL_UPDATED"), INFO)
         return redirect(request, 'home')
-    appstruct = {'acl': map(acl_to_dict, context.__acl__)}
-    result = rapid_deform(context, request, EditACL,
-                          edit_acl_submit, appstruct=appstruct)
+    result = rapid_deform(context, request, EditACL, edit_acl_submit, 
+                          acl=map(acl_to_dict, context.__acl__))
     if isinstance(result, dict):
         message = "Editing Access Control List"
         result.update({"title": message, "header": message})
@@ -441,10 +440,8 @@ def userarea_admin_edit_settings(context, request):
         s.update(bind_params['name'], deserialized['value'])
         return redirect(request, 'userarea_admin_list_settings')
     name = request.matchdict.get('name')
-    appstruct = {'value': s.show_setting(name).value}
-    result = rapid_deform(context, request, SettingSchema,
-                          edit_setting_submit, appstruct=appstruct,
-                          name=name)
+    result = rapid_deform(context, request, SettingSchema, edit_setting_submit, 
+                          name=name, value=s.show_setting(name).value)
     if isinstance(result, dict):
         message = "Editing Settings"
         result.update({"title": message, "header": message})
@@ -464,9 +461,8 @@ def userarea_admin_edit_template(context, request):
         """
         open(main_path, "w", newline="\n").write(deserialized['value'])
         return redirect(request, 'home')
-    appstruct = {'value': open(main_path).read()}
     result = rapid_deform(context, request, SettingSchema,
-                          edit_template_submit, appstruct=appstruct)
+                          edit_template_submit, value=open(main_path).read())
     if isinstance(result, dict):
         message = "Editing Template"
         result.update({"title": message, "header": message})
@@ -502,3 +498,60 @@ def userarea_admin_file_upload(context, request):
             else:
                 result.append((False, "/static/" + item, item))
     return {'items': result, 'title': message, 'header': message}
+
+@view_config(route_name='userarea_admin_manage_users',
+             permission='group:admin', renderer='userarea/manage_users.jinja2')
+def userarea_admin_manage_users(context, request):
+    """
+    Show table of users
+    """
+    return {"users": u.list(as_obj=True)}
+
+@view_config(route_name='userarea_admin_manage_user',
+             permission='group:admin', renderer='deform.jinja2')
+def userarea_admin_manage_user(context, request):
+    """
+    Manage a user
+    """
+    user = request.matchdict.get("name")
+    db_user = u.show(user)
+    def manage_user_submit(context, request, deserialized, bind_params):
+        """
+        Save user
+        """
+        db_user.full_name = deserialized.get("full_name")
+        db_user.email_address = deserialized.get("email")
+        db_user.sex = deserialized.get("sex")
+        db_user.website = deserialized.get("website")
+        db_user.aboutme = deserialized.get("about_me")
+        db_user.timezone = deserialized.get("timezone")
+        db_user.birthday = deserialized.get("birthday")
+        db_user.banned = deserialized.get("banned")
+        db_user.groups = []
+        for item in deserialized.get("groups"):
+            db_user.groups.append(u.show_group(item))
+        if deserialized.get("password"):
+            db_user.password = deserialized.get("password")
+        transaction.commit()
+        request.session.flash(s.show_setting("INFO_ACC_UPDATED"), INFO)
+        return redirect(request, 'userarea_admin_manage_users')
+    result = rapid_deform(context, request, EditAdminUserSchema, 
+                          manage_user_submit, full_name=db_user.full_name,
+                          email=db_user.email_address, website=db_user.website,
+                          birthday=db_user.birthday, about_me=db_user.aboutme,
+                          sex=db_user.sex, timezone=db_user.timezone,
+                          banned=db_user.banned, 
+                          groups=[x.name for x in db_user.groups])
+    if isinstance(result, dict):
+        message = "Managing user " + user
+        result.update({"title": message, "header": message})
+    return result
+
+@view_config(route_name='userarea_admin_delete_user', permission='group:admin')
+def userarea_admin_delete_user(context, request):
+    """
+    Delete a user
+    """
+    user = request.matchdict.get("name")
+    u.delete_user(user)
+    return redirect(request, 'userarea_admin_manage_users')

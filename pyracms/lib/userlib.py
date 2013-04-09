@@ -50,10 +50,12 @@ class UserLib():
         except NoResultFound:
             raise UserNotFound
 
-    def list(self, first=True):
+    def list(self, first=True, as_obj=False):
         """
         List all the users
         """
+        if as_obj:
+            return DBSession.query(User)
         if first:
             return [x[0] for x in DBSession.query(User.name).all()]
         else:
@@ -84,6 +86,8 @@ class UserLib():
         try:
             user = self.show(username)
         except UserNotFound:
+            return False
+        if user.banned:
             return False
         return user.validate_password(password)
     

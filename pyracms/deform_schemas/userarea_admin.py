@@ -1,10 +1,12 @@
 from ..factory import RootFactory
 from ..models import DBSession
+from .userarea import EditUserSchema
 from colander import (Schema, SchemaNode, String, OneOf, SequenceSchema, Integer, 
-    MappingSchema, deferred)
+    MappingSchema, deferred, Boolean, Set)
 from deform import FileData
 from deform.widget import SelectWidget, TextAreaWidget, FileUploadWidget
 from pyramid.security import Everyone
+from ..lib.userlib import UserLib
 
 class MemoryTmpStore(dict):
     """ Instances of this class implement the
@@ -51,6 +53,13 @@ def deferred_acl_widget(node, kw):
 @deferred
 def deferred_acl_validator(node, kw):
     return OneOf(get_acl(True))
+
+@deferred
+def deferred_group_widget(node, kw):
+    return SelectWidget(values=[(x[0], x[0]) 
+                                for x in UserLib().list_groups()], 
+                        multiple=True)
+
 class MenuItem(Schema):
     name = SchemaNode(String())
     url = SchemaNode(String())
@@ -80,3 +89,8 @@ class RestoreBackupSchema(Schema):
 class RestoreSettingsSchema(Schema):
     restore_settings_json_file = SchemaNode(FileData(), 
                                             widget=FileUploadWidget(tmpstore))
+    
+class EditAdminUserSchema(EditUserSchema):
+    banned = SchemaNode(Boolean())
+    password = SchemaNode(String(), missing='')
+    groups = SchemaNode(Set(), widget=deferred_group_widget)

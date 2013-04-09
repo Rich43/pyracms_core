@@ -92,7 +92,12 @@ def main(global_config, **settings):
                      '/userarea_admin/backup_settings')
     config.add_route('userarea_admin_restore_settings',
                      '/userarea_admin/restore_settings')
-    
+    config.add_route('userarea_admin_manage_users',
+                     '/userarea_admin/manage_users')
+    config.add_route('userarea_admin_manage_user',
+                     '/userarea_admin/manage_users/{name}')
+    config.add_route('userarea_admin_delete_user',
+                     '/userarea_admin/delete_user/{name}')
     config.scan()
     return config.make_wsgi_app()
 

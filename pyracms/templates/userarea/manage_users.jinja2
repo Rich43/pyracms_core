@@ -1,0 +1,18 @@
+{% extends "main.jinja2" %}
+{% block title %} - Manage Users{% endblock %}
+{% block content %}
+<h2>Manage Users</h2>
+<table>
+    <tr>
+        <th>Username</th>
+        <th>Actions</th>
+    </tr>
+    {% for user in users %}
+    <tr>
+        <td>{{ user.name }}</td>
+        <td><a href="/userarea_admin/manage_users/{{ user.name }}">Edit</a> | 
+            <a href="/userarea_admin/delete_user/{{ user.name }}">Delete</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -32,6 +32,7 @@ def main(argv=sys.argv):
         u = UserLib()
         admin_user = u.create_user("admin", "Admin User", "admin@admin.com",
                                    "admin", "Male")
+        admin_user.banned = False
         u.create_user(Everyone, "Guest User", "guest@guest.com", "guest",
                       "Female")
         
@@ -95,6 +96,8 @@ def main(argv=sys.argv):
         DBSession.add(Menu("Restore Settings", 
                            "/userarea_admin/restore_settings", 
                            11, group, 'backup'))
+        DBSession.add(Menu("Manage Users", "/userarea_admin/manage_users", 
+                           12, group, 'group:admin'))
         
         # Add Settings
         def add_dict(d):
