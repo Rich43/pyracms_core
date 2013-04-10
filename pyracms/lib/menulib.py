@@ -45,12 +45,18 @@ class MenuLib():
         return output
     
     def from_dict(self, data):
-        DBSession.query(MenuGroup).delete()
-        DBSession.query(Menu).delete()
         for k, v in data.items():
-            group = MenuGroup(k)
+            try:
+                group = self.show_group(k)
+            except MenuGroupNotFound:
+                group = MenuGroup(k)
+                DBSession.add(group)
             for item in v:
-                group.menu_items.append(Menu(item["name"], item["url"], 
-                                             item["position"], group, 
-                                             item["permissions"]))
-            DBSession.add(group)
+                try:
+                    DBSession.query(Menu).filter_by(group_id=group.id,
+                                                    name=item["name"],
+                                                    url=item["url"]).one()
+                except NoResultFound:
+                    group.menu_items.append(Menu(item["name"], item["url"], 
+                                                 item["position"], group, 
+                                                 item["permissions"]))
