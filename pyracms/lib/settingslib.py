@@ -53,6 +53,5 @@ class SettingsLib():
         return dict(self.DBSession.query(Settings.name, Settings.value))
     
     def from_dict(self, data):
-        self.DBSession.query(Settings).delete()
         for k, v in data.items():
-            self.DBSession.add(Settings(k, v))
+            self.DBSession.merge(Settings(k, v))
