@@ -54,4 +54,8 @@ class SettingsLib():
     
     def from_dict(self, data):
         for k, v in data.items():
-            self.DBSession.merge(Settings(k, v))
+            try:
+                item = self.show_setting(k, True)
+                item.value = v
+            except SettingNotFound:
+                self.DBSession.add(Settings(k, v))
