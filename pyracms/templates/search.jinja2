@@ -5,7 +5,7 @@
     {{ debug }}
 {% for item in items %}
 <div class="search">
-    <div class="searchlink"><a href="{{ item['path'] }}">{{ item['title'] }}</a></div>
+    <div class="searchlink"><a href="{{ item['path'] }}">{{ item['title'] or item['item_id'] }}</a></div>
     <div class="searchurl">{{ item['path'] }}</div>
     <div class="searchdescription">{{ item.highlights("content")|safe or item['content']|striptags|truncate(200) }}</div>
 </div>
