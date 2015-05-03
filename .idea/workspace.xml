@@ -25,10 +25,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyracms/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.67791075" vertical-offset="7673" max-vertical-offset="9588">
+            <state vertical-scroll-proportion="0.0" vertical-offset="7673" max-vertical-offset="9588">
               <caret line="488" column="44" selection-start-line="488" selection-start-column="44" selection-end-line="488" selection-end-column="44" />
               <folding>
                 <element signature="e#0#132#0" expanded="true" />
@@ -59,11 +59,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="development.ini" pinned="false" current-in-tab="false">
+      <file leaf-file-name="development.ini" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/development.ini">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="306" max-vertical-offset="1326">
-              <caret line="18" column="13" selection-start-line="18" selection-start-column="0" selection-end-line="19" selection-end-column="35" />
+            <state vertical-scroll-proportion="0.4069641" vertical-offset="51" max-vertical-offset="1326">
+              <caret line="25" column="8" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
               <folding />
             </state>
           </provider>
@@ -116,10 +116,10 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/development.ini" />
         <option value="$PROJECT_DIR$/pyracms/templates/main.jinja2" />
         <option value="$PROJECT_DIR$/pyracms/__init__.py" />
         <option value="$PROJECT_DIR$/pyracms/views.py" />
+        <option value="$PROJECT_DIR$/development.ini" />
       </list>
     </option>
   </component>
@@ -662,14 +662,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/development.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1326">
-          <caret line="18" column="13" selection-start-line="18" selection-start-column="0" selection-end-line="19" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pyracms/templates/main.jinja2">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="459" max-vertical-offset="1377">
@@ -698,11 +690,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pyracms/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.67791075" vertical-offset="7673" max-vertical-offset="9588">
+        <state vertical-scroll-proportion="0.0" vertical-offset="7673" max-vertical-offset="9588">
           <caret line="488" column="44" selection-start-line="488" selection-start-column="44" selection-end-line="488" selection-end-column="44" />
           <folding>
             <element signature="e#0#132#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/development.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.4069641" vertical-offset="51" max-vertical-offset="1326">
+          <caret line="25" column="8" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
+          <folding />
         </state>
       </provider>
     </entry>
