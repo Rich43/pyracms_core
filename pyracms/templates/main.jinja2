@@ -52,7 +52,8 @@
     </ul>
   {% endif %}
   </div>
-  {% for item in request.session.pop_flash('info'): %}
+
+  {% for item in  request.session.pop_flash('info'): %}
   <div class="flash_info">
       {{ item }}
   </div>

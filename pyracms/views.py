@@ -76,7 +76,7 @@ def redirect_view(article, request):
                                         request, type=gamedeptype,
                                         **request.POST))
 
-@view_config(route_name='userarea_login', renderer='userarea/login.jinja2')
+@view_config(route_name='userarea_login', renderer='login.jinja2')
 def userarea_login(context, request):
     """
     Display login form
@@ -103,9 +103,9 @@ def userarea_login(context, request):
     return rapid_deform(context, request, LoginSchema, login_submit,
                         redirect_url=redirect_url)
 
-@view_config(route_name='userarea_profile', renderer='userarea/profile.jinja2')
+@view_config(route_name='userarea_profile', renderer='profile.jinja2')
 @view_config(route_name='userarea_profile_two', 
-             renderer='userarea/profile.jinja2')
+             renderer='profile.jinja2')
 def userarea_profile(context, request):
     """
     Display either current or specified user's profile
@@ -164,7 +164,7 @@ def userarea_change_password_submit(context, request, deserialized, bind_params)
     password = deserialized.get("password")
     u.change_password(user, password)
     request.session.flash(s.show_setting("INFO_PASS_CHANGE"), INFO)
-    return HTTPFound(location="/userarea/login", headers=forget(request))
+    return HTTPFound(location="/login", headers=forget(request))
 
 @view_config(route_name='userarea_change_password_token',
              renderer='deform.jinja2')
@@ -469,21 +469,23 @@ def userarea_admin_edit_template(context, request):
     return result
 
 @view_config(route_name='userarea_admin_file_upload',
-             permission='file_upload', renderer='userarea/file_upload.jinja2')
+             permission='file_upload', renderer='file_upload.jinja2')
 def userarea_admin_file_upload(context, request):
+    def filename_filter(filename):
+        return "".join(filter(lambda c: c.isalnum() or ".", filename))
     message = "File Upload"
     result = []
     setting_data = request.registry.settings.get("static_path")
     static_path = resolve(setting_data).abspath()
     if 'path' in request.GET:
-        new_static_path = os.path.join(static_path, request.GET['path'])
+        new_static_path = os.path.join(static_path, filename_filter(request.GET['path']))
     else:
         new_static_path = static_path
     if 'datafile' in request.POST:
         data_file = request.POST['datafile']
         shutil.copyfileobj(data_file.file,
                            open(os.path.join(new_static_path,
-                                             data_file.filename), "wb"))
+                                             filename_filter(data_file.filename)), "wb"))
     for item in os.listdir(new_static_path):
         if os.path.isdir(os.path.join(new_static_path, item)):
             if 'path' in request.GET:
@@ -500,7 +502,7 @@ def userarea_admin_file_upload(context, request):
     return {'items': result, 'title': message, 'header': message}
 
 @view_config(route_name='userarea_admin_manage_users',
-             permission='group:admin', renderer='userarea/manage_users.jinja2')
+             permission='group:admin', renderer='manage_users.jinja2')
 def userarea_admin_manage_users(context, request):
     """
     Show table of users

@@ -60,7 +60,7 @@ def main(global_config, **settings):
     config.add_route('userarea_login', '/userarea/login')
     config.add_view(view=".views.userarea_login",
                     context="pyramid.httpexceptions.HTTPForbidden",
-                    renderer="userarea/login.jinja2")
+                    renderer="login.jinja2")
     config.add_route('userarea_logout', '/userarea/logout')
     config.add_route('userarea_profile', '/userarea/profile')
     config.add_route('userarea_profile_two', '/userarea/profile/{user}')
