@@ -76,7 +76,7 @@ def redirect_view(article, request):
                                         request, type=gamedeptype,
                                         **request.POST))
 
-@view_config(route_name='userarea_login', renderer='login.jinja2')
+@view_config(route_name='userarea_login', renderer='userarea/login.jinja2')
 def userarea_login(context, request):
     """
     Display login form
@@ -105,7 +105,7 @@ def userarea_login(context, request):
 
 @view_config(route_name='userarea_profile', renderer='profile.jinja2')
 @view_config(route_name='userarea_profile_two', 
-             renderer='profile.jinja2')
+             renderer='userarea/profile.jinja2')
 def userarea_profile(context, request):
     """
     Display either current or specified user's profile
@@ -469,7 +469,7 @@ def userarea_admin_edit_template(context, request):
     return result
 
 @view_config(route_name='userarea_admin_file_upload',
-             permission='file_upload', renderer='file_upload.jinja2')
+             permission='file_upload', renderer='userarea/file_upload.jinja2')
 def userarea_admin_file_upload(context, request):
     def filename_filter(filename):
         return "".join(filter(lambda c: c.isalnum() or ".", filename))
@@ -502,7 +502,7 @@ def userarea_admin_file_upload(context, request):
     return {'items': result, 'title': message, 'header': message}
 
 @view_config(route_name='userarea_admin_manage_users',
-             permission='group:admin', renderer='manage_users.jinja2')
+             permission='group:admin', renderer='userarea/manage_users.jinja2')
 def userarea_admin_manage_users(context, request):
     """
     Show table of users
