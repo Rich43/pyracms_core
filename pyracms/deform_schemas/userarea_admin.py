@@ -31,21 +31,6 @@ def get_acl(single_result=False):
         result.insert(0, (Everyone, Everyone))
     return result
 
-class ACLItem(Schema):
-    allow_deny = SchemaNode(String(),
-                 widget=SelectWidget(values=[("Allow", "Allow"),
-                                             ("Deny", "Deny")],
-                 validator=OneOf([("Allow", "Deny")]),
-                 default="Allow"))
-    who = SchemaNode(String())
-    permission = SchemaNode(String())
-
-class ACL(SequenceSchema):
-    acl_item = ACLItem()
-
-class EditACL(Schema):
-    acl = ACL()
-    
 @deferred
 def deferred_acl_widget(node, kw):
     return SelectWidget(values=get_acl())
@@ -53,6 +38,23 @@ def deferred_acl_widget(node, kw):
 @deferred
 def deferred_acl_validator(node, kw):
     return OneOf(get_acl(True))
+
+class ACLItem(Schema):
+    allow_deny = SchemaNode(String(),
+                 widget=SelectWidget(values=[("Allow", "Allow"),
+                                             ("Deny", "Deny")],
+                 validator=OneOf([("Allow", "Deny")]),
+                 default="Allow"))
+    who = SchemaNode(String())
+    permission = SchemaNode(String(), widget=deferred_acl_widget,
+                            validator=deferred_acl_validator, 
+                            default=Everyone)
+
+class ACL(SequenceSchema):
+    acl_item = ACLItem()
+
+class EditACL(Schema):
+    acl = ACL()
 
 @deferred
 def deferred_group_widget(node, kw):
@@ -64,7 +66,8 @@ class MenuItem(Schema):
     name = SchemaNode(String())
     url = SchemaNode(String())
     permissions = SchemaNode(String(), widget=deferred_acl_widget,
-                             validator=deferred_acl_validator, default=Everyone)
+                             validator=deferred_acl_validator, 
+                             default=Everyone)
     position = SchemaNode(Integer())
     
 class Menu(SequenceSchema):
