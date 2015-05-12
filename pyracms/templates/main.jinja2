@@ -9,10 +9,10 @@
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
     <!-- Start of javascript and css needed for forms -->
     {% for reqt in js_links %}
-      <script type="text/javascript" src="/dstatic/{{ reqt | safe }}"></script>
+      <script type="text/javascript" src="{{ request.static_url('%s' % reqt) | safe }}"></script>
     {%- endfor %}
     {% for reqt in css_links %}
-      <link rel="stylesheet" href="/dstatic/{{ reqt | safe }}" type="text/css" />
+      <link rel="stylesheet" href="{{ request.static_url('%s' % reqt) | safe }}" type="text/css" />
     {%- endfor %}
     <!-- End of javascript and css needed for forms -->
     <script type="text/javascript">

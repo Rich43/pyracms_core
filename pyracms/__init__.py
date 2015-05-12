@@ -42,8 +42,7 @@ def main(global_config, **settings):
     config.add_subscriber(add_renderer_globals, BeforeRender)
     config.add_static_view('static', settings.get('static_path'), 
                            cache_max_age=3600)
-    config.add_static_view("dstatic", "deform:static", 
-                           cache_max_age=3600)
+    config.add_static_view('static-deform', 'deform:static')
     if settings.get("enable_pyracms_home"):
         config.add_view(dummy_home, route_name="home", 
                         renderer="dummy_home.jinja2")
