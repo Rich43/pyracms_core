@@ -1,79 +1,55 @@
-from ..models import Files, FilesData
+from pyramid.path import AssetResolver
+from pyracms.models import DBSession, Files
+from uuid import uuid1
+from os.path import join, split
+from os import mkdir
+from time import time
+from shutil import rmtree
+resolve = AssetResolver().resolve
 
-class AlchemyIO:
-    """class AlchemyIO
-    Read and write files to the database.
-    Takes in:
-    1) file object          -   only needed for write
-    2) a Files object that
-       has been added and
-       commited to the
-       session.             -   only needed for read
-    3) the session itself   -   only needed for write
-    """
-    def __init__(self, fle=None, sess=None, FilesObj=None, 
-                 mime=None, filename=None):
-        self.sess = sess
-        self.FilesObj = FilesObj
-        self.fle = fle
-        self.mime = mime
-        self.filename = filename
-        
-    def read(self):
-        """
-        Read data from FilesObj and yield it in
-        1MB chunks.
-        """
-        if not self.FilesObj:
-            raise Exception("FilesObj attribute is not set.")
-        for item in self.FilesObj.data:
-            yield item.data
+class FileLib:
+    def __init__(self, request):
+        self.request = request
 
-    def read_from(self, pos):
-        """
-        Todo: Add ability to read, starting from a position.
-        """
-        pass
+    def filename_filter(self, filename):
+        return "".join(filter(lambda c: c.isalnum() or ".", filename))
 
-    def write(self):
+    def get_filename(self, filename):
+        uuid = str(uuid1(clock_seq=int(time())))
+        return (uuid, join(uuid, filename))
+
+    def get_static_path(self):
+        setting_data = self.request.registry.settings.get("static_path")
+        return resolve(setting_data).abspath()
+
+    def write(self, filename, file_obj, mimetype):
         """
         Make a new File record, make needed
         FileData record(s) while reading data from self.fle,
         return the File record.
         """
-        if not self.fle:
-            raise Exception("fle attribute is not set.")
-        if not self.sess:
-            raise Exception("sess attribute is not set.")
-        if not self.mime:
-            raise Exception("mime attribute is not set.")
-        if not self.filename:
-            raise Exception("filename attribute is not set.")
-        f = Files(self.filename, self.mime)
-        self.fle.seek(0,2)
-        f.size = self.fle.tell()
-        self.fle.seek(0)
-        self.sess.add(f)
-        #transaction.commit()
+        uuid, filename = self.get_filename(self.filename_filter(filename))
+        name_with_path = join(self.get_static_path(), filename)
+        f = Files(filename, mimetype)
+        file_obj.seek(0,2)
+        f.size = file_obj.tell()
+        file_obj.seek(0)
+        DBSession.add(f)
+        try:
+            mkdir(join(self.get_static_path(), uuid))
+        except OSError:
+            pass
+        file_out_obj = open(name_with_path, "wb")
         while True:
-            buf = self.fle.read(10**6)
+            buf = file_obj.read(10**6)
             if buf:
-                fd = FilesData(buf)
-                f.data.append(fd)
-                #transaction.commit()
+                file_out_obj.write(buf)
             else:
                 break
+        file_out_obj.close()
         f.upload_complete = True
         return f
 
-    def get_size(self):
-        """
-        Read data from FilesObj and
-        get file size.
-        """
-        if not self.FilesObj:
-            raise Exception("FilesObj attribute is not set.")
-        size = 0
-        for item in self.FilesObj.data:
-            size += len(item.data)
-        return size
+    def delete(self, db_file):
+        rmtree(join(self.get_static_path(), split(db_file.name)[0]))
+        DBSession.delete(db_file)

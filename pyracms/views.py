@@ -25,6 +25,7 @@ import json
 import os
 import shutil
 import transaction
+from pyracms.lib.filelib import FileLib
 
 u = UserLib()
 t = TokenLib()
@@ -472,21 +473,19 @@ def userarea_admin_edit_template(context, request):
 @view_config(route_name='userarea_admin_file_upload',
              permission='file_upload', renderer='userarea/file_upload.jinja2')
 def userarea_admin_file_upload(context, request):
-    def filename_filter(filename):
-        return "".join(filter(lambda c: c.isalnum() or ".", filename))
     message = "File Upload"
     result = []
-    setting_data = request.registry.settings.get("static_path")
-    static_path = resolve(setting_data).abspath()
+    file_lib = FileLib(request)
+    static_path = file_lib.get_static_path()
     if 'path' in request.GET:
-        new_static_path = os.path.join(static_path, filename_filter(request.GET['path']))
+        new_static_path = os.path.join(static_path, file_lib.filename_filter(request.GET['path']))
     else:
         new_static_path = static_path
     if 'datafile' in request.POST:
         data_file = request.POST['datafile']
         shutil.copyfileobj(data_file.file,
                            open(os.path.join(new_static_path,
-                                             filename_filter(data_file.filename)), "wb"))
+                                             file_lib.filename_filter(data_file.filename)), "wb"))
     for item in os.listdir(new_static_path):
         if os.path.isdir(os.path.join(new_static_path, item)):
             if 'path' in request.GET:

@@ -22,10 +22,13 @@
                             type="text/css" media="screen" charset="utf-8" />
 </head>
 <body>
-  {{ w.search_html|safe }}
-  <div class="menu">
+<div class="pageborder">
+  <span class="search">{{ w.search_html|safe }}</span>
+<h1 class="header">Pynguins</h1>
+<div class="menus">
     <!-- This variable contains the logged in user's username -->
     {% set userid = w.logged_in(request) %}
+  <div class="menu">
     <h3>Main Menu</h3>
     <ul>
       <!-- A for loop that outputs all the menu items on the main menu -->
@@ -33,6 +36,26 @@
       <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
       {%- endfor %}
     </ul>
+   </div>
+  <div class="menu">
+    <h3>Hosted Sites</h3>
+    <ul>
+      <!-- A for loop that outputs all the menu items on the main menu -->
+      {%- for item in w.generate_menu("hosted_sites", context, request): %}
+      <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
+      {%- endfor %}
+    </ul>
+   </div>
+  <div class="menu">
+    <h3>Source Code</h3>
+    <ul>
+      <!-- A for loop that outputs all the menu items on the main menu -->
+      {%- for item in w.generate_menu("source_code", context, request): %}
+      <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
+      {%- endfor %}
+    </ul>
+   </div>
+   <div class="menu">
     <h3>User Area</h3>
     <!-- Display a small helpful message stating if you are logged in -->
     <h4>{% if not userid %}Not logged in.{% else %}Logged in as {{ userid }}.{% endif %}</h4>
@@ -42,9 +65,12 @@
       <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
       {%- endfor %}
     </ul>
+   </div>
+   
   <!-- Pre-generate the admin area menu so that I can conditionally ahow it, depending on if I am logged in -->
   {% set adminarea = w.generate_menu("admin_area", context, request) %}
   {% if adminarea %}
+<div class="menu">
     <h3>Admin Area</h3>
     <ul>
       <!-- A for loop that outputs all the menu items on the admin area menu -->
@@ -52,10 +78,11 @@
       <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
       {%- endfor %}
     </ul>
+</div>
   {% endif %}
-  </div>
-
-  {% for item in  request.session.pop_flash('info'): %}
+  
+</div>
+  {% for item in request.session.pop_flash('info'): %}
   <div class="flash_info">
       {{ item }}
   </div>
@@ -74,5 +101,6 @@
     <!-- Display the main content on the page -->
     {% block content %}{% endblock %}
   </div>
+</div>
 </body>
 </html>
