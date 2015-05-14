@@ -55,6 +55,7 @@ class Files(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(1024), index=True, nullable=False)
+    uuid = Column(Unicode(128), index=True, nullable=False)
     mimetype = Column(Unicode(128), index=True, nullable=False)
     size = Column(BigInteger, index=True, default=0)
     created = Column(DateTime, default=datetime.now)

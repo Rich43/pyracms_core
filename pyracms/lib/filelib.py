@@ -8,6 +8,8 @@ from shutil import rmtree
 resolve = AssetResolver().resolve
 
 class FileLib:
+    UPLOAD_DIR = "uploads"
+
     def __init__(self, request):
         self.request = request
 
@@ -28,15 +30,21 @@ class FileLib:
         FileData record(s) while reading data from self.fle,
         return the File record.
         """
-        uuid, filename = self.get_filename(self.filename_filter(filename))
-        name_with_path = join(self.get_static_path(), filename)
+        filename = self.filename_filter(filename)
+        uuid, new_filename = self.get_filename(filename)
+        name_with_path = join(self.get_static_path(), self.UPLOAD_DIR, new_filename)
         f = Files(filename, mimetype)
+        f.uuid = uuid
         file_obj.seek(0,2)
         f.size = file_obj.tell()
         file_obj.seek(0)
         DBSession.add(f)
         try:
-            mkdir(join(self.get_static_path(), uuid))
+            mkdir(join(self.get_static_path(), self.UPLOAD_DIR))
+        except OSError:
+            pass
+        try:
+            mkdir(join(self.get_static_path(), self.UPLOAD_DIR, uuid))
         except OSError:
             pass
         file_out_obj = open(name_with_path, "wb")
@@ -51,5 +59,5 @@ class FileLib:
         return f
 
     def delete(self, db_file):
-        rmtree(join(self.get_static_path(), split(db_file.name)[0]))
+        rmtree(join(self.get_static_path(), self.UPLOAD_DIR, split(db_file.name)[0]), True)
         DBSession.delete(db_file)
