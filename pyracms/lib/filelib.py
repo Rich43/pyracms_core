@@ -1,7 +1,7 @@
 from pyramid.path import AssetResolver
 from pyracms.models import DBSession, Files
 from uuid import uuid1
-from os.path import join, split, samefile
+from os.path import join, split
 from os import mkdir
 from time import time
 from shutil import rmtree
@@ -62,7 +62,5 @@ class FileLib:
     def delete(self, db_file):
         path = join(self.get_static_path(), self.UPLOAD_DIR, 
                     db_file.uuid)
-        if not samefile(join(self.get_static_path(), self.UPLOAD_DIR),
-                        path):
-            rmtree(path, True)
-            DBSession.delete(db_file)
+        rmtree(path, True)
+        DBSession.delete(db_file)
