@@ -106,7 +106,122 @@ def main(argv=sys.argv):
                     DBSession.add(Settings(k))
                 else:
                     DBSession.add(Settings(k, v))
-        d = {"CSS": ".menu {float: left;}\n.searchform {float: right;}", 
+        d = {"CSS": """html {
+height:100%;
+}
+
+body {
+background-color:#BDBFCC;
+font-family:Arial,Helvetica,sans-serif;
+font-size:16px;
+height:100%;
+margin:0;
+padding:0;
+}
+
+.header {
+text-align: center;
+padding: 10px;
+margin-left: 20px;
+margin-right: 20px;
+}
+
+.content {
+background-color:#EFF2F8;
+border-color:white;
+border-style:solid;
+border-width:10px 10px 5px;
+margin-left:200px;
+padding:25px;
+min-height: 100px;
+border-radius: 25px;
+}
+
+.content h2 {
+text-align:center;
+}
+
+.pageborder {
+background-color:white;
+margin:20px 30px;
+padding-bottom:30px;
+border-radius: 15px;
+}
+
+.pageborder:after {
+clear:both;
+content:".";
+display:block;
+height:0;
+visibility:hidden;
+}
+
+.menus {
+float:left;
+height:100%;
+width:207px;
+}
+
+.menu {
+border:1px solid #000000;
+margin:10px;
+text-align:center;
+}
+
+.menu ul li a {
+font-weight:bold;
+color:black;
+height:31px;
+line-height:23px;
+}
+
+.menu ul li {
+width:150px;
+}
+
+.menu ul {
+list-style-type:none;
+padding-left:1em;
+}
+
+.menu h3 {
+font-size:x-large;
+font-weight:normal;
+height:15px;
+margin-top:0;
+width:185px;
+}
+
+.redirecthtml {
+    padding-bottom: 10px;
+}
+
+.error-message {
+    color: red;
+}
+
+.grid {
+width:75%;    
+}
+
+.errwarninfoimg {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.errwarninfotext {
+    position: absolute;
+    top: 25%;
+}
+
+.errwarninfodiv {
+    margin-top: 20px;
+    position: relative;
+}
+
+.errwarninfolink {
+    padding-left: 20px;
+}""", 
              "TITLE": "Untitled Website",
              "KEYWORDS": None, "DESCRIPTION": None, "DEFAULTRENDERER": "HTML",
              "RECOVER_PASSWORD": "recover password", 
