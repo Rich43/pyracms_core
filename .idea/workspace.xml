@@ -37,23 +37,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="filelib.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/pyracms/lib/filelib.py">
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/pyracms/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.43910256" vertical-offset="69" max-vertical-offset="1020">
-              <caret line="32" column="49" selection-start-line="32" selection-start-column="49" selection-end-line="32" selection-end-column="49" />
-              <folding>
-                <element signature="e#0#38#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="main.jinja2" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pyracms/templates/main.jinja2">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.75" vertical-offset="0" max-vertical-offset="1665">
-              <caret line="14" column="52" selection-start-line="14" selection-start-column="38" selection-end-line="14" selection-end-column="56" />
+            <state vertical-scroll-proportion="0.59294873" vertical-offset="810" max-vertical-offset="3285">
+              <caret line="100" column="58" selection-start-line="100" selection-start-column="58" selection-end-line="100" selection-end-column="58" />
               <folding />
             </state>
           </provider>
@@ -91,8 +79,8 @@
         <option value="$PROJECT_DIR$/pyracms/deform_schemas/userarea_admin.py" />
         <option value="$PROJECT_DIR$/pyracms/__init__.py" />
         <option value="$PROJECT_DIR$/pyracms/views.py" />
-        <option value="$PROJECT_DIR$/pyracms/models.py" />
         <option value="$PROJECT_DIR$/pyracms/lib/filelib.py" />
+        <option value="$PROJECT_DIR$/pyracms/models.py" />
       </list>
     </option>
   </component>
@@ -258,7 +246,7 @@
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="FullScreen" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../hypernucleus-server" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../article" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -543,7 +531,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="25" width="1936" height="1056" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24974146" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -592,6 +580,52 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/pyracms/views.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="5775" max-vertical-offset="8475">
+          <caret line="487" column="98" selection-start-line="487" selection-start-column="98" selection-end-line="487" selection-end-column="98" />
+          <folding>
+            <element signature="e#0#132#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyracms/lib/filelib.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1020">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#38#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyracms/templates/main.jinja2">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="210" max-vertical-offset="1665">
+          <caret line="14" column="52" selection-start-line="14" selection-start-column="38" selection-end-line="14" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyracms/deform_schemas/userarea_admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="855" max-vertical-offset="1575">
+          <caret line="57" column="0" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyracms/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="264" max-vertical-offset="1470">
+          <caret line="61" column="39" selection-start-line="61" selection-start-column="39" selection-end-line="61" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyracms/views.py">
+      <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="6675" max-vertical-offset="8475">
           <caret line="487" column="98" selection-start-line="487" selection-start-column="98" selection-end-line="487" selection-end-column="98" />
           <folding>
@@ -605,7 +639,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="810">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#38#0" expanded="true" />
+            <element signature="e#0#38#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -632,9 +666,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="262" max-vertical-offset="3375">
           <caret line="219" column="0" selection-start-line="219" selection-start-column="0" selection-end-line="219" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#40#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -699,9 +731,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="3555">
           <caret line="6" column="34" selection-start-line="6" selection-start-column="34" selection-end-line="6" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#40#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -748,9 +778,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="102" max-vertical-offset="4029">
           <caret line="6" column="34" selection-start-line="6" selection-start-column="34" selection-end-line="6" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#40#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -802,34 +830,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pyracms/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5833333" vertical-offset="219" max-vertical-offset="3390">
-          <caret line="51" column="18" selection-start-line="51" selection-start-column="18" selection-end-line="51" selection-end-column="18" />
-          <folding>
-            <element signature="e#0#40#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyracms/templates/main.jinja2">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.75" vertical-offset="0" max-vertical-offset="1665">
-          <caret line="14" column="52" selection-start-line="14" selection-start-column="38" selection-end-line="14" selection-end-column="56" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyracms/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="6675" max-vertical-offset="8475">
-          <caret line="487" column="98" selection-start-line="487" selection-start-column="98" selection-end-line="487" selection-end-column="98" />
-          <folding>
-            <element signature="e#0#132#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pyracms/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="264" max-vertical-offset="1470">
@@ -840,11 +840,37 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pyracms/lib/filelib.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.43910256" vertical-offset="69" max-vertical-offset="1020">
-          <caret line="32" column="49" selection-start-line="32" selection-start-column="49" selection-end-line="32" selection-end-column="49" />
+        <state vertical-scroll-proportion="0.43269232" vertical-offset="0" max-vertical-offset="1080">
+          <caret line="27" column="11" selection-start-line="27" selection-start-column="11" selection-end-line="27" selection-end-column="11" />
           <folding>
-            <element signature="e#0#38#0" expanded="true" />
+            <element signature="e#0#38#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyracms/templates/main.jinja2">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="210" max-vertical-offset="1665">
+          <caret line="14" column="52" selection-start-line="14" selection-start-column="38" selection-end-line="14" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyracms/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="5775" max-vertical-offset="8475">
+          <caret line="487" column="98" selection-start-line="487" selection-start-column="98" selection-end-line="487" selection-end-column="98" />
+          <folding>
+            <element signature="e#0#132#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyracms/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.59294873" vertical-offset="810" max-vertical-offset="3285">
+          <caret line="100" column="58" selection-start-line="100" selection-start-column="58" selection-end-line="100" selection-end-column="58" />
+          <folding />
         </state>
       </provider>
     </entry>
