@@ -2,7 +2,7 @@ from ..factory import RootFactory
 from ..models import DBSession
 from .userarea import EditUserSchema
 from colander import (Schema, SchemaNode, String, OneOf, SequenceSchema, Integer, 
-    MappingSchema, deferred, Boolean, Set)
+                      MappingSchema, deferred, Boolean, Set)
 from deform import FileData
 from deform.widget import SelectWidget, TextAreaWidget, FileUploadWidget
 from pyramid.security import Everyone

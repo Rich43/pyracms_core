@@ -31,7 +31,8 @@ def get_username(request):
         return Everyone
 
 def rapid_deform(context, request, schema, validated_callback=None,
-                 appstruct=null, **bind_params):
+                 appstruct=null, action='', use_ajax=False,
+                 **bind_params):
     """
     Display a deform form. Cache generated forms in database.
     """
@@ -40,7 +41,8 @@ def rapid_deform(context, request, schema, validated_callback=None,
 
     # Initialise form library
     bound_schema = schema().bind(**bind_params)
-    myform = Form(bound_schema, buttons=['submit'])
+    myform = Form(bound_schema, action=action, use_ajax=use_ajax,
+                  buttons=['submit'])
 
     # Default template arguments
     reqts = myform.get_widget_resources()

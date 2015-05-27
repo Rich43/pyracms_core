@@ -1,14 +1,17 @@
-from ..deform_schemas.userarea import LoginSchema
-from .helperlib import get_username
-from .menulib import MenuLib, MenuGroupNotFound
-from .restlib import html_body
-from .userlib import UserLib, UserNotFound
 from datetime import datetime, date, timedelta
+
 from deform.form import Form
 from pyramid.security import authenticated_userid, Everyone, has_permission
 import markdown
 import postmarkup
 import pytz
+
+from ..deform_schemas.userarea import LoginSchema
+from .helperlib import get_username
+from .menulib import MenuLib, MenuGroupNotFound
+from .restlib import html_body
+from .userlib import UserLib, UserNotFound
+from .filelib import FileLib
 
 search_html = """
 <form action="/redirect/search" method="post" class="searchform">
@@ -22,7 +25,10 @@ class WidgetLib():
     def __init__(self):
         self.search_html = search_html
         self.bbcode = postmarkup.render_bbcode
-        
+
+    def get_upload_url(self, request):
+        return '%s/static/%s/' % (request.host_url, FileLib(request).UPLOAD_DIR)
+
     def format_time(self, time, request=None, tz='UTC', time_format='%H:%M:%S'):
         """
         Format the time, adjusting with timezone
