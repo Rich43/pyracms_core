@@ -85,12 +85,14 @@ class FileLib:
             if is_image:
                 media_obj.thumbnail(thumbnail_size)
                 media_obj.save(str_file + ".thumbnail.png", "png")
+                f.is_picture = True
             if is_video:
                 main_path = str_file + ".main.png"
                 media_obj.save_frame(main_path, media_obj.duration/10)
                 im_obj = Image.open(main_path)
                 im_obj.thumbnail(thumbnail_size)
                 im_obj.save(str_file + ".thumbnail.png", "png")
+                f.is_video = True
             if not is_image and not is_video:
                 return f
         f.upload_complete = True

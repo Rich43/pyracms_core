@@ -50,7 +50,7 @@
         <entry file="file://$PROJECT_DIR$/pyracms/models.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="40" column="54" selection-start-line="40" selection-start-column="54" selection-end-line="40" selection-end-column="54" />
+              <caret line="63" column="12" selection-start-line="63" selection-start-column="12" selection-end-line="63" selection-end-column="12" />
               <folding />
             </state>
           </provider>
@@ -59,8 +59,8 @@
       <file leaf-file-name="filelib.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pyracms/lib/filelib.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.5705128">
-              <caret line="98" column="30" selection-start-line="98" selection-start-column="30" selection-end-line="98" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.74358976">
+              <caret line="94" column="33" selection-start-line="94" selection-start-column="33" selection-end-line="94" selection-end-column="33" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
               </folding>
@@ -143,11 +143,11 @@
         <option value="$PROJECT_DIR$/development.ini" />
         <option value="$PROJECT_DIR$/pyracms/__init__.py" />
         <option value="$PROJECT_DIR$/pyracms/views.py" />
-        <option value="$PROJECT_DIR$/pyracms/models.py" />
         <option value="$PROJECT_DIR$/pyracms/deform_schemas/userarea_admin.py" />
         <option value="$PROJECT_DIR$/pyracms/lib/settingslib.py" />
         <option value="$PROJECT_DIR$/pyracms/lib/helperlib.py" />
         <option value="$PROJECT_DIR$/pyracms/lib/widgetlib.py" />
+        <option value="$PROJECT_DIR$/pyracms/models.py" />
         <option value="$PROJECT_DIR$/pyracms/lib/filelib.py" />
       </list>
     </option>
@@ -1052,15 +1052,15 @@
     <entry file="file://$PROJECT_DIR$/pyracms/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="40" column="54" selection-start-line="40" selection-start-column="54" selection-end-line="40" selection-end-column="54" />
+          <caret line="63" column="12" selection-start-line="63" selection-start-column="12" selection-end-line="63" selection-end-column="12" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyracms/lib/filelib.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.5705128">
-          <caret line="98" column="30" selection-start-line="98" selection-start-column="30" selection-end-line="98" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.74358976">
+          <caret line="94" column="33" selection-start-line="94" selection-start-column="33" selection-end-line="94" selection-end-column="33" />
           <folding>
             <element signature="e#0#38#0" expanded="true" />
           </folding>
