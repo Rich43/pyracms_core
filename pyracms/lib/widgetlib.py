@@ -97,8 +97,7 @@ class WidgetLib():
             return list1
         return list1 | set(list2)
 
-    def render_article(self, page, article):
-        renderer = page.renderer.name
+    def render_article(self, renderer, article):
         if renderer == "HTML":
             return article
         elif renderer == "BBCODE":
