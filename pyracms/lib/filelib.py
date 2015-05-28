@@ -93,6 +93,7 @@ class FileLib:
                 im_obj.thumbnail(thumbnail_size)
                 im_obj.save(str_file + ".thumbnail.png", "png")
                 f.is_video = True
+                f.video_duration = media_obj.duration
             if not is_image and not is_video:
                 return f
         f.upload_complete = True

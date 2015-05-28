@@ -63,6 +63,7 @@ class Files(Base):
     is_picture = Column(Boolean, default=False, index=True)
     is_video = Column(Boolean, default=False, index=True)
     download_count = Column(Integer, default=0, index=True)
+    video_duration = Column(Integer, default=0, index=True)
 
     def __init__(self, name, mimetype):
         self.name = name
