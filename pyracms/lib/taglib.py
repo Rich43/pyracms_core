@@ -3,6 +3,7 @@ import string
 ARTICLE = "page"
 GAMEDEP = "game"
 BOARD = "thread"
+GALLERY = "gallery"
 
 class InvalidTagType(Exception):
     pass
@@ -14,7 +15,7 @@ class TagLib():
     """
     
     def __init__(self, cls, tag_type):
-        if not tag_type in [ARTICLE, GAMEDEP, BOARD]:
+        if not tag_type in [ARTICLE, GAMEDEP, BOARD, GALLERY]:
             raise InvalidTagType
         self.tag_type = tag_type
         self.cls = cls
