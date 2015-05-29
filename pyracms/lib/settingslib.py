@@ -34,6 +34,13 @@ class SettingsLib():
         """
         setting = self.show_setting(name, True)
         setting.value = value
+
+    def has_setting(self, name):
+        try:
+            self.show_setting(name)
+            return True
+        except SettingNotFound:
+            return False
         
     def show_setting(self, name, as_obj=False):
         """
