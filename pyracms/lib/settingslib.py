@@ -20,7 +20,7 @@ class SettingsLib():
         """
         return self.DBSession.query(Settings.name, Settings.value)
 
-    def create(self, name, value):
+    def create(self, name, value=""):
         """
         Update a page
         Raise PageNotFound if page does not exist
@@ -41,7 +41,7 @@ class SettingsLib():
             return True
         except SettingNotFound:
             return False
-        
+
     def show_setting(self, name, as_obj=False):
         """
         Get setting object.
