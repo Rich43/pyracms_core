@@ -10,8 +10,10 @@
     {% for user in users %}
     <tr>
         <td>{{ user.name }}</td>
-        <td><a href="/userarea_admin/manage_users/{{ user.name }}">Edit</a> | 
-            <a href="/userarea_admin/delete_user/{{ user.name }}">Delete</a></td>
+        <td><a href="{{ request.route_url("userarea_admin_manage_user",
+                name=user.name) }}">Edit</a> |
+            <a href="{{ request.route_url("userarea_admin_delete_user",
+                name=user.name) }}">Delete</a></td>
     </tr>
     {% endfor %}
 </table>
