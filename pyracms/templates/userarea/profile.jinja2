@@ -2,6 +2,7 @@
 {% block title %} - {{ user }}'s Profile{% endblock %}
 {% block content %}
     <h3>{{ user }}'s Profile</h3>
+    <p><img src="/userarea/get_picture" width="200" /></p>
     <p>Username: {{ user }}</p>
     <p>Display Name: {{ db_user.full_name }}</p>
     <p>Website: {{ db_user.website }}</p>

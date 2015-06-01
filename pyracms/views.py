@@ -21,10 +21,12 @@ from pyramid.view import view_config
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
 from string import Template
+from os.path import join
 import json
 import os
 import shutil
 import transaction
+from pyracms import WidgetLib
 from pyracms.lib.filelib import FileLib
 
 u = UserLib()
@@ -76,6 +78,30 @@ def redirect_view(article, request):
     return HTTPFound(location=route_url(route_name,
                                         request, type=gamedeptype,
                                         **request.POST))
+
+@view_config(route_name='userarea_get_picture')
+def userarea_get_picture(request):
+    """
+    Setup Profile Picture
+    """
+    user = u.show(authenticated_userid(request))
+    if s.has_setting("PYRACMS_GALLERY"):
+        from pyracms_gallery.lib.gallerylib import GalleryLib
+        g = GalleryLib()
+        if user.album_id == -1:
+            user.album_id = g.create_album(user.name, user.name, user)
+        if user.picture_id == -1:
+            path = join(FileLib(request).get_static_path(), "blank.jpg")
+            user.picture_id = g.create_picture(g.show_album(user.album_id),
+                                               open(path, "rb"), "image/jpeg",
+                                               "blank.jpg", user, request,
+                                               "Anonymous")
+        picture = g.show_picture(user.picture_id)
+        return HTTPFound(location=WidgetLib().get_upload_url(request) +
+                                  picture.file_obj.uuid + "/" +
+                                  picture.file_obj.name)
+    else:
+        return HTTPFound(location=request.host_url + "/static/blank.jpg")
 
 @view_config(route_name='userarea_login', renderer='userarea/login.jinja2')
 def userarea_login(context, request):

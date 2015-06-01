@@ -71,6 +71,7 @@ def main(global_config, **settings):
                      '/userarea/change_password/{token}')
     config.add_route('userarea_register', '/userarea/register')
     config.add_route('userarea_list', '/userarea/list')
+    config.add_route('userarea_get_picture', '/userarea/get_picture')
 
     # Userarea Admin routes
     config.add_route('userarea_admin_edit_menu', '/userarea_admin/edit_menu')

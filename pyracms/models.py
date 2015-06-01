@@ -102,6 +102,7 @@ class User(Base):
     file_obj = relationship(Files, cascade="all, delete")
     thread_id = Column(Integer, nullable=False, default=-1)
     album_id = Column(Integer, nullable=False, default=-1)
+    picture_id = Column(Integer, nullable=False, default=-1)
     _password = Column('password', Unicode(128), nullable=False)
     groups = relationship('Group', secondary=UserGroup.__table__,
                           backref='user')
