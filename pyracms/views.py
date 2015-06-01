@@ -142,7 +142,17 @@ def userarea_profile(context, request):
     if not user:
         raise Forbidden()
     db_user = u.show(user)
-    result = {'user': user, 'db_user': db_user}
+    result = {'str_user': user, 'db_user': db_user, "thread_enabled": False}
+    if s.has_setting("PYRACMS_FORUM"):
+        from pyracms_forum.views import get_thread
+        from pyracms_forum.lib.boardlib import BoardLib
+        if db_user.thread_id == -1:
+            db_user.thread_id = BoardLib().add_thread(db_user.name,
+                                                      db_user.name, "",
+                                                      db_user,
+                                                      add_post=False).id
+        result.update(get_thread(context, request, db_user.thread_id))
+        result.update({"thread_enabled": True})
     return result
 
 @view_config(route_name='userarea_recover_password', renderer='deform.jinja2')

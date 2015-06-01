@@ -122,6 +122,7 @@ class UserLib():
         user.full_name = full_name
         user.password = password
         user.sex = sex
+
         DBSession.add(user)
         return user
     

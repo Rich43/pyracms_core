@@ -1,14 +1,17 @@
 {% extends "main.jinja2" %}
-{% block title %} - {{ user }}'s Profile{% endblock %}
+{% if thread_enabled %}
+{% from "pyracms_forum:templates/widgets/comments.jinja2" import comments %}
+{% endif %}
+{% block title %} - {{ str_user }}'s Profile{% endblock %}
 {% block content %}
-    <h3>{{ user }}'s Profile</h3>
+    <h3>{{ str_user }}'s Profile</h3>
     {%  if db_user.picture_id == -1 %}
         <p><img src="/userarea/get_picture" width="200" /></p>
     {%  else %}
         <p><a href="{{ request.route_url("show_album", album_id=db_user.album_id) }}">
             <img src="/userarea/get_picture" width="200" /></a></p>
     {% endif %}
-    <p>Username: {{ user }}</p>
+    <p>Username: {{ str_user }}</p>
     <p>Display Name: {{ db_user.full_name }}</p>
     <p>Website: {{ db_user.website }}</p>
     <p>Birthday: {{ w.format_date(db_user.birthday, request) }}</p>
@@ -16,4 +19,7 @@
     <p>About Me: {{ db_user.aboutme }}</p>
     <p>Timezone: {{ db_user.timezone }}</p>
     <p>Member Since: {{ db_user.created }}</p>
+    {%  if thread_enabled %}
+    {{ comments(request, thread, form, forum_reply, w) }}
+    {% endif %}
 {% endblock %}
