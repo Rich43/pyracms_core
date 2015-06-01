@@ -25,9 +25,7 @@ class FileLib:
         return resolve(setting_data).abspath()
 
     def open_media(self, filename):
-        from moviepy.video.io.VideoFileClip import VideoFileClip
         from PIL import Image
-
         is_image = False
         is_video = False
         media_obj = None
@@ -37,6 +35,7 @@ class FileLib:
         except OSError:
             is_image = False
             try:
+                from moviepy.video.io.VideoFileClip import VideoFileClip
                 media_obj = VideoFileClip(filename)
                 is_video = True
             except OSError:
