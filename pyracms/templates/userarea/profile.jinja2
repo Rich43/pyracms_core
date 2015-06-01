@@ -2,7 +2,12 @@
 {% block title %} - {{ user }}'s Profile{% endblock %}
 {% block content %}
     <h3>{{ user }}'s Profile</h3>
-    <p><img src="/userarea/get_picture" width="200" /></p>
+    {%  if db_user.picture_id == -1 %}
+        <p><img src="/userarea/get_picture" width="200" /></p>
+    {%  else %}
+        <p><a href="{{ request.route_url("show_album", album_id=db_user.album_id) }}">
+            <img src="/userarea/get_picture" width="200" /></a></p>
+    {% endif %}
     <p>Username: {{ user }}</p>
     <p>Display Name: {{ db_user.full_name }}</p>
     <p>Website: {{ db_user.website }}</p>
