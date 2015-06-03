@@ -61,11 +61,14 @@ class UserLib():
         else:
             return DBSession.query(User.name, User.full_name).all()
 
-    def list_groups(self):
+    def list_groups(self, as_obj=False):
         """
         List all the groups
         """
-        return DBSession.query(Group.name, Group.display_name).all()
+        if as_obj:
+            return DBSession.query(Group)
+        else:
+            return DBSession.query(Group.name, Group.display_name).all()
 
     def exists(self, name):
         """
@@ -153,4 +156,6 @@ class UserLib():
             user.groups.append(group)
         DBSession.add(group)
         return group
-    
+
+    def count(self):
+        return self.list(as_obj=True).count()

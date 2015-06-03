@@ -1,4 +1,4 @@
-from .deform_schemas.userarea import (LoginSchema, RegisterSchema, 
+from .deform_schemas.userarea import (LoginSchema, RegisterSchema,
     ChangePasswordSchema, RecoverPasswordSchema, EditUserSchema)
 from .deform_schemas.userarea_admin import (EditACL, MenuGroup, EditMenuItems, 
     SettingSchema, RestoreSettingsSchema, EditAdminUserSchema)
@@ -87,19 +87,12 @@ def userarea_get_picture(request):
     user = u.show(authenticated_userid(request))
     if s.has_setting("PYRACMS_GALLERY"):
         from pyracms_gallery.lib.gallerylib import GalleryLib
+        user = u.show(request.matchdict.get('user'))
         g = GalleryLib()
-        if user.album_id == -1:
-            user.album_id = g.create_album(user.name, user.name, user)
-        if user.picture_id == -1:
-            path = join(FileLib(request).get_static_path(), "blank.jpg")
-            user.picture_id = g.create_picture(g.show_album(user.album_id),
-                                               open(path, "rb"), "image/jpeg",
-                                               "blank.jpg", user, request,
-                                               "Anonymous")
         picture = g.show_picture(user.picture_id)
         return HTTPFound(location=WidgetLib().get_upload_url(request) +
-                                  picture.file_obj.uuid + "/" +
-                                  picture.file_obj.name)
+                         picture.file_obj.uuid + "/" +
+                         picture.file_obj.name)
     else:
         return HTTPFound(location=request.host_url + "/static/blank.jpg")
 
@@ -145,12 +138,6 @@ def userarea_profile(context, request):
     result = {'str_user': user, 'db_user': db_user, "thread_enabled": False}
     if s.has_setting("PYRACMS_FORUM"):
         from pyracms_forum.views import get_thread
-        from pyracms_forum.lib.boardlib import BoardLib
-        if db_user.thread_id == -1:
-            db_user.thread_id = BoardLib().add_thread(db_user.name,
-                                                      db_user.name, "",
-                                                      db_user,
-                                                      add_post=False).id
         result.update(get_thread(context, request, db_user.thread_id))
         result.update({"thread_enabled": True})
     return result
@@ -166,7 +153,7 @@ def userarea_recover_password(context, request):
         """
         email = deserialized.get("email")
         user = u.show_by_email(email)
-        token = t.add_token(user, "password_recover")
+        token = t.add_token(user, "password_recovery")
         parsed = Template(s.show_setting("EMAIL"))
         route_name = "userarea_change_password_token"
         url = route_url(route_name, request, token=token)
@@ -282,27 +269,48 @@ def userarea_register(context, request):
         """
         email = deserialized.get("email")
         user = u.create_user(deserialized.get("username"),
-                             deserialized.get("full_name"),
-                             email, deserialized.get("password"))
-        user.sex = deserialized.get("sex")
+                             deserialized.get("full_name"), email,
+                             deserialized.get("password"),
+                             deserialized.get("sex"))
         user.website = deserialized.get("website")
         user.aboutme = deserialized.get("about_me")
         user.timezone = deserialized.get("timezone")
         user.birthday = deserialized.get("birthday")
-        token = t.add_token(user, "register")
-        parsed = Template(s.show_setting("EMAIL"))
-        url = route_url("token_get", request, token=token)
-        parsed = parsed.safe_substitute(what=s.show_setting("REGISTRATION"),
-                                        username=user.name, url=url,
-                                        title=s.show_setting("TITLE"))
-        mailer = get_mailer(request)
-        message = Message(subject=s.show_setting("REGISTRATION_SUBJECT"),
-                          sender=s.show_setting("MAIL_SENDER"),
-                          recipients=[user.email_address], body=parsed)
-        mailer.send(message)
-        user.groups.append(u.show_group("article"))
-        request.session.flash(s.show_setting("INFO_ACTIVATON_EMAIL_SENT")
-                              % email, INFO)
+        if s.has_setting("PYRACMS_GALLERY"):
+            from pyracms_gallery.lib.gallerylib import GalleryLib
+            g = GalleryLib()
+            user.album_id = g.create_album(user.name, user.name, user)
+            path = join(FileLib(request).get_static_path(), "blank.jpg")
+            user.picture_id = g.create_picture(g.show_album(user.album_id),
+                                               open(path, "rb"), "image/jpeg",
+                                               "blank.jpg", user, request,
+                                               "Anonymous")
+            picture = g.show_picture(user.picture_id)
+        if s.has_setting("PYRACMS_FORUM"):
+            from pyracms_forum.lib.boardlib import BoardLib
+            user.thread_id = BoardLib().add_thread(user.name,user.name, "",
+                                                   user, add_post=False).id
+        if u.count() > 1:
+            token = t.add_token(user, "register")
+            parsed = Template(s.show_setting("EMAIL"))
+            url = route_url("token_get", request, token=token)
+            parsed = parsed.safe_substitute(what=s.show_setting("REGISTRATION"),
+                                            username=user.name, url=url,
+                                            title=s.show_setting("TITLE"))
+            mailer = get_mailer(request)
+            message = Message(subject=s.show_setting("REGISTRATION_SUBJECT"),
+                              sender=s.show_setting("MAIL_SENDER"),
+                              recipients=[user.email_address], body=parsed)
+            mailer.send(message)
+            for item in s.show_setting("DEFAULTGROUPS").trim().split():
+                user.groups.append(u.show_group(item))
+            request.session.flash(s.show_setting("INFO_ACTIVATON_EMAIL_SENT")
+                                  % email, INFO)
+        else:
+            # I am an admin, all access!
+            user.banned = False
+            for item in u.list_groups(True):
+                user.groups.append(item)
         return redirect(request, "home")
     result = rapid_deform(context, request, RegisterSchema, register_submit)
     if isinstance(result, dict):
@@ -514,14 +522,14 @@ def userarea_admin_file_upload(context, request):
     file_lib = FileLib(request)
     static_path = file_lib.get_static_path()
     if 'path' in request.GET:
-        new_static_path = os.path.join(static_path, file_lib.filename_filter(request.GET['path']))
+        new_static_path = os.path.join(static_path,
+                            file_lib.filename_filter(request.GET['path']))
     else:
         new_static_path = static_path
     if 'datafile' in request.POST:
         data_file = request.POST['datafile']
-        shutil.copyfileobj(data_file.file,
-                           open(os.path.join(new_static_path,
-                                             file_lib.filename_filter(data_file.filename)), "wb"))
+        shutil.copyfileobj(data_file.file, open(os.path.join(new_static_path,
+                        file_lib.filename_filter(data_file.filename)), "wb"))
     for item in os.listdir(new_static_path):
         if os.path.isdir(os.path.join(new_static_path, item)):
             if 'path' in request.GET:

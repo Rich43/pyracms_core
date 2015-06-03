@@ -1,7 +1,7 @@
 from ..factory import RootFactory
 from ..lib.userlib import UserLib
 from ..lib.settingslib import SettingsLib
-from ..models import DBSession, Base, Menu, MenuGroup, Settings
+from ..models import DBSession, Base, Menu, MenuGroup, TokenPurpose
 from pyramid.paster import get_appsettings, setup_logging
 from pyramid.security import Everyone, Allow, Authenticated
 from sqlalchemy import engine_from_config
@@ -148,14 +148,9 @@ def main(argv=sys.argv):
     with transaction.manager:
         # Default Users
         u = UserLib()
-        admin_user = u.create_user("admin", "Admin User", "admin@admin.com",
-                                   "admin", "Male")
-        admin_user.banned = False
-        u.create_user(Everyone, "Guest User", "guest@guest.com", "guest",
-                      "Female")
         
         # Default Groups
-        u.create_group("admin", "All Access!", [admin_user])
+        u.create_group("admin", "All Access!")
         
         # Default ACL
         acl = RootFactory(session=DBSession)
@@ -178,6 +173,7 @@ def main(argv=sys.argv):
         s.create("KEYWORDS")
         s.create("DESCRIPTION")
         s.create("DEFAULTRENDERER", "HTML")
+        s.create("DEFAULTGROUPS", "")
         s.create("RECOVER_PASSWORD", "recover password")
         s.create("RECOVER_PASSWORD_SUBJECT", "Password recovery for %s")
         s.create("REGISTRATION", "registration")
@@ -255,3 +251,5 @@ def main(argv=sys.argv):
                            12, group, 'group:admin'))
         
 
+        DBSession.add(TokenPurpose("register"))
+        DBSession.add(TokenPurpose("password_recovery"))

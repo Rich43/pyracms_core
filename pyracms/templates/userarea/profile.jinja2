@@ -6,10 +6,12 @@
 {% block content %}
     <h3>{{ str_user }}'s Profile</h3>
     {%  if db_user.picture_id == -1 %}
-        <p><img src="/userarea/get_picture" width="200" /></p>
+        <p><img src="{{ request.route_url("userarea_get_picture",
+            user=str_user) }}" width="200" /></p>
     {%  else %}
         <p><a href="{{ request.route_url("show_album", album_id=db_user.album_id) }}">
-            <img src="/userarea/get_picture" width="200" /></a></p>
+            <img src="{{ request.route_url("userarea_get_picture",
+            user=str_user) }}" width="200" /></a></p>
     {% endif %}
     <p>Username: {{ str_user }}</p>
     <p>Display Name: {{ db_user.full_name }}</p>

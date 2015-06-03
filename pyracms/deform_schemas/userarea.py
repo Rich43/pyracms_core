@@ -90,7 +90,7 @@ class RegisterSchema(MappingSchema):
                                                            ["Female"] * 2]),
                      validator=OneOf(["Male", "Female"]))
     timezone = SchemaNode(String(), widget=SelectWidget(values=all_tz, size=20),
-                    validator=OneOf(all_timezones))
+                    validator=OneOf(all_timezones), default="Europe/London")
 
 class EditUserSchema(MappingSchema):
     full_name = SchemaNode(String(), widget=TextInputWidget(size=40),
