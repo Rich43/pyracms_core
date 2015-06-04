@@ -15,7 +15,7 @@ from pyramid.exceptions import Forbidden
 from pyramid.httpexceptions import HTTPFound
 from pyramid.path import AssetResolver
 from pyramid.response import Response
-from pyramid.security import remember, forget, authenticated_userid
+from pyramid.security import remember, forget, authenticated_userid, Everyone
 from pyramid.url import route_url
 from pyramid.view import view_config
 from pyramid_mailer import get_mailer
@@ -84,7 +84,6 @@ def userarea_get_picture(request):
     """
     Setup Profile Picture
     """
-    user = u.show(authenticated_userid(request))
     if s.has_setting("PYRACMS_GALLERY"):
         from pyracms_gallery.lib.gallerylib import GalleryLib
         user = u.show(request.matchdict.get('user'))
@@ -263,19 +262,7 @@ def userarea_register(context, request):
     """
     Display register form
     """
-    def register_submit(context, request, deserialized, bind_params):
-        """
-        Submit register form, add user to database
-        """
-        email = deserialized.get("email")
-        user = u.create_user(deserialized.get("username"),
-                             deserialized.get("full_name"), email,
-                             deserialized.get("password"),
-                             deserialized.get("sex"))
-        user.website = deserialized.get("website")
-        user.aboutme = deserialized.get("about_me")
-        user.timezone = deserialized.get("timezone")
-        user.birthday = deserialized.get("birthday")
+    def add_picture_to_user(user):
         if s.has_setting("PYRACMS_GALLERY"):
             from pyracms_gallery.lib.gallerylib import GalleryLib
             g = GalleryLib()
@@ -286,10 +273,27 @@ def userarea_register(context, request):
                                                "blank.jpg", user, request,
                                                "Anonymous")
             picture = g.show_picture(user.picture_id)
+    def add_forum_to_user(user):
         if s.has_setting("PYRACMS_FORUM"):
             from pyracms_forum.lib.boardlib import BoardLib
             user.thread_id = BoardLib().add_thread(user.name,user.name, "",
                                                    user, add_post=False).id
+    def register_submit(context, request, deserialized, bind_params):
+        """
+        Submit register form, add user to database
+        """
+
+        email = deserialized.get("email")
+        user = u.create_user(deserialized.get("username"),
+                             deserialized.get("full_name"), email,
+                             deserialized.get("password"),
+                             deserialized.get("sex"))
+        user.website = deserialized.get("website")
+        user.aboutme = deserialized.get("about_me")
+        user.timezone = deserialized.get("timezone")
+        user.birthday = deserialized.get("birthday")
+        add_picture_to_user(user)
+        add_forum_to_user(user)
         if u.count() > 1:
             token = t.add_token(user, "register")
             parsed = Template(s.show_setting("EMAIL"))
@@ -311,6 +315,10 @@ def userarea_register(context, request):
             user.banned = False
             for item in u.list_groups(True):
                 user.groups.append(item)
+            user = u.create_user(Everyone, "Guest User", "guest@guest.com",
+                                 "guest", "Female")
+            add_picture_to_user(user)
+            add_forum_to_user(user)
         return redirect(request, "home")
     result = rapid_deform(context, request, RegisterSchema, register_submit)
     if isinstance(result, dict):
