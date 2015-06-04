@@ -9,6 +9,7 @@ from pyramid.events import BeforeRender
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from sqlalchemy import engine_from_config
 from .views import dummy_home
+from uuid import uuid4
 
 def add_renderer_globals(event):
     event['w'] = WidgetLib()
@@ -22,13 +23,12 @@ def main(global_config, **settings):
     DBSession.configure(bind=engine)
 
     # Setup auth + auth policy's
-    authentication_policy = AuthTktAuthenticationPolicy(
-                            settings.get('auth_secret'), callback=groupfinder)
+    authentication_policy = AuthTktAuthenticationPolicy(str(uuid4()),
+                                                        callback=groupfinder)
     authorization_policy = ACLAuthorizationPolicy()
 
     # Configure session support
-    session_factory = UnencryptedCookieSessionFactoryConfig(
-                                            settings.get('session_secret'))
+    session_factory = UnencryptedCookieSessionFactoryConfig(str(uuid4()))
 
     # Add basic configuration
     config = Configurator(settings=settings,

@@ -98,8 +98,8 @@ class User(Base):
     banned = Column(Boolean, default=True)
     timezone = Column(Unicode(128), nullable=False, 
                       default="Europe/London")
-    file_id = Column(Integer, ForeignKey('files.id'))
-    file_obj = relationship(Files, cascade="all, delete")
+    postcount = Column(Integer, default=0, nullable=False)
+    signature = Column(UnicodeText, default='')
     thread_id = Column(Integer, nullable=False, default=-1)
     album_id = Column(Integer, nullable=False, default=-1)
     picture_id = Column(Integer, nullable=False, default=-1)
