@@ -6,6 +6,13 @@ from pyramid.security import authenticated_userid, Everyone
 from pyramid.url import route_url
 import inspect
 
+def list_routes(request):
+    for item in request.registry.introspector.get_category('routes'):
+        if len(item["related"]):
+            name = item["related"][0].discriminator[3]
+            if not name.startswith("__"):
+                yield name
+
 def redirect(request, route_id, **optargs):
     """
     Quick way to return redirect object
