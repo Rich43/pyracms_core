@@ -5,6 +5,7 @@ from pyramid.security import authenticated_userid, Everyone, has_permission
 import markdown
 import postmarkup
 import pytz
+from json import loads
 
 from ..deform_schemas.userarea import LoginSchema
 from .helperlib import get_username
@@ -144,9 +145,15 @@ class WidgetLib():
                         append = False
             if append:
                 try:
-                    result.append([item.url % tmpl_args,
-                                   item.name % tmpl_args,
-                                   False])
+                    if item.type == "url":
+                        result.append([item.url % tmpl_args,
+                                       item.name % tmpl_args,
+                                       False])
+                    elif item.type == "route":
+                        result.append([request.route_url(item.route_name,
+                                                         **tmpl_args),
+                                       item.name % tmpl_args,
+                                       False])
                 except KeyError:
                     pass
         if len(result):

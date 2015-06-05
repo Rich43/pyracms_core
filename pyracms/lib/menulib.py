@@ -29,34 +29,43 @@ class MenuLib():
         """
         Add menu grop
         """
-        DBSession.add(MenuGroup(name))
+        group = MenuGroup(name)
+        DBSession.add(group)
+        return group
         
     def delete_group(self, name):
         """
         Delete menu group by name
         """
         DBSession.delete(self.show_group(name))
-    
-    def to_dict(self):
-        output = {}
-        groups = self.list_groups()
-        for item in groups:
-            output[item.name] = serialize_relation(item.menu_items)
-        return output
-    
-    def from_dict(self, data):
-        for k, v in data.items():
-            try:
-                group = self.show_group(k)
-            except MenuGroupNotFound:
-                group = MenuGroup(k)
-                DBSession.add(group)
-            for item in v:
-                try:
-                    DBSession.query(Menu).filter_by(group_id=group.id,
-                                                    name=item["name"],
-                                                    url=item["url"]).one()
-                except NoResultFound:
-                    group.menu_items.append(Menu(item["name"], item["url"], 
-                                                 item["position"], group, 
-                                                 item["permissions"]))
+
+    def add_menu_item_url(self, name, url, position, group, permissions=''):
+        """
+        Add a menu item with a custom url
+        :param name: Name of menu item
+        :param url: URL of menu item
+        :param position: Position in list
+        :param group: Menu Group it belongs to
+        :param permissions: Permissions for the item
+        :return:
+        """
+        item = Menu(name, "url", position, group, permissions)
+        item.url = url
+        DBSession.add(item)
+        return item
+
+    def add_menu_item_route(self, name, route_name, position, group,
+                            permissions=''):
+        """
+        Add a menu item with a route
+        :param name: Name of menu item
+        :param route_name: Name of route
+        :param position: Position in list
+        :param group: Menu Group it belongs to
+        :param permissions: Permissions for the item
+        :return:
+        """
+        item = Menu(name, "route", position, group, permissions)
+        item.route_name = route_name
+        DBSession.add(item)
+        return item

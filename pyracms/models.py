@@ -165,16 +165,18 @@ class Menu(Base):
     __tablename__ = 'menu'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
     id = Column(Integer, primary_key=True)
+    name = Column(Unicode(128), nullable=False)
+    route_name = Column(Unicode(128), nullable=True)
+    url = Column(Unicode(128), nullable=True)
+    type = Column(Enum("route", "url"), default="route", nullable=False)
     group_id = Column(Integer, ForeignKey('menugroup.id'), nullable=False)
     group = relationship("MenuGroup")
     position = Column(Integer, default=1, nullable=False)
-    url = Column(Unicode(128), nullable=False)
-    name = Column(Unicode(128), nullable=False)
     permissions = Column(Unicode(128), default='')
 
-    def __init__(self, name, url, position, group, permissions=''):
+    def __init__(self, name, type, position, group, permissions=''):
         self.name = name
-        self.url = url
+        self.type = type
         self.position = position
         self.group = group
         self.permissions = permissions

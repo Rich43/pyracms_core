@@ -5,6 +5,7 @@ from ..models import DBSession, Base, Menu, MenuGroup, TokenPurpose
 from pyramid.paster import get_appsettings, setup_logging
 from pyramid.security import Everyone, Allow, Authenticated
 from sqlalchemy import engine_from_config
+from ..lib.menulib import MenuLib
 import os
 import sys
 import transaction
@@ -205,51 +206,51 @@ def main(argv=sys.argv):
         s.create("ERROR_VOTE", "You have already voted.")
 
         # Add menu items
-        group = MenuGroup("main_menu")
-        DBSession.add(Menu("Home", "/", 1, group, Everyone))
+        m = MenuLib()
+        group = m.add_group("main_menu")
+        m.add_menu_item_route("Home", "home", 1, group, Everyone)
         
-        group = MenuGroup("user_area")
-        DBSession.add(Menu("Login", "/userarea/login", 1, group,
-                           'not_authenticated'))
-        DBSession.add(Menu("Recover Password", "/userarea/recover_password",
-                           2, group, 'not_authenticated'))
-        DBSession.add(Menu("Logout", "/userarea/logout", 3, group,
-                           Authenticated))
-        DBSession.add(Menu("Register", "/userarea/register", 4, group,
-                           'not_authenticated'))
-        DBSession.add(Menu("My Profile", "/userarea/profile", 5, group,
-                           Authenticated))
-        DBSession.add(Menu("Edit Profile", "/userarea/edit", 6, group,
-                           Authenticated))
-        DBSession.add(Menu("Change Password", "/userarea/change_password",
-                           7, group, Authenticated))
-        DBSession.add(Menu("User List", "/userarea/list", 8, group,
-                           Everyone))
+        group = m.add_group("user_area")
+        m.add_menu_item_route("Login", "userarea_login", 1, group,
+                              'not_authenticated')
+        m.add_menu_item_route("Recover Password", "userarea_recover_password",
+                              2, group, 'not_authenticated')
+        m.add_menu_item_route("Logout", "userarea_logout", 3, group,
+                              Authenticated)
+        m.add_menu_item_route("Register", "userarea_register", 4, group,
+                              'not_authenticated')
+        m.add_menu_item_route("My Profile", "userarea_profile", 5, group,
+                              Authenticated)
+        m.add_menu_item_route("Edit Profile", "userarea_edit", 6, group,
+                              Authenticated)
+        m.add_menu_item_route("Change Password", "userarea_change_password",
+                              7, group, Authenticated)
+        m.add_menu_item_route("User List", "userarea_list", 8, group,
+                              Everyone)
         
-        group = MenuGroup("admin_area")
-        DBSession.add(Menu("Edit Menu", "/userarea_admin/edit_menu", 
-                           1, group, 'edit_menu'))
-        DBSession.add(Menu("Edit Menu Groups", 
-                           "/userarea_admin/edit_menu_group", 
-                           2, group, 'edit_menu'))
-        DBSession.add(Menu("Edit ACL", "/userarea_admin/edit_acl", 
-                           3, group, 'edit_acl'))
-        DBSession.add(Menu("Edit Settings", "/userarea_admin/list_settings",
-                           4, group, 'edit_settings'))
-        DBSession.add(Menu("Edit CSS", "/userarea_admin/edit_setting/CSS",
-                           5, group, 'edit_settings'))
-        DBSession.add(Menu("Edit Template", "/userarea_admin/edit_template",
-                           6, group, 'edit_settings'))
-        DBSession.add(Menu("Upload Files", "/userarea_admin/file_upload",
-                           7, group, 'file_upload'))
-        DBSession.add(Menu("Backup Settings", "/userarea_admin/backup_settings",
-                           10, group, 'backup'))
-        DBSession.add(Menu("Restore Settings", 
-                           "/userarea_admin/restore_settings", 
-                           11, group, 'backup'))
-        DBSession.add(Menu("Manage Users", "/userarea_admin/manage_users", 
-                           12, group, 'group:admin'))
-        
+        group = m.add_group("admin_area")
+        m.add_menu_item_route("Edit Menu", "userarea_admin_edit_menu",
+                              1, group, 'edit_menu')
+        m.add_menu_item_route("Edit Menu Groups",
+                              "userarea_admin_edit_menu_group",
+                              2, group, 'edit_menu')
+        m.add_menu_item_route("Edit ACL", "userarea_admin_edit_acl",
+                              3, group, 'edit_acl')
+        m.add_menu_item_route("Edit Settings", "userarea_admin_list_settings",
+                              4, group, 'edit_settings')
+        m.add_menu_item_url("Edit CSS", "/userarea_admin/edit_setting/CSS",
+                            5, group, 'edit_settings')
+        m.add_menu_item_route("Edit Template", "userarea_admin_edit_template",
+                              6, group, 'edit_settings')
+        m.add_menu_item_route("Upload Files", "userarea_admin_file_upload",
+                              7, group, 'file_upload')
+        m.add_menu_item_route("Backup Settings", "userarea_admin_backup_settings",
+                              10, group, 'backup')
+        m.add_menu_item_route("Restore Settings",
+                              "userarea_admin_restore_settings",
+                              11, group, 'backup')
+        m.add_menu_item_route("Manage Users", "userarea_admin_manage_users",
+                              12, group, 'group:admin')
 
         DBSession.add(TokenPurpose("register"))
         DBSession.add(TokenPurpose("password_recovery"))

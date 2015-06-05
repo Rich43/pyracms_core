@@ -7,6 +7,7 @@ from deform import FileData
 from deform.widget import SelectWidget, TextAreaWidget, FileUploadWidget
 from pyramid.security import Everyone
 from ..lib.userlib import UserLib
+from ..lib.helperlib import list_routes
 
 class MemoryTmpStore(dict):
     """ Instances of this class implement the
@@ -15,6 +16,9 @@ class MemoryTmpStore(dict):
         return None
 
 tmpstore = MemoryTmpStore()
+
+def double_up(items):
+    return [(x, x) for x in items]
 
 def get_acl(single_result=False):
     rf = RootFactory(session=DBSession)
@@ -41,13 +45,12 @@ def deferred_acl_validator(node, kw):
 
 class ACLItem(Schema):
     allow_deny = SchemaNode(String(),
-                 widget=SelectWidget(values=[("Allow", "Allow"),
-                                             ("Deny", "Deny")],
+                 widget=SelectWidget(values=double_up(["Allow", "Deny"]),
                  validator=OneOf([("Allow", "Deny")]),
                  default="Allow"))
     who = SchemaNode(String())
     permission = SchemaNode(String(), widget=deferred_acl_widget,
-                            validator=deferred_acl_validator, 
+                            validator=deferred_acl_validator,
                             default=Everyone)
 
 class ACL(SequenceSchema):
@@ -62,9 +65,26 @@ def deferred_group_widget(node, kw):
                                 for x in UserLib().list_groups()], 
                         multiple=True)
 
+@deferred
+def deferred_route_name_widget(node, kw):
+    data = list(list_routes(kw['request'], True))
+    return SelectWidget(values=data)
+
+@deferred
+def deferred_route_name_validator(node, kw):
+    data = list(list_routes(kw['request']))
+    return OneOf(data)
+
 class MenuItem(Schema):
     name = SchemaNode(String())
-    url = SchemaNode(String())
+    type = SchemaNode(String(),
+                 widget=SelectWidget(values=double_up(["route", "url"]),
+                 validator=OneOf(["route", "url"]),
+                 default="route"))
+    route_name = SchemaNode(String(),
+                 widget=deferred_route_name_widget,
+                 validator=deferred_route_name_validator)
+    url = SchemaNode(String(), missing='')
     permissions = SchemaNode(String(), widget=deferred_acl_widget,
                              validator=deferred_acl_validator, 
                              default=Everyone)
