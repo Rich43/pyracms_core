@@ -1,6 +1,6 @@
 from ..models import DBSession, MenuGroup, Menu
-from .helperlib import serialize_relation
 from sqlalchemy.orm.exc import NoResultFound
+from json import dumps
 
 class MenuGroupNotFound(Exception):
     pass
@@ -55,7 +55,7 @@ class MenuLib():
         return item
 
     def add_menu_item_route(self, name, route_name, position, group,
-                            permissions=''):
+                            permissions='', route_json={}):
         """
         Add a menu item with a route
         :param name: Name of menu item
@@ -67,5 +67,6 @@ class MenuLib():
         """
         item = Menu(name, "route", position, group, permissions)
         item.route_name = route_name
+        item.route_json = dumps(route_json)
         DBSession.add(item)
         return item

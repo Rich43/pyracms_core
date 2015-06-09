@@ -131,9 +131,9 @@ class WidgetLib():
             append = True
             # If the item has any permissions
             if item.permissions:
-                # Loop through a comma seperated list of permissions
+                # Loop through a comma separated list of permissions
                 for permission in item.permissions.split(","):
-                    # Do not append if find not autnenticated permission
+                    # Do not append if find not authenticated permission
                     # (Only triggers when logged in!)
                     if (permission == NOT_AUTH and
                         quick_permission(NOT_AUTH)):
@@ -150,11 +150,12 @@ class WidgetLib():
                                        item.name % tmpl_args,
                                        False])
                     elif item.type == "route":
+                        tmpl_args.update(loads(item.route_json))
                         result.append([request.route_url(item.route_name,
                                                          **tmpl_args),
                                        item.name % tmpl_args,
                                        False])
-                except KeyError:
+                except KeyError as e:
                     pass
         if len(result):
             result[-1][-1] = True

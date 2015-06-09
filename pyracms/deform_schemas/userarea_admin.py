@@ -84,6 +84,7 @@ class MenuItem(Schema):
     route_name = SchemaNode(String(),
                  widget=deferred_route_name_widget,
                  validator=deferred_route_name_validator)
+    route_json = SchemaNode(String())
     url = SchemaNode(String(), missing='')
     permissions = SchemaNode(String(), widget=deferred_acl_widget,
                              validator=deferred_acl_validator, 

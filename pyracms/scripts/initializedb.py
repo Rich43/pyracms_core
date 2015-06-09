@@ -238,8 +238,8 @@ def main(argv=sys.argv):
                               3, group, 'edit_acl')
         m.add_menu_item_route("Edit Settings", "userarea_admin_list_settings",
                               4, group, 'edit_settings')
-        m.add_menu_item_url("Edit CSS", "/userarea_admin/edit_setting/CSS",
-                            5, group, 'edit_settings')
+        m.add_menu_item_route("Edit CSS", "userarea_admin_edit_settings",
+                              5, group, 'edit_settings', {"name": "CSS"})
         m.add_menu_item_route("Edit Template", "userarea_admin_edit_template",
                               6, group, 'edit_settings')
         m.add_menu_item_route("Upload Files", "userarea_admin_file_upload",
