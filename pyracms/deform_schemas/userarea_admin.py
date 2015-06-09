@@ -78,12 +78,13 @@ def deferred_route_name_validator(node, kw):
 class MenuItem(Schema):
     name = SchemaNode(String())
     type = SchemaNode(String(),
-                 widget=SelectWidget(values=double_up(["route", "url"]),
-                 validator=OneOf(["route", "url"]),
-                 default="route"))
+                      widget=SelectWidget(values=double_up(["route", "url"]),
+                      validator=OneOf(["route", "url"]),
+                      default="route"))
     route_name = SchemaNode(String(),
-                 widget=deferred_route_name_widget,
-                 validator=deferred_route_name_validator)
+                            widget=deferred_route_name_widget,
+                            validator=deferred_route_name_validator,
+                            default="article_read")
     route_json = SchemaNode(String())
     url = SchemaNode(String(), missing='')
     permissions = SchemaNode(String(), widget=deferred_acl_widget,

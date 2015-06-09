@@ -22,10 +22,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyracms/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.25641027">
+            <state vertical-scroll-proportion="0.0">
               <caret line="169" column="52" selection-start-line="169" selection-start-column="52" selection-end-line="169" selection-end-column="52" />
               <folding>
                 <element signature="e#0#40#0" expanded="true" />
@@ -34,11 +34,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="userarea_admin.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="userarea_admin.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pyracms/deform_schemas/userarea_admin.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="86" column="14" selection-start-line="86" selection-start-column="14" selection-end-line="86" selection-end-column="14" />
+            <state vertical-scroll-proportion="0.35897437">
+              <caret line="80" column="40" selection-start-line="80" selection-start-column="40" selection-end-line="80" selection-end-column="40" />
               <folding>
                 <element signature="e#0#33#0" expanded="true" />
               </folding>
@@ -174,8 +174,8 @@
         <option value="$PROJECT_DIR$/pyracms/lib/menulib.py" />
         <option value="$PROJECT_DIR$/pyracms/scripts/initializedb.py" />
         <option value="$PROJECT_DIR$/pyracms/lib/widgetlib.py" />
-        <option value="$PROJECT_DIR$/pyracms/deform_schemas/userarea_admin.py" />
         <option value="$PROJECT_DIR$/pyracms/models.py" />
+        <option value="$PROJECT_DIR$/pyracms/deform_schemas/userarea_admin.py" />
       </list>
     </option>
   </component>
@@ -1094,22 +1094,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pyracms/deform_schemas/userarea_admin.py">
+    <entry file="file://$PROJECT_DIR$/pyracms/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="86" column="14" selection-start-line="86" selection-start-column="14" selection-end-line="86" selection-end-column="14" />
+          <caret line="169" column="52" selection-start-line="169" selection-start-column="52" selection-end-line="169" selection-end-column="52" />
           <folding>
-            <element signature="e#0#33#0" expanded="true" />
+            <element signature="e#0#40#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pyracms/models.py">
+    <entry file="file://$PROJECT_DIR$/pyracms/deform_schemas/userarea_admin.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.25641027">
-          <caret line="169" column="52" selection-start-line="169" selection-start-column="52" selection-end-line="169" selection-end-column="52" />
+        <state vertical-scroll-proportion="0.35897437">
+          <caret line="80" column="40" selection-start-line="80" selection-start-column="40" selection-end-line="80" selection-end-column="40" />
           <folding>
-            <element signature="e#0#40#0" expanded="true" />
+            <element signature="e#0#33#0" expanded="true" />
           </folding>
         </state>
       </provider>
