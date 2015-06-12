@@ -96,4 +96,4 @@ class MenuLib():
                     m.route_name = item["route_name"]
                     m.route_json = item["route_json"]
                     m.url = item["url"]
-                    group.menu_items.append()
+                    group.menu_items.append(m)
