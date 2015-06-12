@@ -347,22 +347,29 @@ def userarea_list(context, request): #@ReservedAssignment
                       for item in u.list(False)],
             'title': message, 'header': message}
 
-@view_config(route_name='userarea_admin_backup_settings', permission='backup')
-def userarea_admin_backup_settings(context, request):
+@view_config(route_name='userarea_admin_backup', permission='backup')
+def userarea_admin_backup(context, request):
     m = MenuLib()
     res = request.response
     res.content_type = "application/json"
-    res.text = str(json.dumps({"menus": m.to_dict(), "settings": s.to_dict()}))
+    what = request.matchdict.get("what")
+    if what == "menus":
+        res.text = str(json.dumps(m.to_dict()))
+    elif what == "settings":
+        res.text = str(json.dumps(s.to_dict()))
     return res
 
-@view_config(route_name='userarea_admin_restore_settings', permission='backup',
+@view_config(route_name='userarea_admin_restore', permission='backup',
              renderer='deform.jinja2')
-def userarea_admin_restore_settings(context, request):
+def userarea_admin_restore(context, request):
+    what = request.matchdict.get("what")
     def restore_settings_submit(context, request, deserialized, bind_params):
         data = json.loads(deserialized['restore_settings_json_file']
                           ['fp'].read().decode())
-        s.from_dict(data['settings'])
-        MenuLib().from_dict(data['menus'])
+        if what == "menus":
+            MenuLib().from_dict(data)
+        elif what == "settings":
+            s.from_dict(data)
         return redirect(request, "article_list")
     result = rapid_deform(context, request, RestoreSettingsSchema,
                           restore_settings_submit)

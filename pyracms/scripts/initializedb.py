@@ -244,13 +244,16 @@ def main(argv=sys.argv):
                               6, group, 'edit_settings')
         m.add_menu_item_route("Upload Files", "userarea_admin_file_upload",
                               7, group, 'file_upload')
-        m.add_menu_item_route("Backup Settings", "userarea_admin_backup_settings",
-                              10, group, 'backup')
-        m.add_menu_item_route("Restore Settings",
-                              "userarea_admin_restore_settings",
-                              11, group, 'backup')
+        m.add_menu_item_route("Backup Menus", "userarea_admin_backup",
+                              10, group, 'backup', {"what": "menus"})
+        m.add_menu_item_route("Restore Menus", "userarea_admin_restore",
+                              11, group, 'backup', {"what": "menus"})
+        m.add_menu_item_route("Backup Settings", "userarea_admin_backup",
+                              12, group, 'backup', {"what": "settings"})
+        m.add_menu_item_route("Restore Settings", "userarea_admin_restore",
+                              13, group, 'backup', {"what": "settings"})
         m.add_menu_item_route("Manage Users", "userarea_admin_manage_users",
-                              12, group, 'group:admin')
+                              14, group, 'group:admin')
 
         DBSession.add(TokenPurpose("register"))
         DBSession.add(TokenPurpose("password_recovery"))

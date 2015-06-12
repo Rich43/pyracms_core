@@ -1,6 +1,8 @@
 from ..models import DBSession, MenuGroup, Menu
 from sqlalchemy.orm.exc import NoResultFound
 from json import dumps
+from pyracms.lib.helperlib import serialize_relation
+
 
 class MenuGroupNotFound(Exception):
     pass
@@ -70,3 +72,28 @@ class MenuLib():
         item.route_json = dumps(route_json)
         DBSession.add(item)
         return item
+
+    def to_dict(self):
+        output = {}
+        groups = self.list_groups()
+        for item in groups:
+            output[item.name] = serialize_relation(item.menu_items)
+        return output
+
+    def from_dict(self, data):
+        for k, v in data.items():
+            try:
+                group = self.show_group(k)
+            except MenuGroupNotFound:
+                group = MenuGroup(k)
+                DBSession.add(group)
+            for item in v:
+                try:
+                    DBSession.query(Menu).filter_by(item["id"]).one()
+                except NoResultFound:
+                    m = Menu(item["name"], item["type"], item["position"],
+                             group, item["permissions"])
+                    m.route_name = m["route_name"]
+                    m.route_json = m["route_json"]
+                    m.url = m["url"]
+                    group.menu_items.append()

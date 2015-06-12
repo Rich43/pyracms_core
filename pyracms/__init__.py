@@ -88,10 +88,10 @@ def main(global_config, **settings):
                      '/userarea_admin/edit_template')
     config.add_route('userarea_admin_file_upload',
                      '/userarea_admin/file_upload')
-    config.add_route('userarea_admin_backup_settings',
-                     '/userarea_admin/backup_settings')
-    config.add_route('userarea_admin_restore_settings',
-                     '/userarea_admin/restore_settings')
+    config.add_route('userarea_admin_backup',
+                     '/userarea_admin/backup/{what:settings|menus}')
+    config.add_route('userarea_admin_restore',
+                     '/userarea_admin/restore/{what:settings|menus}')
     config.add_route('userarea_admin_manage_users',
                      '/userarea_admin/manage_users')
     config.add_route('userarea_admin_manage_user',
