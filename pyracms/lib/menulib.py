@@ -89,7 +89,7 @@ class MenuLib():
                 DBSession.add(group)
             for item in v:
                 try:
-                    DBSession.query(Menu).filter_by(item["id"]).one()
+                    DBSession.query(Menu).filter_by(id=item["id"]).one()
                 except NoResultFound:
                     m = Menu(item["name"], item["type"], item["position"],
                              group, item["permissions"])
