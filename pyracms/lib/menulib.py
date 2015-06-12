@@ -88,12 +88,10 @@ class MenuLib():
                 group = MenuGroup(k)
                 DBSession.add(group)
             for item in v:
-                try:
-                    DBSession.query(Menu).filter_by(id=item["id"]).one()
-                except NoResultFound:
-                    m = Menu(item["name"], item["type"], item["position"],
-                             group, item["permissions"])
-                    m.route_name = item["route_name"]
-                    m.route_json = item["route_json"]
-                    m.url = item["url"]
-                    group.menu_items.append(m)
+                m = Menu(item["name"], item["type"], item["position"],
+                         group, item["permissions"])
+                m.route_name = item["route_name"]
+                m.route_json = item["route_json"]
+                m.url = item["url"]
+                DBSession.add(m)
+                group.menu_items.append(m)
