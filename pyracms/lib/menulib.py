@@ -93,7 +93,7 @@ class MenuLib():
                 except NoResultFound:
                     m = Menu(item["name"], item["type"], item["position"],
                              group, item["permissions"])
-                    m.route_name = m["route_name"]
-                    m.route_json = m["route_json"]
-                    m.url = m["url"]
+                    m.route_name = item["route_name"]
+                    m.route_json = item["route_json"]
+                    m.url = item["url"]
                     group.menu_items.append()
