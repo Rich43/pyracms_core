@@ -93,6 +93,8 @@ class WidgetLib():
         return form_instance
 
     def merge_res(self, list1, list2, what):
+        if not isinstance(list1, list) or not isinstance(list2, list):
+            return []
         list1 = set(list1.get_widget_resources()[what])
         if not list2:
             return list1
