@@ -81,6 +81,8 @@ class MenuLib():
         return output
 
     def from_dict(self, data):
+        DBSession.query(MenuGroup).delete()
+        DBSession.query(Menu).delete()
         for k, v in data.items():
             try:
                 group = self.show_group(k)
