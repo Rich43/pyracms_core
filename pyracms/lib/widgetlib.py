@@ -6,6 +6,7 @@ import markdown
 import postmarkup
 import pytz
 from json import loads
+from os.path import splitext
 
 from ..deform_schemas.userarea import LoginSchema
 from .helperlib import get_username
@@ -13,6 +14,7 @@ from .menulib import MenuLib, MenuGroupNotFound
 from .restlib import html_body
 from .userlib import UserLib, UserNotFound
 from .filelib import FileLib
+from .settingslib import SettingsLib
 
 search_html = """
 <form action="/redirect/search" method="post" class="searchform">
@@ -26,6 +28,21 @@ class WidgetLib():
     def __init__(self):
         self.search_html = search_html
         self.bbcode = postmarkup.render_bbcode
+        self.splitext = splitext
+
+    def get_gallerylib(self):
+        s = SettingsLib()
+        if s.has_setting("PYRACMS_GALLERY"):
+            from pyracms_gallery.lib.gallerylib import GalleryLib
+            return GalleryLib()
+        return None
+
+    def get_boardlib(self):
+        s = SettingsLib()
+        if s.has_setting("PYRACMS_FORUM"):
+            from pyracms_forum.lib.boardlib import BoardLib
+            return BoardLib()
+        return None
 
     def get_upload_url(self, request):
         return '%s/static/%s/' % (request.host_url, FileLib(request).UPLOAD_DIR)

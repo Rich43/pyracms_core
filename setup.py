@@ -23,7 +23,8 @@ requires = [
 	'SQLAlchemy',
     'Markdown',
     'Pillow',
-    'pyramid_mailer'
+    'pyramid_mailer',
+    'moviepy'
     ]
 
 setup(name='pyracms',
