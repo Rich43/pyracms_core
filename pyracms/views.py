@@ -88,10 +88,19 @@ def userarea_get_picture(request):
         from pyracms_gallery.lib.gallerylib import GalleryLib
         user = u.show(request.matchdict.get('user'))
         g = GalleryLib()
-        picture = g.show_picture(user.picture_id)
-        return HTTPFound(location=WidgetLib().get_upload_url(request) +
-                         picture.file_obj.uuid + "/" +
-                         picture.file_obj.name)
+        album = g.show_album(user.album_id)
+        if album.pictures.count() == 0:
+            return HTTPFound(location=request.host_url + "/static/blank.jpg")
+        elif album.default_picture:
+            picture = album.default_picture
+            return HTTPFound(location=WidgetLib().get_upload_url(request) +
+                             picture.file_obj.uuid + "/" +
+                             picture.file_obj.name)
+        else:
+            picture = album.pictures[0]
+            return HTTPFound(location=WidgetLib().get_upload_url(request) +
+                             picture.file_obj.uuid + "/" +
+                             picture.file_obj.name)
     else:
         return HTTPFound(location=request.host_url + "/static/blank.jpg")
 
@@ -266,13 +275,7 @@ def userarea_register(context, request):
         if s.has_setting("PYRACMS_GALLERY"):
             from pyracms_gallery.lib.gallerylib import GalleryLib
             g = GalleryLib()
-            user.album_id = g.create_album(user.name, user.name, user)
-            path = join(FileLib(request).get_static_path(), "blank.jpg")
-            user.picture_id = g.create_picture(g.show_album(user.album_id),
-                                               open(path, "rb"), "image/jpeg",
-                                               "blank.jpg", user, request,
-                                               "Anonymous")
-            picture = g.show_picture(user.picture_id)
+            user.album_id = g.create_album(user.name, user.name, user, True)
     def add_forum_to_user(user):
         if s.has_setting("PYRACMS_FORUM"):
             from pyracms_forum.lib.boardlib import BoardLib

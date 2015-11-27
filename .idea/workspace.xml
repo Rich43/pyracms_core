@@ -26,7 +26,7 @@
         <entry file="file://$PROJECT_DIR$/pyracms/models.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="169" column="52" selection-start-line="169" selection-start-column="52" selection-end-line="169" selection-end-column="52" />
+              <caret line="103" column="58" selection-start-line="103" selection-start-column="58" selection-end-line="103" selection-end-column="58" />
               <folding>
                 <element signature="e#0#40#0" expanded="true" />
               </folding>
@@ -34,11 +34,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="userarea_admin.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="userarea_admin.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyracms/deform_schemas/userarea_admin.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.13383298">
-              <caret line="73" column="44" selection-start-line="73" selection-start-column="44" selection-end-line="73" selection-end-column="44" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="91" column="46" selection-start-line="91" selection-start-column="46" selection-end-line="91" selection-end-column="46" />
               <folding>
                 <element signature="e#0#33#0" expanded="true" />
               </folding>
@@ -56,10 +56,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="widgetlib.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="widgetlib.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pyracms/lib/widgetlib.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
+            <state vertical-scroll-proportion="0.01604278">
               <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
               <folding />
             </state>
@@ -82,7 +82,7 @@
         <entry file="file://$PROJECT_DIR$/pyracms/lib/userlib.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="55" column="11" selection-start-line="55" selection-start-column="11" selection-end-line="55" selection-end-column="11" />
+              <caret line="76" column="11" selection-start-line="76" selection-start-column="11" selection-end-line="76" selection-end-column="11" />
               <folding />
             </state>
           </provider>
@@ -100,48 +100,22 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="profile.jinja2" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pyracms/templates/userarea/profile.jinja2">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-8.125">
+              <caret line="13" column="53" selection-start-line="13" selection-start-column="53" selection-end-line="13" selection-end-column="53" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="settingslib.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyracms/lib/settingslib.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="14" column="36" selection-start-line="14" selection-start-column="36" selection-end-line="14" selection-end-column="36" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pyracms/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="368" column="27" selection-start-line="368" selection-start-column="27" selection-end-line="368" selection-end-column="27" />
-              <folding>
-                <element signature="e#0#131#0" expanded="true" />
-                <element signature="e#1469#1953#0" expanded="false" />
-                <element signature="e#2049#2165#0" expanded="false" />
-                <element signature="e#2220#2437#0" expanded="false" />
-                <element signature="e#2560#2832#0" expanded="false" />
-                <element signature="e#2921#3448#0" expanded="false" />
-                <element signature="e#3568#4551#0" expanded="false" />
-                <element signature="e#5437#6900#0" expanded="false" />
-                <element signature="e#6988#7467#0" expanded="false" />
-                <element signature="e#7624#8255#0" expanded="false" />
-                <element signature="e#8428#8755#0" expanded="false" />
-                <element signature="e#8906#10262#0" expanded="false" />
-                <element signature="e#10380#13677#0" expanded="false" />
-                <element signature="e#13765#13992#0" expanded="false" />
-                <element signature="e#14121#14403#0" expanded="false" />
-                <element signature="e#15833#16266#0" expanded="false" />
-                <element signature="e#17896#18937#0" expanded="false" />
-                <element signature="e#19103#19846#0" expanded="false" />
-                <element signature="e#20025#20421#0" expanded="false" />
-                <element signature="e#20602#21267#0" expanded="false" />
-                <element signature="e#21448#22153#0" expanded="false" />
-                <element signature="e#22342#23569#0" expanded="false" />
-                <element signature="e#23761#23838#0" expanded="false" />
-                <element signature="e#24013#25697#0" expanded="false" />
-                <element signature="e#25833#25987#0" expanded="false" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -161,14 +135,14 @@
         <option value="$PROJECT_DIR$/pyracms/deform_schemas/userarea.py" />
         <option value="$PROJECT_DIR$/pyracms/templates/userarea/profile.jinja2" />
         <option value="$PROJECT_DIR$/pyracms/lib/helperlib.py" />
-        <option value="$PROJECT_DIR$/pyracms/models.py" />
-        <option value="$PROJECT_DIR$/pyracms/views.py" />
         <option value="$PROJECT_DIR$/pyracms/__init__.py" />
         <option value="$PROJECT_DIR$/pyracms/scripts/initializedb.py" />
         <option value="$PROJECT_DIR$/pyracms/lib/asda" />
         <option value="$PROJECT_DIR$/pyracms/lib/menulib.py" />
         <option value="$PROJECT_DIR$/pyracms/lib/widgetlib.py" />
         <option value="$PROJECT_DIR$/pyracms/deform_schemas/userarea_admin.py" />
+        <option value="$PROJECT_DIR$/pyracms/models.py" />
+        <option value="$PROJECT_DIR$/pyracms/views.py" />
       </list>
     </option>
   </component>
@@ -178,9 +152,10 @@
     <detection-done>true</detection-done>
   </component>
   <component name="ProjectFrameBounds">
+    <option name="x" value="-1" />
     <option name="y" value="25" />
-    <option name="width" value="1920" />
-    <option name="height" value="1055" />
+    <option name="width" value="1922" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -207,8 +182,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -238,6 +213,46 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="pyracms" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyracms" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyracms" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyracms" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="templates" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyracms" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyracms" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyracms" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="templates" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="userarea" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -430,6 +445,12 @@
       <envs />
       <method />
     </configuration>
+    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
+      <command value="run-script" />
+      <scripts />
+      <envs />
+      <method />
+    </configuration>
     <configuration default="true" type="tests" factoryName="Attests">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -601,10 +622,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="25" width="1920" height="1055" extended-state="0" />
-    <editor active="false" />
+    <frame x="-1" y="25" width="1922" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1616267" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16145833" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -650,30 +671,25 @@
           <caret line="371" column="29" selection-start-line="371" selection-start-column="29" selection-end-line="371" selection-end-column="29" />
           <folding>
             <element signature="e#0#131#0" expanded="true" />
-            <element signature="e#1469#1953#0" expanded="false" />
             <element signature="e#2049#2165#0" expanded="false" />
             <element signature="e#2220#2437#0" expanded="false" />
             <element signature="e#2560#2832#0" expanded="false" />
-            <element signature="e#2921#3448#0" expanded="false" />
-            <element signature="e#3568#4551#0" expanded="false" />
-            <element signature="e#5437#6900#0" expanded="false" />
-            <element signature="e#6988#7467#0" expanded="false" />
-            <element signature="e#7624#8255#0" expanded="false" />
-            <element signature="e#8428#8755#0" expanded="false" />
-            <element signature="e#8906#10262#0" expanded="false" />
-            <element signature="e#10380#13677#0" expanded="false" />
-            <element signature="e#13765#13992#0" expanded="false" />
-            <element signature="e#14121#14403#0" expanded="false" />
-            <element signature="e#15833#16266#0" expanded="false" />
-            <element signature="e#17896#18937#0" expanded="false" />
-            <element signature="e#19103#19846#0" expanded="false" />
-            <element signature="e#20025#20421#0" expanded="false" />
-            <element signature="e#20602#21267#0" expanded="false" />
-            <element signature="e#21448#22153#0" expanded="false" />
-            <element signature="e#22342#23569#0" expanded="false" />
-            <element signature="e#23761#23838#0" expanded="false" />
-            <element signature="e#24013#25697#0" expanded="false" />
-            <element signature="e#25833#25987#0" expanded="false" />
+            <element signature="e#4013#4996#0" expanded="false" />
+            <element signature="e#5882#7345#0" expanded="false" />
+            <element signature="e#7433#7912#0" expanded="false" />
+            <element signature="e#8069#8700#0" expanded="false" />
+            <element signature="e#8873#9200#0" expanded="false" />
+            <element signature="e#9351#10707#0" expanded="false" />
+            <element signature="e#14155#14437#0" expanded="false" />
+            <element signature="e#15867#16300#0" expanded="false" />
+            <element signature="e#17930#18971#0" expanded="false" />
+            <element signature="e#19137#19880#0" expanded="false" />
+            <element signature="e#20059#20455#0" expanded="false" />
+            <element signature="e#20636#21301#0" expanded="false" />
+            <element signature="e#21482#22187#0" expanded="false" />
+            <element signature="e#23795#23872#0" expanded="false" />
+            <element signature="e#24047#25731#0" expanded="false" />
+            <element signature="e#25867#26021#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -971,13 +987,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pyracms/templates/userarea/profile.jinja2">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="23" column="10" selection-start-line="23" selection-start-column="0" selection-end-line="25" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pyracms/lib/helperlib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -992,12 +1001,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pyracms/models.py">
+    <entry file="file://$PROJECT_DIR$/pyracms/lib/menulib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="169" column="52" selection-start-line="169" selection-start-column="52" selection-end-line="169" selection-end-column="52" />
+          <caret line="1" column="44" selection-start-line="1" selection-start-column="44" selection-end-line="1" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyracms/deform_schemas/userarea_admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="91" column="46" selection-start-line="91" selection-start-column="46" selection-end-line="91" selection-end-column="46" />
           <folding>
-            <element signature="e#0#40#0" expanded="true" />
+            <element signature="e#0#33#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1009,6 +1026,24 @@
           <folding>
             <element signature="e#0#40#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyracms/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="103" column="58" selection-start-line="103" selection-start-column="58" selection-end-line="103" selection-end-column="58" />
+          <folding>
+            <element signature="e#0#40#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyracms/templates/userarea/profile.jinja2">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.125">
+          <caret line="13" column="53" selection-start-line="13" selection-start-column="53" selection-end-line="13" selection-end-column="53" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1025,8 +1060,37 @@
     <entry file="file://$PROJECT_DIR$/pyracms/lib/userlib.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="55" column="11" selection-start-line="55" selection-start-column="11" selection-end-line="55" selection-end-column="11" />
+          <caret line="76" column="11" selection-start-line="76" selection-start-column="11" selection-end-line="76" selection-end-column="11" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyracms/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.18412349">
+          <caret line="63" column="58" selection-start-line="63" selection-start-column="58" selection-end-line="63" selection-end-column="58" />
+          <folding>
+            <element signature="e#0#131#0" expanded="true" />
+            <element signature="e#2049#2165#0" expanded="false" />
+            <element signature="e#2220#2437#0" expanded="false" />
+            <element signature="e#2560#2832#0" expanded="false" />
+            <element signature="e#4013#4996#0" expanded="false" />
+            <element signature="e#5882#7345#0" expanded="false" />
+            <element signature="e#7433#7912#0" expanded="false" />
+            <element signature="e#8069#8700#0" expanded="false" />
+            <element signature="e#8873#9200#0" expanded="false" />
+            <element signature="e#9351#10707#0" expanded="false" />
+            <element signature="e#14155#14437#0" expanded="false" />
+            <element signature="e#15867#16300#0" expanded="false" />
+            <element signature="e#17930#18971#0" expanded="false" />
+            <element signature="e#19137#19880#0" expanded="false" />
+            <element signature="e#20059#20455#0" expanded="false" />
+            <element signature="e#20636#21301#0" expanded="false" />
+            <element signature="e#21482#22187#0" expanded="false" />
+            <element signature="e#23795#23872#0" expanded="false" />
+            <element signature="e#24047#25731#0" expanded="false" />
+            <element signature="e#25867#26021#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1038,63 +1102,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pyracms/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="368" column="27" selection-start-line="368" selection-start-column="27" selection-end-line="368" selection-end-column="27" />
-          <folding>
-            <element signature="e#0#131#0" expanded="true" />
-            <element signature="e#1469#1953#0" expanded="false" />
-            <element signature="e#2049#2165#0" expanded="false" />
-            <element signature="e#2220#2437#0" expanded="false" />
-            <element signature="e#2560#2832#0" expanded="false" />
-            <element signature="e#2921#3448#0" expanded="false" />
-            <element signature="e#3568#4551#0" expanded="false" />
-            <element signature="e#5437#6900#0" expanded="false" />
-            <element signature="e#6988#7467#0" expanded="false" />
-            <element signature="e#7624#8255#0" expanded="false" />
-            <element signature="e#8428#8755#0" expanded="false" />
-            <element signature="e#8906#10262#0" expanded="false" />
-            <element signature="e#10380#13677#0" expanded="false" />
-            <element signature="e#13765#13992#0" expanded="false" />
-            <element signature="e#14121#14403#0" expanded="false" />
-            <element signature="e#15833#16266#0" expanded="false" />
-            <element signature="e#17896#18937#0" expanded="false" />
-            <element signature="e#19103#19846#0" expanded="false" />
-            <element signature="e#20025#20421#0" expanded="false" />
-            <element signature="e#20602#21267#0" expanded="false" />
-            <element signature="e#21448#22153#0" expanded="false" />
-            <element signature="e#22342#23569#0" expanded="false" />
-            <element signature="e#23761#23838#0" expanded="false" />
-            <element signature="e#24013#25697#0" expanded="false" />
-            <element signature="e#25833#25987#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyracms/lib/menulib.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="1" column="44" selection-start-line="1" selection-start-column="44" selection-end-line="1" selection-end-column="44" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pyracms/lib/widgetlib.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
+        <state vertical-scroll-proportion="0.01604278">
           <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyracms/deform_schemas/userarea_admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.13383298">
-          <caret line="73" column="44" selection-start-line="73" selection-start-column="44" selection-end-line="73" selection-end-column="44" />
-          <folding>
-            <element signature="e#0#33#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
