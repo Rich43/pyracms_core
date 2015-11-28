@@ -200,6 +200,7 @@ def main(argv=sys.argv):
                                             "been updated.")
         s.create("INFO_ACL_UPDATED", "The access control list has been updated.")
         s.create("INFO_VOTE", "Your vote has been added.")
+        s.create("ERROR_FOUND", "%s already exists.")
         s.create("ERROR_NOT_FOUND", "%s was not found.")
         s.create("ERROR_INVALID_USER_PASS", "Invalid username or password.")
         s.create("ERROR_TOKEN", "Token could not be found.")
