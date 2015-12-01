@@ -59,7 +59,7 @@ def rapid_deform(context, request, schema, validated_callback=None,
     reqts = myform.get_widget_resources()
     result = {'js_links': reqts['js'], 'css_links': reqts['css']}
 
-    if submit_name in request.POST:
+    if submit_name.replace(" ", "_") in request.POST:
         controls = list(request.POST.items())
         try:
             deserialized = myform.validate(controls)
