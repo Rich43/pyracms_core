@@ -43,7 +43,7 @@ def get_username(request):
 
 def rapid_deform(context, request, schema, validated_callback=None,
                  appstruct=null, action='', use_ajax=False,
-                 **bind_params):
+                 form_name='form', **bind_params):
     """
     Display a deform form. Cache generated forms in database.
     """
@@ -65,7 +65,7 @@ def rapid_deform(context, request, schema, validated_callback=None,
             deserialized = myform.validate(controls)
         except ValidationFailure as e:
             # Failed validation
-            result.update({'form':e.render()})
+            result.update({form_name:e.render()})
             return result
         # Form submitted, all validated!
         if validated_callback:
@@ -74,7 +74,7 @@ def rapid_deform(context, request, schema, validated_callback=None,
 
     # Add to cache and render.
     form_data = myform.render(bind_params)
-    result.update({'form':form_data})
+    result.update({form_name: form_data})
     result.update(bind_params)
     return result
 
