@@ -43,7 +43,7 @@ def get_username(request):
 
 def rapid_deform(context, request, schema, validated_callback=None,
                  appstruct=null, action='', use_ajax=False,
-                 form_name='form', **bind_params):
+                 form_name='form', submit_name='submit', **bind_params):
     """
     Display a deform form. Cache generated forms in database.
     """
@@ -53,13 +53,13 @@ def rapid_deform(context, request, schema, validated_callback=None,
     # Initialise form library
     bound_schema = schema().bind(**bind_params)
     myform = Form(bound_schema, action=action, use_ajax=use_ajax,
-                  buttons=['submit'])
+                  buttons=[submit_name])
 
     # Default template arguments
     reqts = myform.get_widget_resources()
     result = {'js_links': reqts['js'], 'css_links': reqts['css']}
 
-    if 'submit' in request.POST:
+    if submit_name in request.POST:
         controls = list(request.POST.items())
         try:
             deserialized = myform.validate(controls)
