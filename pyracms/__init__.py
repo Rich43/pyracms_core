@@ -15,6 +15,14 @@ def add_renderer_globals(event):
     event['w'] = WidgetLib()
     event['s'] = SettingsLib()
 
+def get_uuid(file_name):
+    try:
+        return open(file_name, "r").read()
+    except IOError:
+        uuid = str(uuid4())
+        open(file_name, "w").write(uuid)
+        return uuid
+
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
@@ -23,12 +31,12 @@ def main(global_config, **settings):
     DBSession.configure(bind=engine)
 
     # Setup auth + auth policy's
-    authentication_policy = AuthTktAuthenticationPolicy(str(uuid4()),
+    authentication_policy = AuthTktAuthenticationPolicy(get_uuid("auth_uuid.txt"),
                                                         callback=groupfinder)
     authorization_policy = ACLAuthorizationPolicy()
 
     # Configure session support
-    session_factory = UnencryptedCookieSessionFactoryConfig(str(uuid4()))
+    session_factory = UnencryptedCookieSessionFactoryConfig(get_uuid("sess_uuid.txt"))
 
     # Add basic configuration
     config = Configurator(settings=settings,
