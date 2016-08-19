@@ -169,7 +169,11 @@ class WidgetLib():
                                        item.name % tmpl_args,
                                        False])
                     elif item.type == "route":
-                        tmpl_args.update(loads(item.route_json))
+                        try:
+                            tmpl_args.update(loads(item.route_json))
+                        except Exception as e1:
+                            print("-" * 50)
+                            print(e1)
                         result.append([request.route_url(item.route_name,
                                                          **tmpl_args),
                                        item.name % tmpl_args,
