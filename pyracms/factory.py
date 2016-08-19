@@ -25,6 +25,7 @@ class JsonList(UserList):
             save(self)
         else:
             try:
+                DBSession.flush()
                 db_data = self.settings.show_setting("ACL")
                 super().__init__(json.loads(db_data))
             except SettingNotFound:
