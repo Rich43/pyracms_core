@@ -57,6 +57,8 @@ def rapid_deform(context, request, schema, validated_callback=None,
 
     # Default template arguments
     reqts = myform.get_widget_resources()
+    reqts['js'] = [x.replace("deform:static/", "") for x in reqts['js']]
+    reqts['css'] = [x.replace("deform:static/", "") for x in reqts['css']]
     result = {'js_links': reqts['js'], 'css_links': reqts['css']}
 
     if submit_name.replace(" ", "_") in request.POST:
