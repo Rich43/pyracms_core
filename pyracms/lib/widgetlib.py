@@ -16,17 +16,8 @@ from .userlib import UserLib, UserNotFound
 from .filelib import FileLib
 from .settingslib import SettingsLib
 
-search_html = """
-<form action="/redirect/search" method="post" class="searchform">
-  <label for="query">Search: </label>
-  <input type="text" name="query" />
-  <input type="submit" value="Submit" />
-</form>
-"""
-
 class WidgetLib():
     def __init__(self):
-        self.search_html = search_html
         self.bbcode = postmarkup.render_bbcode
         self.splitext = splitext
 

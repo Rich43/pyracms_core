@@ -1,3 +1,4 @@
+{% from "widgets/helpers.jinja2" import err_warn_info %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal">
 <head>
@@ -23,80 +24,44 @@
 </head>
 <body>
 <div class="pageborder">
-  <span class="search">{{ w.search_html|safe }}</span>
+  <span class="search">
+    <form action="/redirect/search" method="post" class="searchform">
+      <label for="query">Search: </label>
+      <input type="text" name="query" />
+      <input type="submit" value="Submit" />
+    </form>
+  </span>
 <h1 class="header">Pynguins</h1>
 <div class="menus">
     <!-- This variable contains the logged in user's username -->
     {% set userid = w.logged_in(request) %}
-  <div class="menu">
-    <h3>Main Menu</h3>
-    <ul>
-      <!-- A for loop that outputs all the menu items on the main menu -->
-      {%- for item in w.generate_menu("main_menu", context, request): %}
-      <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
-      {%- endfor %}
-    </ul>
-   </div>
-  <div class="menu">
-    <h3>Hosted Sites</h3>
-    <ul>
-      <!-- A for loop that outputs all the menu items on the main menu -->
-      {%- for item in w.generate_menu("hosted_sites", context, request): %}
-      <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
-      {%- endfor %}
-    </ul>
-   </div>
-  <div class="menu">
-    <h3>Source Code</h3>
-    <ul>
-      <!-- A for loop that outputs all the menu items on the main menu -->
-      {%- for item in w.generate_menu("source_code", context, request): %}
-      <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
-      {%- endfor %}
-    </ul>
-   </div>
-   <div class="menu">
-    <h3>User Area</h3>
-    <!-- Display a small helpful message stating if you are logged in -->
-    <h4>{% if not userid %}Not logged in.{% else %}Logged in as {{ userid }}.{% endif %}</h4>
-    <ul>
-      <!-- A for loop that outputs all the menu items on the user area menu -->
-      {%- for item in w.generate_menu("user_area", context, request): %}
-      <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
-      {%- endfor %}
-    </ul>
-   </div>
-   
-  <!-- Pre-generate the admin area menu so that I can conditionally ahow it, depending on if I am logged in -->
-  {% set adminarea = w.generate_menu("admin_area", context, request) %}
-  {% if adminarea %}
-<div class="menu">
-    <h3>Admin Area</h3>
-    <ul>
-      <!-- A for loop that outputs all the menu items on the admin area menu -->
-      {%- for item in adminarea: %}
-      <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
-      {%- endfor %}
-    </ul>
-</div>
-  {% endif %}
+    {% macro menu(display_name, name, userarea=False) %}
+        <!-- Check to see if there are any menu items in first place -->
+        {% if w.generate_menu(name, context, request) %}
+            <div class="menu">
+            <h3>{{ display_name }}</h3>
+            <ul>
+                <!-- Check to see if we are displaying a user area menu, off by default -->
+                {% if userarea %}
+                <!-- Display a small helpful message stating if you are logged in -->
+                <h4>{% if not userid %}Not logged in.{% else %}Logged in as {{ userid }}.{% endif %}</h4>
+                {% endif %}
+              <!-- A for loop that outputs all the menu items on the main menu, edit this to your liking -->
+              {%- for item in w.generate_menu(name, context, request): %}
+              <li><a href="{{ item[0] }}">{{ item[1] }}</a></li>
+              {%- endfor %}
+            </ul>
+           </div>
+        {% endif %}
+    {% endmacro %}
+    {{ menu("Main Menu", "main_menu") }}
+    {{ menu("Hosted Sites", "hosted_sites") }}
+    {{ menu("Source Code", "source_code") }}
+    {{ menu("User Area", "user_area") }}
+    {{ menu("Admin Area", "admin_area") }}
   
 </div>
-  {% for item in request.session.pop_flash('info'): %}
-  <div class="flash_info">
-      {{ item }}
-  </div>
-  {% endfor %}
-  {% for item in request.session.pop_flash('warn'): %}
-  <div class="flash_warning">
-      {{ item }}
-  </div>
-  {% endfor %}
-  {% for item in request.session.pop_flash('error'): %}
-  <div class="flash_error">
-      {{ item }}
-  </div>
-  {% endfor %}
+{{ err_warn_info(request) }}
   <div class="content">
     <!-- Display the main content on the page -->
     {% block content %}{% endblock %}

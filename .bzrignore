@@ -6,3 +6,5 @@ pyracms_db.bat
 whoosh_index
 pyracms.egg-info
 __pycache__
+auth_uuid.txt
+sess_uuid.txt

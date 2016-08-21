@@ -1,0 +1,17 @@
+{% macro err_warn_info(request) %}
+    {% for item in request.session.pop_flash('info'): %}
+      <div class="flash_info">
+          {{ item }}
+      </div>
+    {% endfor %}
+    {% for item in request.session.pop_flash('warn'): %}
+      <div class="flash_warning">
+          {{ item }}
+      </div>
+    {% endfor %}
+    {% for item in request.session.pop_flash('error'): %}
+      <div class="flash_error">
+          {{ item }}
+      </div>
+    {% endfor %}
+{% endmacro %}
