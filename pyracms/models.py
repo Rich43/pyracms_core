@@ -8,9 +8,25 @@ from sqlalchemy.schema import UniqueConstraint, ForeignKey
 from zope.sqlalchemy import ZopeTransactionExtension
 import hashlib
 import uuid
+import json
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
+
+class JsonBase:
+    __json__ = []
+
+    def to_dict(self):
+        result_dict = {}
+        for item in self.__json__:
+            result_dict[item] = getattr(self, item)
+        return result_dict
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    def make_json(self, data):
+        return json.dumps(data)
 
 class UserGroup(Base):
     """

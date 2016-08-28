@@ -6,6 +6,12 @@ from pyramid.security import authenticated_userid, Everyone
 from pyramid.url import route_url
 import inspect
 
+def display_json(request, json):
+    res = request.response
+    res.content_type = "application/json"
+    res.text = json
+    return res
+
 def list_routes(request, show_pattern=False):
     for item in request.registry.introspector.get_category('routes'):
         if len(item["related"]):
