@@ -8,3 +8,4 @@ pyracms.egg-info
 __pycache__
 auth_uuid.txt
 sess_uuid.txt
+.idea

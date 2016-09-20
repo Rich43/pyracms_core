@@ -1,16 +1,11 @@
-from .deform_schemas.userarea import (LoginSchema, RegisterSchema,
-    ChangePasswordSchema, RecoverPasswordSchema, EditUserSchema)
-from .deform_schemas.userarea_admin import (EditACL, MenuGroup, EditMenuItems, 
-    SettingSchema, RestoreSettingsSchema, EditAdminUserSchema)
-from .factory import JsonList
-from .lib.helperlib import (acl_to_dict, dict_to_acl, serialize_relation, 
-    deserialize_relation, redirect, rapid_deform)
-from .lib.menulib import MenuLib
-from .lib.searchlib import SearchLib
-from .lib.settingslib import SettingsLib
-from .lib.tokenlib import TokenLib, InvalidToken
-from .lib.userlib import UserLib
-from .models import Menu
+import json
+import os
+import shutil
+from string import Template
+
+import transaction
+from pyracms import WidgetLib
+from pyracms.lib.filelib import FileLib
 from pyramid.exceptions import Forbidden
 from pyramid.httpexceptions import HTTPFound
 from pyramid.path import AssetResolver
@@ -20,14 +15,23 @@ from pyramid.url import route_url
 from pyramid.view import view_config
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
-from string import Template
-from os.path import join
-import json
-import os
-import shutil
-import transaction
-from pyracms import WidgetLib
-from pyracms.lib.filelib import FileLib
+
+from .deform_schemas.userarea import (LoginSchema, RegisterSchema,
+                                      ChangePasswordSchema,
+                                      RecoverPasswordSchema, EditUserSchema)
+from .deform_schemas.userarea_admin import (EditACL, MenuGroup, EditMenuItems,
+                                            SettingSchema,
+                                            RestoreSettingsSchema,
+                                            EditAdminUserSchema)
+from .factory import JsonList
+from .lib.helperlib import (acl_to_dict, dict_to_acl, serialize_relation,
+                            deserialize_relation, redirect, rapid_deform)
+from .lib.menulib import MenuLib
+from .lib.searchlib import SearchLib
+from .lib.settingslib import SettingsLib
+from .lib.tokenlib import TokenLib, InvalidToken
+from .lib.userlib import UserLib
+from .models import Menu
 
 u = UserLib()
 t = TokenLib()
@@ -37,8 +41,10 @@ ERROR = 'error'
 WARN = 'warn'
 INFO = 'info'
 
+
 def dummy_home(context, request):
     return {}
+
 
 @view_config(route_name='token_get')
 def token_get(context, request):
@@ -55,6 +61,7 @@ def token_get(context, request):
         request.session.flash(s.show_setting("ERROR_TOKEN"), ERROR)
     return redirect(request, "home")
 
+
 @view_config(route_name='search', renderer='search.jinja2')
 def search(context, request):
     """
@@ -63,12 +70,14 @@ def search(context, request):
     s = SearchLib()
     return {"items": s.search(request.matchdict['query'])}
 
+
 @view_config(route_name='css')
 def css(request):
     css_data = s.show_setting("CSS")
     return Response(app_iter=[css_data.encode()],
                     headerlist=[('Content-Type', "text/css"),
                                 ('Content-Length', str(len(css_data)))])
+
 
 @view_config(route_name='redirect_one')
 @view_config(route_name='redirect_two')
@@ -78,6 +87,7 @@ def redirect_view(article, request):
     return HTTPFound(location=route_url(route_name,
                                         request, type=gamedeptype,
                                         **request.POST))
+
 
 @view_config(route_name='userarea_get_picture')
 def userarea_get_picture(request):
@@ -94,21 +104,23 @@ def userarea_get_picture(request):
         elif album.default_picture:
             picture = album.default_picture
             return HTTPFound(location=WidgetLib().get_upload_url(request) +
-                             picture.file_obj.uuid + "/" +
-                             picture.file_obj.name)
+                                      picture.file_obj.uuid + "/" +
+                                      picture.file_obj.name)
         else:
             picture = album.pictures[0]
             return HTTPFound(location=WidgetLib().get_upload_url(request) +
-                             picture.file_obj.uuid + "/" +
-                             picture.file_obj.name)
+                                      picture.file_obj.uuid + "/" +
+                                      picture.file_obj.name)
     else:
         return HTTPFound(location=request.host_url + "/static/blank.jpg")
+
 
 @view_config(route_name='userarea_login', renderer='userarea/login.jinja2')
 def userarea_login(context, request):
     """
     Display login form
     """
+
     def login_submit(context, request, deserialized, bind_params):
         """
         Submit login form
@@ -121,9 +133,10 @@ def userarea_login(context, request):
             return HTTPFound(location=deserialized.get("redirect_url"),
                              headers=headers)
         else:
-            request.session.flash(s.show_setting("ERROR_INVALID_USER_PASS"), 
+            request.session.flash(s.show_setting("ERROR_INVALID_USER_PASS"),
                                   ERROR)
             return redirect(request, "userarea_login")
+
     if request.matched_route.name == "userarea_login":
         redirect_url = route_url("home", request)
     else:
@@ -131,9 +144,10 @@ def userarea_login(context, request):
     return rapid_deform(context, request, LoginSchema, login_submit,
                         redirect_url=redirect_url)
 
-@view_config(route_name='userarea_profile', 
+
+@view_config(route_name='userarea_profile',
              renderer='userarea/profile.jinja2')
-@view_config(route_name='userarea_profile_two', 
+@view_config(route_name='userarea_profile_two',
              renderer='userarea/profile.jinja2')
 def userarea_profile(context, request):
     """
@@ -150,11 +164,13 @@ def userarea_profile(context, request):
         result.update({"thread_enabled": True})
     return result
 
+
 @view_config(route_name='userarea_recover_password', renderer='deform.jinja2')
 def userarea_recover_password(context, request):
     """
     Display password recovery form
     """
+
     def recover_password_submit(context, request, deserialized, bind_params):
         """
         Submit password recovery form, email a token
@@ -177,6 +193,7 @@ def userarea_recover_password(context, request):
         request.session.flash(s.show_setting("INFO_RECOVERY_EMAIL_SENT")
                               % email, INFO)
         return redirect(request, "home")
+
     result = rapid_deform(context, request, RecoverPasswordSchema,
                           recover_password_submit)
     if isinstance(result, dict):
@@ -184,7 +201,9 @@ def userarea_recover_password(context, request):
         result.update({"title": message, "header": message})
     return result
 
-def userarea_change_password_submit(context, request, deserialized, bind_params):
+
+def userarea_change_password_submit(context, request, deserialized,
+                                    bind_params):
     """
     Submit change password form. 
     If a token was used, expire it then send changes to database.
@@ -198,6 +217,7 @@ def userarea_change_password_submit(context, request, deserialized, bind_params)
     u.change_password(user, password)
     request.session.flash(s.show_setting("INFO_PASS_CHANGE"), INFO)
     return HTTPFound(location="/login", headers=forget(request))
+
 
 @view_config(route_name='userarea_change_password_token',
              renderer='deform.jinja2')
@@ -220,6 +240,7 @@ def userarea_change_password_token(context, request):
         result.update({"title": message, "header": message})
     return result
 
+
 @view_config(route_name='userarea_change_password',
              permission='userarea_edit', renderer='deform.jinja2')
 def userarea_change_password(context, request):
@@ -233,6 +254,7 @@ def userarea_change_password(context, request):
         result.update({"title": message, "header": message})
     return result
 
+
 @view_config(route_name='userarea_edit', permission='userarea_edit',
              renderer='deform.jinja2')
 def userarea_edit(context, request):
@@ -241,6 +263,7 @@ def userarea_edit(context, request):
     """
     user = authenticated_userid(request)
     db_user = u.show(user)
+
     def edit_submit(context, request, deserialized, bind_params):
         """
         Submit profile data, save to database
@@ -255,6 +278,7 @@ def userarea_edit(context, request):
         transaction.commit()
         request.session.flash(s.show_setting("INFO_ACC_UPDATED"), INFO)
         return redirect(request, "userarea_profile", user=user)
+
     user = authenticated_userid(request)
     result = rapid_deform(context, request, EditUserSchema,
                           edit_submit, user=user, full_name=db_user.full_name,
@@ -266,21 +290,25 @@ def userarea_edit(context, request):
         result.update({"title": message, "header": message})
     return result
 
+
 @view_config(route_name='userarea_register', renderer='deform.jinja2')
 def userarea_register(context, request):
     """
     Display register form
     """
+
     def add_picture_to_user(user):
         if s.has_setting("PYRACMS_GALLERY"):
             from pyracms_gallery.lib.gallerylib import GalleryLib
             g = GalleryLib()
             user.album_id = g.create_album(user.name, user.name, user, True)
+
     def add_forum_to_user(user):
         if s.has_setting("PYRACMS_FORUM"):
             from pyracms_forum.lib.boardlib import BoardLib
-            user.thread_id = BoardLib().add_thread(user.name,user.name, "",
+            user.thread_id = BoardLib().add_thread(user.name, user.name, "",
                                                    user, add_post=False).id
+
     def register_submit(context, request, deserialized, bind_params):
         """
         Submit register form, add user to database
@@ -323,11 +351,13 @@ def userarea_register(context, request):
             add_picture_to_user(user)
             add_forum_to_user(user)
         return redirect(request, "home")
+
     result = rapid_deform(context, request, RegisterSchema, register_submit)
     if isinstance(result, dict):
         message = "Register"
         result.update({"title": message, "header": message})
     return result
+
 
 @view_config(route_name='userarea_logout')
 def userarea_logout(context, request):
@@ -339,8 +369,9 @@ def userarea_logout(context, request):
     request.session.flash(s.show_setting("INFO_LOGOUT"), INFO)
     return redirect(request, "home", headers=headers)
 
+
 @view_config(route_name='userarea_list', renderer='list.jinja2')
-def userarea_list(context, request): #@ReservedAssignment
+def userarea_list(context, request):  # @ReservedAssignment
     """
     Display a list of users
     """
@@ -349,6 +380,7 @@ def userarea_list(context, request): #@ReservedAssignment
     return {'items': [(route_url(route_name, request, user=item[0]), item[1])
                       for item in u.list(False)],
             'title': message, 'header': message}
+
 
 @view_config(route_name='userarea_admin_backup', permission='backup')
 def userarea_admin_backup(context, request):
@@ -362,10 +394,12 @@ def userarea_admin_backup(context, request):
         res.text = str(json.dumps(s.to_dict()))
     return res
 
+
 @view_config(route_name='userarea_admin_restore', permission='backup',
              renderer='deform.jinja2')
 def userarea_admin_restore(context, request):
     what = request.matchdict.get("what")
+
     def restore_settings_submit(context, request, deserialized, bind_params):
         data = json.loads(deserialized['restore_settings_json_file']
                           ['fp'].read().decode())
@@ -374,12 +408,14 @@ def userarea_admin_restore(context, request):
         elif what == "settings":
             s.from_dict(data)
         return redirect(request, "article_list")
+
     result = rapid_deform(context, request, RestoreSettingsSchema,
                           restore_settings_submit)
     if isinstance(result, dict):
         message = "Restore Settings from JSON File"
         result.update({"title": message, "header": message})
     return result
+
 
 @view_config(route_name='userarea_admin_edit_menu', permission='edit_menu',
              renderer='list.jinja2')
@@ -396,6 +432,7 @@ def userarea_admin_edit_menu(context, request):
                       for item in m.list_groups()],
             'title': message, 'header': message}
 
+
 @view_config(route_name='userarea_admin_edit_menu_item',
              permission='edit_menu', renderer='deform.jinja2')
 def userarea_admin_edit_menu_item(context, request):
@@ -404,6 +441,7 @@ def userarea_admin_edit_menu_item(context, request):
     See: userarea_admin_edit_menu
     """
     m = MenuLib()
+
     def edit_menu_item_submit(context, request, deserialized, bind_params):
         """
         Save new list of menu items to database
@@ -420,6 +458,7 @@ def userarea_admin_edit_menu_item(context, request):
         request.session.flash(s.show_setting("INFO_MENU_UPDATED")
                               % group.name, INFO)
         return redirect(request, 'userarea_admin_edit_menu')
+
     group = m.show_group(request.matchdict.get('group'))
     result = rapid_deform(context, request, EditMenuItems,
                           edit_menu_item_submit, group=group,
@@ -429,6 +468,7 @@ def userarea_admin_edit_menu_item(context, request):
         result.update({"title": message, "header": message})
     return result
 
+
 @view_config(route_name='userarea_admin_edit_menu_group',
              permission='edit_menu', renderer='deform.jinja2')
 def userarea_admin_edit_menu_group(context, request):
@@ -436,6 +476,7 @@ def userarea_admin_edit_menu_group(context, request):
     Display form that lets you edit menu groups
     """
     m = MenuLib()
+
     def edit_menu_group_submit(context, request, deserialized, bind_params):
         """
         Save new list of menu groups to database
@@ -446,6 +487,7 @@ def userarea_admin_edit_menu_group(context, request):
         list(map(m.delete_group, groups - deserialized_groups))
         request.session.flash(s.show_setting("INFO_MENU_GROUP_UPDATED"), INFO)
         return redirect(request, 'userarea_admin_edit_menu')
+
     groups = m.list_groups().all()
     menu_groups = [x['name'] for x in serialize_relation(groups)]
     result = rapid_deform(context, request, MenuGroup,
@@ -456,12 +498,14 @@ def userarea_admin_edit_menu_group(context, request):
         result.update({"title": message, "header": message})
     return result
 
+
 @view_config(route_name='userarea_admin_edit_acl',
              permission='edit_acl', renderer='deform.jinja2')
 def userarea_admin_edit_acl(context, request):
     """
     Display a form that lets you edit the access control list
     """
+
     def edit_acl_submit(context, request, deserialized, bind_params):
         """
         Save new access control list to database
@@ -470,12 +514,14 @@ def userarea_admin_edit_acl(context, request):
         request.session['groupfinder'] = {}
         request.session.flash(s.show_setting("INFO_ACL_UPDATED"), INFO)
         return redirect(request, 'home')
-    result = rapid_deform(context, request, EditACL, edit_acl_submit, 
+
+    result = rapid_deform(context, request, EditACL, edit_acl_submit,
                           acl=map(acl_to_dict, context.__acl__))
     if isinstance(result, dict):
         message = "Editing Access Control List"
         result.update({"title": message, "header": message})
     return result
+
 
 @view_config(route_name='userarea_admin_list_settings',
              permission='edit_settings', renderer='list.jinja2')
@@ -491,25 +537,29 @@ def userarea_admin_list_settings(context, request):
                       for item in s.list()],
             'title': message, 'header': message}
 
+
 @view_config(route_name='userarea_admin_edit_settings',
              permission='edit_settings', renderer='deform.jinja2')
 def userarea_admin_edit_settings(context, request):
     """
     Display a form that lets you edit the settings table
     """
+
     def edit_setting_submit(context, request, deserialized, bind_params):
         """
         Save new setting to database
         """
         s.update(bind_params['name'], deserialized['value'])
         return redirect(request, 'userarea_admin_list_settings')
+
     name = request.matchdict.get('name')
-    result = rapid_deform(context, request, SettingSchema, edit_setting_submit, 
+    result = rapid_deform(context, request, SettingSchema, edit_setting_submit,
                           name=name, value=s.show_setting(name))
     if isinstance(result, dict):
         message = "Editing Settings"
         result.update({"title": message, "header": message})
     return result
+
 
 @view_config(route_name='userarea_admin_edit_template',
              permission='edit_settings', renderer='deform.jinja2')
@@ -519,18 +569,21 @@ def userarea_admin_edit_template(context, request):
     """
     setting_data = request.registry.settings.get("main_template")
     main_path = resolve(setting_data).abspath()
+
     def edit_template_submit(context, request, deserialized, bind_params):
         """
         Save new template
         """
         open(main_path, "w", newline="\n").write(deserialized['value'])
         return redirect(request, 'home')
+
     result = rapid_deform(context, request, SettingSchema,
                           edit_template_submit, value=open(main_path).read())
     if isinstance(result, dict):
         message = "Editing Template"
         result.update({"title": message, "header": message})
     return result
+
 
 @view_config(route_name='userarea_admin_file_upload',
              permission='file_upload', renderer='userarea/file_upload.jinja2')
@@ -541,27 +594,32 @@ def userarea_admin_file_upload(context, request):
     static_path = file_lib.get_static_path()
     if 'path' in request.GET:
         new_static_path = os.path.join(static_path,
-                            file_lib.filename_filter(request.GET['path']))
+                                       file_lib.filename_filter(
+                                           request.GET['path']))
     else:
         new_static_path = static_path
     if 'datafile' in request.POST:
         data_file = request.POST['datafile']
-        shutil.copyfileobj(data_file.file, open(os.path.join(new_static_path,
-                        file_lib.filename_filter(data_file.filename)), "wb"))
+        shutil.copyfileobj(data_file.file,
+                           open(os.path.join(new_static_path,
+                                             file_lib.filename_filter(
+                                                 data_file.filename)),
+                                "wb"))
     for item in os.listdir(new_static_path):
         if os.path.isdir(os.path.join(new_static_path, item)):
             if 'path' in request.GET:
-                result.append((True, "?path=%s/%s" % 
+                result.append((True, "?path=%s/%s" %
                                (request.GET['path'], item), item))
             else:
                 result.append((True, "?path=" + item, item))
         else:
             if 'path' in request.GET:
-                result.append((False, "/static/%s/%s" % 
+                result.append((False, "/static/%s/%s" %
                                (request.GET['path'], item), item))
             else:
                 result.append((False, "/static/" + item, item))
     return {'items': result, 'title': message, 'header': message}
+
 
 @view_config(route_name='userarea_admin_manage_users',
              permission='group:admin', renderer='userarea/manage_users.jinja2')
@@ -571,6 +629,7 @@ def userarea_admin_manage_users(context, request):
     """
     return {"users": u.list(as_obj=True)}
 
+
 @view_config(route_name='userarea_admin_manage_user',
              permission='group:admin', renderer='deform.jinja2')
 def userarea_admin_manage_user(context, request):
@@ -579,6 +638,7 @@ def userarea_admin_manage_user(context, request):
     """
     user = request.matchdict.get("name")
     db_user = u.show(user)
+
     def manage_user_submit(context, request, deserialized, bind_params):
         """
         Save user
@@ -599,17 +659,19 @@ def userarea_admin_manage_user(context, request):
         transaction.commit()
         request.session.flash(s.show_setting("INFO_ACC_UPDATED"), INFO)
         return redirect(request, 'userarea_admin_manage_users')
-    result = rapid_deform(context, request, EditAdminUserSchema, 
+
+    result = rapid_deform(context, request, EditAdminUserSchema,
                           manage_user_submit, full_name=db_user.full_name,
                           email=db_user.email_address, website=db_user.website,
                           birthday=db_user.birthday, about_me=db_user.aboutme,
                           sex=db_user.sex, timezone=db_user.timezone,
-                          banned=db_user.banned, 
+                          banned=db_user.banned,
                           groups=[x.name for x in db_user.groups])
     if isinstance(result, dict):
         message = "Managing user " + user
         result.update({"title": message, "header": message})
     return result
+
 
 @view_config(route_name='userarea_admin_delete_user', permission='group:admin')
 def userarea_admin_delete_user(context, request):

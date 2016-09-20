@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta
 from sqlalchemy import (Column, Integer, Unicode, UnicodeText, DateTime, Boolean, 
-    BigInteger, LargeBinary, Date, Enum)
+    BigInteger, Date, Enum)
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import (scoped_session, sessionmaker, relationship, synonym, 
-    deferred)
+from sqlalchemy.orm import scoped_session, sessionmaker, relationship, synonym
 from sqlalchemy.schema import UniqueConstraint, ForeignKey
 from zope.sqlalchemy import ZopeTransactionExtension
 import hashlib
@@ -116,6 +115,8 @@ class User(Base):
                       default="Europe/London")
     postcount = Column(Integer, default=0, nullable=False)
     signature = Column(UnicodeText, default='')
+    api_uuid = Column(Unicode(128), index=True, nullable=False,
+                      default=lambda: str(uuid.uuid4()))
     thread_id = Column(Integer, nullable=False, default=-1)
     album_id = Column(Integer, nullable=False, default=-1)
     _password = Column('password', Unicode(128), nullable=False)

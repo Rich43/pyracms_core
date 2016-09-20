@@ -24,7 +24,8 @@ requires = [
     'Markdown',
     'Pillow',
     'pyramid_mailer',
-    'moviepy'
+    'moviepy',
+    'cornice'
     ]
 
 setup(name='pyracms',
