@@ -1,5 +1,7 @@
 from ..models import DBSession, User, Group
 from sqlalchemy.orm.exc import NoResultFound
+import json
+from .settingslib import SettingsLib
 
 class UserNotFound(Exception):
     pass
@@ -156,6 +158,30 @@ class UserLib():
             user.groups.append(group)
         DBSession.add(group)
         return group
+
+    def list_users_groups(self, user_name):
+        """
+        List all of the users groups
+        :param user_name: User's username
+        :return: List of groups
+        """
+        return [x.name for x in self.show(user_name).groups]
+
+    def list_users_permissions(self, user_name):
+        """
+        List all of the users permissions
+        :param user_name: User's username
+        :return: List of permissions
+        """
+        groups = self.list_users_groups(user_name)
+        s = SettingsLib()
+        ACLs = json.loads(s.show_setting("ACL"))
+        result = []
+        for ACL in ACLs:
+            for group in groups:
+                if "group:" + group == ACL[1] and ACL[0].lower() == "allow":
+                    result.append(ACL[2])
+        return result
 
     def count(self):
         return self.list(as_obj=True).count()
