@@ -3,6 +3,7 @@ import os
 import shutil
 from string import Template
 
+import datetime
 import transaction
 from pyracms import WidgetLib
 from pyracms.lib.filelib import FileLib
@@ -18,7 +19,7 @@ from pyramid_mailer.message import Message
 
 from .deform_schemas.userarea import (LoginSchema, RegisterSchema,
                                       ChangePasswordSchema,
-                                      RecoverPasswordSchema, EditUserSchema)
+                                      RecoverPasswordSchema, EditUserSchema, RegisterAdminSchema)
 from .deform_schemas.userarea_admin import (EditACL, MenuGroup, EditMenuItems,
                                             SettingSchema,
                                             RestoreSettingsSchema,
@@ -313,7 +314,13 @@ def userarea_register(context, request):
         """
         Submit register form, add user to database
         """
-
+        if not u.count():
+            deserialized['email'] = "admin@example.com"
+            deserialized["full_name"] = "admin"
+            deserialized["sex"] = "Male"
+            deserialized["website"] = "http://www.example.com"
+            deserialized["about_me"] = "I am too lazy to write an 'About Me' :-("
+            deserialized["birthday"] = datetime.date(1987,1,1)
         email = deserialized.get("email")
         user = u.create_user(deserialized.get("username"),
                              deserialized.get("full_name"), email,
@@ -352,9 +359,15 @@ def userarea_register(context, request):
             add_forum_to_user(user)
         return redirect(request, "home")
 
-    result = rapid_deform(context, request, RegisterSchema, register_submit)
+    if u.count() > 1:
+        result = rapid_deform(context, request, RegisterSchema, register_submit)
+    else:
+        result = rapid_deform(context, request, RegisterAdminSchema, register_submit)
+
     if isinstance(result, dict):
         message = "Register"
+        if not u.count():
+            message = "Make an Admin User"
         result.update({"title": message, "header": message})
     return result
 

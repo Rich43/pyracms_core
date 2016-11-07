@@ -92,6 +92,12 @@ class RegisterSchema(MappingSchema):
     timezone = SchemaNode(String(), widget=SelectWidget(values=all_tz, size=20),
                     validator=OneOf(all_timezones), default="Europe/London")
 
+class RegisterAdminSchema(MappingSchema):
+    username = SchemaNode(String(), widget=TextInputWidget(size=40),
+                          validator=All(Length(min=3), valid_username))
+    password = SchemaNode(String(), validator=Length(min=8),
+                          widget=CheckedPasswordWidget(size=40))
+
 class EditUserSchema(MappingSchema):
     full_name = SchemaNode(String(), widget=TextInputWidget(size=40),
                            validator=Length(min=3))
