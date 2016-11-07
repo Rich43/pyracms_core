@@ -3,7 +3,6 @@
 import json
 
 from colander import MappingSchema, SchemaNode, String
-from cornice.ext.spore import generate_spore_description
 from cornice.service import Service, get_services
 from pyracms.lib.userlib import UserLib
 from webob import Response, exc
@@ -41,16 +40,6 @@ def valid_token(request):
 class LoginSchema(MappingSchema):
     username = SchemaNode(String(), location="body", type='str')
     password = SchemaNode(String(), location="body", type='str')
-
-
-spore = Service('spore', path='/spore', renderer='json')
-
-
-@spore.get()
-def api_get_spore(request):
-    services = get_services()
-    return generate_spore_description(services, 'Pyracms Service',
-                                      request.application_url, '1.0')
 
 
 auth = Service(name='auth', path='/api/userarea/auth',
