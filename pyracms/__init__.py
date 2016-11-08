@@ -80,6 +80,8 @@ def main(global_config, **settings):
     config.add_route('userarea_register', '/userarea/register')
     config.add_route('userarea_list', '/userarea/list')
     config.add_route('userarea_get_picture', '/userarea/get_picture/{user}')
+    config.add_route('userarea_website_api', '/userarea/website_api')
+    config.add_route('userarea_website_api_change', '/userarea/website_api_change')
 
     # Userarea Admin routes
     config.add_route('userarea_admin_edit_menu', '/userarea_admin/edit_menu')

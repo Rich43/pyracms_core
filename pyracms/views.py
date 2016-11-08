@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import uuid
 from string import Template
 
 import datetime
@@ -121,7 +122,6 @@ def userarea_login(context, request):
     """
     Display login form
     """
-
     def login_submit(context, request, deserialized, bind_params):
         """
         Submit login form
@@ -297,7 +297,6 @@ def userarea_register(context, request):
     """
     Display register form
     """
-
     def add_picture_to_user(user):
         if s.has_setting("PYRACMS_GALLERY"):
             from pyracms_gallery.lib.gallerylib import GalleryLib
@@ -393,6 +392,26 @@ def userarea_list(context, request):  # @ReservedAssignment
     return {'items': [(route_url(route_name, request, user=item[0]), item[1])
                       for item in u.list(False)],
             'title': message, 'header': message}
+
+
+@view_config(route_name='userarea_website_api', renderer='userarea/website_api.jinja2')
+def userarea_website_api(context, request):
+    """
+    Show users api details
+    """
+    user = authenticated_userid(request)
+    db_user = u.show(user)
+    return {"key": db_user.api_uuid, "user": user}
+
+@view_config(route_name='userarea_website_api_change')
+def userarea_website_api_change(context, request):
+    """
+    Change API Key
+    """
+    user = authenticated_userid(request)
+    db_user = u.show(user)
+    db_user.api_uuid = str(uuid.uuid4())
+    return redirect(request, "userarea_website_api")
 
 
 @view_config(route_name='userarea_admin_backup', permission='backup')

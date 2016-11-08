@@ -228,7 +228,9 @@ def main(argv=sys.argv):
                               7, group, Authenticated)
         m.add_menu_item_route("User List", "userarea_list", 8, group,
                               Everyone)
-        
+        m.add_menu_item_route("Website API", "userarea_website_api", 9, group,
+                              Authenticated)
+
         group = m.add_group("admin_area")
         m.add_menu_item_route("Edit Menu", "userarea_admin_edit_menu",
                               1, group, 'edit_menu')

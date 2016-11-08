@@ -18,7 +18,7 @@ class _401(exc.HTTPError):
         self.content_type = 'application/json'
 
 
-def valid_token(request):
+def get_token(request):
     header = 'X-Messaging-Token'
     htoken = request.headers.get(header)
     if htoken is None:
@@ -27,7 +27,11 @@ def valid_token(request):
         user, token = htoken.split(',', 1)
     except ValueError:
         raise _401()
+    return user, token
 
+
+def valid_token(request, **kwargs):
+    user, token = get_token(request)
     valid = u.exists(user)
     if valid:
         valid = u.show(user).api_uuid == token
@@ -35,6 +39,22 @@ def valid_token(request):
         raise _401()
 
     request.validated['user'] = user
+
+
+def valid_permission(request, permission):
+    user, token = get_token(request)
+    if permission in u.list_users_permissions(user):
+        return True
+    else:
+        return False
+
+
+def valid_group(request, group):
+    user, token = get_token(request)
+    if group in u.list_users_groups(user):
+        return True
+    else:
+        return False
 
 
 class LoginSchema(MappingSchema):
