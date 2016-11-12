@@ -1,0 +1,10 @@
+{% extends "main.jinja2" %}
+{% block title %} - Website API{% endblock %}
+{% block content %}
+    <h3>Website API</h3>
+    <p>Your API Key is: {{ key }}</p>
+    <p><a href="{{ request.route_url("userarea_website_api_change") }}">Change your key</a></p>
+    <p>Use the following header for restricted areas:</p>
+    <pre>Content-Type: application/json
+X-Messaging-Token: {{ user }},{{ key }}</pre>
+{% endblock %}
