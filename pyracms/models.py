@@ -243,3 +243,19 @@ class Token(Base):
     def __init__(self, user, purpose):
         self.user = user
         self.purpose = purpose
+
+class APIFileUpload(Base):
+    __tablename__ = 'apifileupload'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode(128), index=True, unique=True,
+                  default=gen_token, nullable=False)
+    file_id = Column(Integer, ForeignKey('files.id'), unique=True, nullable=False)
+    file_obj = relationship(Files, uselist=False, single_parent=True,
+                            cascade="all, delete, delete-orphan")
+    created = Column(DateTime, default=datetime.now)
+    expires = Column(DateTime, default=expire_time)
+
+    def __init__(self, file_obj):
+        self.file_obj = file_obj

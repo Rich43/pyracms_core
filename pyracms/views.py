@@ -492,6 +492,7 @@ def userarea_admin_edit_menu_item(context, request):
         return redirect(request, 'userarea_admin_edit_menu')
 
     group = m.show_group(request.matchdict.get('group'))
+    print(serialize_relation(group.menu_items))
     result = rapid_deform(context, request, EditMenuItems,
                           edit_menu_item_submit, group=group,
                           menu=serialize_relation(group.menu_items))
