@@ -6,6 +6,13 @@ from pyramid.security import authenticated_userid, Everyone
 from pyramid.url import route_url
 import inspect
 
+def is_int(data):
+    try:
+        int(data)
+    except ValueError:
+        return False
+    return True
+
 def display_json(request, json):
     res = request.response
     res.content_type = "application/json"
