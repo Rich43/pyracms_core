@@ -6,5 +6,25 @@
     <p><a href="{{ request.route_url("userarea_website_api_change") }}">Change your key</a></p>
     <p>Use the following header for restricted areas:</p>
     <pre>Content-Type: application/json
-X-Messaging-Token: {{ user }},{{ key }}</pre>
+X-Messaging-Token: {{ key }}</pre>
+
+    <h4>Listing users and logging in</h4>
+    <p>You can GET/POST to /api/userarea/auth</p>
+    <p>GET: List users, no arguments.</p>
+    <p>POST: Login, requires username and password with JSON format in body</p>
+
+    <h4>Uploading files</h4>
+    <p>You can GET/POST to /api/file_upload</p>
+    <p>POST: Use data field and standard POST to send files at
+        /api/file_upload, or
+        use form below:</p>
+    <p>You will get a uuid key that you can use with other API's.</p>
+    <form action="/api/file_upload" method="post" enctype="multipart/form-data">
+        Select file to upload:
+        <input type="file" name="data" id="data">
+        <input type="submit" value="Upload" name="submit">
+    </form>
+    <p>GET: A GET request with the query string
+        /api/file_upload?uuid=my_uuid_here
+       can return useful metadata about the uploaded file.</p>
 {% endblock %}

@@ -52,6 +52,16 @@ class UserLib():
         except NoResultFound:
             raise UserNotFound
 
+    def show_by_token(self, token):
+        """
+        Get a user from his token
+        Raise UserNotFound if user does not exist
+        """
+        try:
+            return DBSession.query(User).filter_by(api_uuid=token).one()
+        except NoResultFound:
+            raise UserNotFound
+
     def list(self, first=True, as_obj=False):
         """
         List all the users

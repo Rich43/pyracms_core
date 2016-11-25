@@ -6,10 +6,13 @@ import webob
 import ntpath
 from colander import MappingSchema, SchemaNode, String
 from cornice.service import Service
+from cornice.validators import colander_body_validator
 from webob import Response, exc
 
 from .lib.filelib import FileLib, APIFileNotFound
-from .lib.userlib import UserLib
+from .lib.userlib import UserLib, UserNotFound
+
+APP_JSON = "application/json"
 
 u = UserLib()
 
@@ -25,23 +28,18 @@ def get_token(request):
     header = 'X-Messaging-Token'
     htoken = request.headers.get(header)
     if htoken is None:
-        raise _401()
+        raise _401("X-Messaging-Token missing")
     try:
-        user, token = htoken.split(',', 1)
-    except ValueError:
-        raise _401()
-    return user, token
+        user = u.show_by_token(htoken.strip())
+    except UserNotFound:
+        raise _401("Token '%s' Not Found" % htoken)
+    return user, htoken
 
 
 def valid_token(request, **kwargs):
     user, token = get_token(request)
-    valid = u.exists(user)
-    if valid:
-        valid = u.show(user).api_uuid == token
-    if not valid:
-        raise _401()
-
-    request.validated['user'] = user
+    request.validated['user'] = user.name
+    request.validated['user_db'] = user
 
 
 def valid_permission(request, permission):
@@ -116,7 +114,8 @@ def api_user_list(request):
     return users
 
 
-@auth.post(schema=LoginSchema)
+@auth.post(schema=LoginSchema, validators=colander_body_validator,
+           content_type=APP_JSON)
 def api_user_login(request):
     username = request.json_body['username']
     if u.login(username, request.json_body['password']):
