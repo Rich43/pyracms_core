@@ -43,7 +43,7 @@ def valid_token(request, **kwargs):
 
 
 def valid_permission(request, permission):
-    user, token = get_token(request)
+    user = request.validated['user']
     if permission in u.list_users_permissions(user):
         return True
     else:
@@ -51,7 +51,7 @@ def valid_permission(request, permission):
 
 
 def valid_group(request, group):
-    user, token = get_token(request)
+    user = request.validated['user']
     if group in u.list_users_groups(user):
         return True
     else:
