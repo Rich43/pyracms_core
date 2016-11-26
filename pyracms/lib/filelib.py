@@ -22,7 +22,8 @@ class FileLib:
         self.request = request
 
     def filename_filter(self, filename):
-        return "".join(filter(lambda c: c.isalnum() or ".", filename))
+        return "".join(filter(lambda c: c.isalnum() or c in [".", "_"],
+                              filename))
 
     def get_filename(self, filename):
         uuid = str(uuid1(clock_seq=int(time())))

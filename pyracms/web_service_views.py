@@ -125,9 +125,8 @@ def api_user_login(request):
         request.errors.add('body', 'login_fail',
                            'Invalid username/password')
 
-file_upload = Service(name='file_upload',
-                          path='/api/file_upload',
-                          description="Upload files, returns a uuid/key")
+file_upload = Service(name='file_upload', path='/api/file_upload',
+                      description="Upload files, returns a uuid/key")
 
 def api_valid_get_qs(request, **kwargs):
     valid_qs(request, "uuid")
