@@ -20,7 +20,8 @@ from pyramid_mailer.message import Message
 
 from .deform_schemas.userarea import (LoginSchema, RegisterSchema,
                                       ChangePasswordSchema,
-                                      RecoverPasswordSchema, EditUserSchema, RegisterAdminSchema)
+                                      RecoverPasswordSchema, EditUserSchema,
+                                      RegisterAdminSchema)
 from .deform_schemas.userarea_admin import (EditACL, MenuGroup, EditMenuItems,
                                             SettingSchema,
                                             RestoreSettingsSchema,
@@ -318,7 +319,8 @@ def userarea_register(context, request):
             deserialized["full_name"] = "admin"
             deserialized["sex"] = "Male"
             deserialized["website"] = "http://www.example.com"
-            deserialized["about_me"] = "I am too lazy to write an 'About Me' :-("
+            deserialized["about_me"] = "I am too lazy to " + \
+                                       "write an 'About Me' :-("
             deserialized["birthday"] = datetime.date(1987,1,1)
         email = deserialized.get("email")
         user = u.create_user(deserialized.get("username"),
@@ -331,18 +333,23 @@ def userarea_register(context, request):
         user.birthday = deserialized.get("birthday")
         add_picture_to_user(user)
         add_forum_to_user(user)
+        # If there's an admin and guest user
         if u.count() > 1:
+            # Add token and get token url
             token = t.add_token(user, "register")
-            parsed = Template(s.show_setting("EMAIL"))
             url = route_url("token_get", request, token=token)
+            # Generate email template body
+            parsed = Template(s.show_setting("EMAIL"))
             parsed = parsed.safe_substitute(what=s.show_setting("REGISTRATION"),
                                             username=user.name, url=url,
                                             title=s.show_setting("TITLE"))
+            # Send an email
             mailer = get_mailer(request)
             message = Message(subject=s.show_setting("REGISTRATION_SUBJECT"),
                               sender=s.show_setting("MAIL_SENDER"),
                               recipients=[user.email_address], body=parsed)
             mailer.send(message)
+            # Add user to default groups
             for item in s.show_setting("DEFAULTGROUPS").trim().split():
                 user.groups.append(u.show_group(item))
             request.session.flash(s.show_setting("INFO_ACTIVATON_EMAIL_SENT")
@@ -352,16 +359,21 @@ def userarea_register(context, request):
             user.banned = False
             for item in u.list_groups(True):
                 user.groups.append(item)
+            # Create guest user and add user to Everyone group
             user = u.create_user(Everyone, "Guest User", "guest@guest.com",
                                  "guest", "Female")
+            user.groups.append(u.show_group(Everyone))
+            # Add picture and forum to user
             add_picture_to_user(user)
             add_forum_to_user(user)
         return redirect(request, "home")
 
     if u.count() > 1:
-        result = rapid_deform(context, request, RegisterSchema, register_submit)
+        result = rapid_deform(context, request,
+                              RegisterSchema, register_submit)
     else:
-        result = rapid_deform(context, request, RegisterAdminSchema, register_submit)
+        result = rapid_deform(context, request,
+                              RegisterAdminSchema, register_submit)
 
     if isinstance(result, dict):
         message = "Register"
@@ -394,7 +406,8 @@ def userarea_list(context, request):  # @ReservedAssignment
             'title': message, 'header': message}
 
 
-@view_config(route_name='userarea_website_api', renderer='userarea/website_api.jinja2')
+@view_config(route_name='userarea_website_api',
+             renderer='userarea/website_api.jinja2')
 def userarea_website_api(context, request):
     """
     Show users api details

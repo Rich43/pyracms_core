@@ -183,13 +183,18 @@ class UserLib():
         :param user_name: User's username
         :return: List of permissions
         """
+
         groups = self.list_users_groups(user_name)
         s = SettingsLib()
         ACLs = json.loads(s.show_setting("ACL"))
         result = []
+        prefix = "group:"
         for ACL in ACLs:
+            if ACL[1].startswith(prefix):
+                ACL[1] = ACL[1][len(prefix):]
             for group in groups:
-                if "group:" + group == ACL[1] and ACL[0].lower() == "allow":
+                if (group.lower() == ACL[1].lower() and
+                        ACL[0].lower() == "allow"):
                     result.append(ACL[2])
         return result
 

@@ -152,7 +152,9 @@ def main(argv=sys.argv):
         
         # Default Groups
         u.create_group("admin", "All Access!")
-        
+        u.create_group(Everyone, "Guest")
+        u.create_group(Authenticated, "Logged in")
+
         # Default ACL
         acl = RootFactory(session=DBSession)
         acl.__acl__.append((Allow, Everyone, Everyone))
@@ -174,7 +176,7 @@ def main(argv=sys.argv):
         s.create("KEYWORDS")
         s.create("DESCRIPTION")
         s.create("DEFAULTRENDERER", "HTML")
-        s.create("DEFAULTGROUPS", "")
+        s.create("DEFAULTGROUPS", Everyone + "\n" + Authenticated + "\n")
         s.create("RECOVER_PASSWORD", "recover password")
         s.create("RECOVER_PASSWORD_SUBJECT", "Password recovery for %s")
         s.create("REGISTRATION", "registration")
