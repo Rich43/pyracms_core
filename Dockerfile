@@ -1,6 +1,8 @@
 FROM ubuntu:18.04
 FROM python:latest
 
+EXPOSE 6543/tcp
+
 RUN apt-get update -y && \
     apt-get install -y python-dev python3-pip python3-dev && \
     pip3 install --upgrade pip setuptools
