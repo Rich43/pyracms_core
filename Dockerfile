@@ -1,7 +1,8 @@
 FROM ubuntu:18.04
+FROM python:latest
 
 RUN apt-get update -y && \
-    apt-get install -y python3.7 python3-pip python3-dev && \
+    apt-get install -y python3.7-dev python-dev python3-pip python3-dev && \
     pip3 install --upgrade pip setuptools
 
 # We copy this file first to leverage docker cache
