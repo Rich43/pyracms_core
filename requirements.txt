@@ -19,4 +19,5 @@ WebOb
 whoosh
 waitress
 zope.sqlalchemy
-
+plaster
+plaster-pastedeploy
