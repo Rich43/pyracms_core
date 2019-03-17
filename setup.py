@@ -48,7 +48,7 @@ setup(name='pyracms',
       zip_safe=False,
       test_suite='pyracms',
       install_requires=requires,
-      package_data={"": ['*.jinja2']}
+      package_data={"": ['*.jinja2']},
       entry_points="""\
       [paste.app_factory]
       main = pyracms:main
