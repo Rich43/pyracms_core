@@ -14,6 +14,8 @@ RUN pip3 install -r requirements.txt
 
 COPY . /app
 
+RUN python setup.py install
+
 RUN initialize_pyracms_db production.ini
 
 ENTRYPOINT [ "pserve" ]
