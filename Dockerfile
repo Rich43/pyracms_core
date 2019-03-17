@@ -4,8 +4,6 @@ RUN apt-get update -y && \
     apt-get install -y python3.7 python3-pip python3-dev && \
     pip3 install --upgrade pip setuptools
 
-RUN pip freeze > requirements.txt
-
 # We copy this file first to leverage docker cache
 COPY ./requirements.txt /app/requirements.txt
 
