@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 FROM python:latest
 
 RUN apt-get update -y && \
-    apt-get install -y python3-waitress python-dev python3-pip python3-dev && \
+    apt-get install -y python-dev python3-pip python3-dev && \
     pip3 install --upgrade pip setuptools
 
 # We copy this file first to leverage docker cache
@@ -14,7 +14,9 @@ RUN pip3 install -r requirements.txt
 
 COPY . /app
 
-ENTRYPOINT [ "waitress-serve-python3" ]
+RUN initialize_pyracms_db production.ini
 
-CMD [ "pyracms:main" ]
+ENTRYPOINT [ "pserve" ]
+
+CMD [ "production.ini" ]
 
