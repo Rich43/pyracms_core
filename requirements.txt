@@ -11,9 +11,12 @@ postmarkup
 Pygments
 pyramid
 pyramid_mailer
+pyramid_sqlalchemy
 pytz
 SQLAlchemy
 transaction
 WebOb
 whoosh
 waitress
+zope.sqlalchemy
+
