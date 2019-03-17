@@ -16,3 +16,4 @@ SQLAlchemy
 transaction
 WebOb
 whoosh
+waitress
