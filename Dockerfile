@@ -1,21 +1,13 @@
 FROM python:latest
 
-EXPOSE 6543/tcp
-
 # We copy this file first to leverage docker cache
-COPY ./requirements.txt /app/requirements.txt
+COPY ./requirements.txt /code/pyracms/requirements.txt
 
-WORKDIR /app
+WORKDIR /code/pyracms
 
 RUN pip install -r requirements.txt
 
-COPY . /app
+COPY . /code/pyracms
 
 RUN python setup.py install
-
-RUN initialize_pyracms_db production.ini
-
-ENTRYPOINT [ "pserve" ]
-
-CMD [ "production.ini" ]
 
