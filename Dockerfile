@@ -9,5 +9,5 @@ RUN pip install -r requirements.txt
 
 COPY . /code/pyracms
 
-RUN python setup.py install
+RUN python setup.py bdist_wheel
 
