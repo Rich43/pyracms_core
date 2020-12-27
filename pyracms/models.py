@@ -4,12 +4,13 @@ from sqlalchemy import (Column, Integer, Unicode, UnicodeText, DateTime, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, synonym
 from sqlalchemy.schema import UniqueConstraint, ForeignKey
-from zope.sqlalchemy import ZopeTransactionExtension
+from zope.sqlalchemy import register
 import hashlib
 import uuid
 import json
 
-DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
+DBSession = scoped_session(sessionmaker())
+register(DBSession)
 Base = declarative_base()
 
 class JsonBase:
