@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:3.7.3
 
 # We copy this file first to leverage docker cache
 COPY ./requirements.txt /code/pyracms/requirements.txt
